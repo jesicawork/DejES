@@ -1,0 +1,2638 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>大洋周文理補習班｜國小資料庫</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700;900&family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --lavender-bg:#EEE7F8;
+    --lavender-deep:#9B7FC7;
+    --lavender-line:#D9CBEF;
+    --yellow-bg:#FFF7DC;
+    --yellow-deep:#F0C94A;
+    --ink:#453659;
+    --ink-soft:#7A6C93;
+    --paper:#FFFFFF;
+    --danger:#D9695F;
+    --shadow: 0 8px 24px rgba(90,66,130,0.12);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:"Noto Sans TC",sans-serif;
+    background:
+      radial-gradient(circle at 15% 10%, rgba(240,201,74,0.18), transparent 40%),
+      radial-gradient(circle at 90% 85%, rgba(155,127,199,0.16), transparent 45%),
+      var(--lavender-bg);
+    color:var(--ink);
+    min-height:100vh;
+  }
+  h1,h2,h3,.display{font-family:"Noto Serif TC",serif;}
+  button{font-family:inherit;cursor:pointer;}
+  ::selection{background:var(--yellow-deep);color:var(--ink);}
+
+  .app{
+    display:flex;
+    min-height:100vh;
+    max-width:1280px;
+    margin:0 auto;
+  }
+
+  /* ---------- Folder-tab side nav ---------- */
+  .tabnav{
+    width:112px;
+    flex-shrink:0;
+    padding:38px 0 20px 18px;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+  }
+  .tabnav .brandmark{
+    writing-mode:vertical-rl;
+    font-family:"Noto Serif TC",serif;
+    font-weight:900;
+    font-size:13px;
+    letter-spacing:4px;
+    color:var(--lavender-deep);
+    margin-bottom:10px;
+    padding-left:4px;
+  }
+  .tab-btn{
+    position:relative;
+    border:none;
+    text-align:left;
+    padding:16px 10px 16px 16px;
+    border-radius:14px 4px 4px 14px;
+    font-size:14px;
+    font-weight:700;
+    color:var(--ink-soft);
+    background:rgba(255,255,255,0.55);
+    box-shadow:0 2px 6px rgba(90,66,130,0.08);
+    transform:translateX(0) rotate(-0.4deg);
+    transition:transform .18s ease, box-shadow .18s ease, background .18s ease;
+    line-height:1.5;
+  }
+  .tab-btn .en{
+    display:block;
+    font-size:9px;
+    letter-spacing:1.5px;
+    font-weight:500;
+    color:var(--ink-soft);
+    opacity:.7;
+    margin-top:2px;
+  }
+  .tab-btn:nth-child(2){ background:var(--yellow-bg); }
+  .tab-btn:nth-child(3){ background:var(--lavender-bg); }
+  .tab-btn:nth-child(4){ background:var(--yellow-bg); }
+  .tab-btn:nth-child(5){ background:var(--lavender-bg); }
+  .tab-btn:hover{ transform:translateX(6px) rotate(-0.4deg); }
+  .tab-btn.active{
+    background:var(--paper);
+    color:var(--ink);
+    transform:translateX(14px) rotate(0deg);
+    box-shadow:var(--shadow);
+    z-index:2;
+  }
+  .tab-btn.active::after{
+    content:"";
+    position:absolute;
+    right:-14px; top:0; bottom:0; width:14px;
+    background:var(--paper);
+  }
+
+  /* ---------- Main paper card ---------- */
+  .main-wrap{
+    flex:1;
+    padding:32px 32px 32px 0;
+    min-width:0;
+  }
+  .paper-card{
+    position:relative;
+    background:var(--paper);
+    border-radius:6px 22px 22px 22px;
+    box-shadow:var(--shadow);
+    min-height:calc(100vh - 64px);
+    padding:36px 40px;
+    overflow:hidden;
+  }
+  .paper-card::before{
+    content:"";
+    position:absolute;
+    left:0; top:0; bottom:0; width:26px;
+    background-image: radial-gradient(circle, var(--lavender-bg) 5px, transparent 5.5px);
+    background-size: 26px 34px;
+    background-position: 9px 20px;
+    opacity:.9;
+  }
+  .paper-card > .content{
+    margin-left:14px;
+    animation: fadein .35s ease;
+  }
+  @keyframes fadein{ from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);} }
+  @media (prefers-reduced-motion: reduce){
+    .paper-card > .content{ animation:none; }
+    .tab-btn{ transition:none; }
+  }
+
+  .topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    margin-bottom:22px;
+    gap:16px;
+  }
+  .eyebrow{
+    font-size:12px;
+    letter-spacing:3px;
+    color:var(--lavender-deep);
+    font-weight:700;
+    margin:0 0 6px;
+  }
+  .page-title{
+    font-size:28px;
+    margin:0;
+    color:var(--ink);
+    font-weight:900;
+  }
+  .icon-btn{
+    border:1px solid var(--lavender-line);
+    background:var(--lavender-bg);
+    color:var(--ink);
+    width:38px;height:38px;
+    border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-size:16px;
+    flex-shrink:0;
+  }
+  .icon-btn:hover{ background:var(--yellow-bg); }
+
+  /* ---------- Home ---------- */
+  .hero{
+    background:linear-gradient(135deg, var(--yellow-bg), var(--paper) 60%);
+    border:1px solid var(--yellow-deep);
+    border-radius:20px;
+    padding:34px 36px;
+    margin-bottom:26px;
+  }
+  .hero h1{ font-size:34px; margin:0 0 6px; color:var(--ink); }
+  .hero p{ margin:0; color:var(--ink-soft); font-size:15px; }
+  .stat-row{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:16px;
+    margin:26px 0;
+  }
+  .stat-card{
+    background:var(--paper);
+    border:1px solid var(--lavender-line);
+    border-radius:16px;
+    padding:18px 20px;
+    position:relative;
+  }
+  .stat-card::before{
+    content:"";
+    position:absolute; top:-6px; left:20px;
+    width:34px; height:12px;
+    background:var(--yellow-deep);
+    opacity:.6;
+    border-radius:2px;
+    transform:rotate(-3deg);
+  }
+  .stat-num{ font-family:"Noto Serif TC",serif; font-size:30px; font-weight:900; color:var(--lavender-deep); }
+  .stat-label{ font-size:13px; color:var(--ink-soft); margin-top:2px; }
+
+  .nav-cards{ display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
+  .nav-card{
+    border:1px solid var(--lavender-line);
+    border-radius:16px;
+    padding:22px 20px;
+    background:var(--lavender-bg);
+    transition:transform .15s ease, box-shadow .15s ease;
+    text-align:left;
+  }
+  .nav-card:hover{ transform:translateY(-3px); box-shadow:var(--shadow); }
+  .nav-card h3{ margin:8px 0 4px; font-size:17px; }
+  .nav-card p{ margin:0; font-size:13px; color:var(--ink-soft); line-height:1.6; }
+  .nav-card .badge{
+    display:inline-block; font-size:22px;
+  }
+
+  /* ---------- Layout: sidebar + list ---------- */
+  .two-col{ display:flex; gap:24px; align-items:flex-start; }
+  .folder-side{
+    width:220px;
+    flex-shrink:0;
+    background:var(--lavender-bg);
+    border-radius:16px;
+    padding:16px;
+  }
+  .folder-side h4{ margin:0 0 10px; font-size:13px; letter-spacing:1px; color:var(--ink-soft); font-weight:700; }
+  .folder-item{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:9px 10px;
+    border-radius:10px;
+    font-size:14px;
+    color:var(--ink);
+    margin-bottom:4px;
+  }
+  .folder-item:hover{ background:rgba(255,255,255,.6); }
+  .folder-item.active{ background:var(--paper); font-weight:700; box-shadow:0 2px 6px rgba(90,66,130,.1); }
+  .folder-item .name{ flex:1; cursor:pointer; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .folder-item .del{ opacity:0; border:none; background:none; color:var(--danger); font-size:13px; padding:2px 4px; }
+  .folder-item:hover .del{ opacity:.8; }
+  .add-folder-btn{
+    width:100%; margin-top:8px;
+    border:1.5px dashed var(--lavender-deep);
+    background:transparent;
+    color:var(--lavender-deep);
+    border-radius:10px;
+    padding:8px;
+    font-size:13px;
+    font-weight:600;
+  }
+  .add-folder-btn:hover{ background:rgba(155,127,199,0.1); }
+  .folder-item.pinned{
+    font-weight:700; margin-bottom:10px; padding-bottom:9px;
+    border-bottom:1.5px dashed var(--lavender-line);
+    border-radius:10px 10px 0 0;
+  }
+  .folder-item.pinned.active{ box-shadow:none; background:rgba(255,255,255,.75); }
+
+  .breadcrumb{ display:flex; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:12px; font-size:13px; }
+  .breadcrumb .crumb{ cursor:pointer; color:var(--ink-soft); padding:3px 8px; border-radius:8px; }
+  .breadcrumb .crumb:hover{ background:var(--lavender-bg); color:var(--ink); }
+  .breadcrumb .crumb.current{ color:var(--lavender-deep); font-weight:700; cursor:default; }
+  .breadcrumb .crumb.current:hover{ background:none; }
+  .breadcrumb .crumb-sep{ color:var(--ink-soft); opacity:.6; }
+
+  .folder-overview{ margin-top:22px; }
+  .folder-overview h4{ margin:0 0 10px; font-size:13px; letter-spacing:1px; color:var(--ink-soft); font-weight:700; }
+  .folder-card-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(150px,1fr)); gap:12px; }
+  .folder-card{
+    display:flex; flex-direction:column; gap:0;
+    background:var(--paper); border:1.5px solid var(--lavender-line); border-radius:12px;
+    overflow:hidden; transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .folder-card:hover{ transform:translateY(-2px); box-shadow:var(--shadow); border-color:var(--lavender-deep); }
+  .folder-card-nav{
+    display:flex; flex-direction:column; align-items:flex-start; gap:4px;
+    padding:14px 14px 10px; text-align:left; background:none; width:100%;
+  }
+  .folder-card .ic{ font-size:20px; }
+  .folder-card .name{ font-weight:700; font-size:14px; }
+  .folder-card .count{ font-size:11px; color:var(--ink-soft); }
+  .folder-card-actions{
+    display:flex; justify-content:flex-end; gap:4px; padding:6px 10px;
+    border-top:1px solid var(--lavender-line); background:rgba(155,127,199,0.05);
+  }
+  .folder-card-actions .del{ border:none; background:none; color:var(--ink-soft); font-size:13px; padding:2px 5px; }
+  .folder-card-actions .del:hover{ color:var(--danger); }
+
+  .folder-chip{
+    display:inline-block; font-size:10px; font-weight:700; color:var(--lavender-deep);
+    background:var(--lavender-bg); padding:2px 8px; border-radius:99px; margin-left:6px; vertical-align:middle;
+  }
+
+  .file-panel{ flex:1; min-width:0; }
+  .file-panel-head{
+    display:flex; justify-content:space-between; align-items:center;
+    margin-bottom:14px;
+  }
+  .file-panel-head h3{ margin:0; font-size:16px; }
+  .btn{
+    border:none; border-radius:10px; padding:9px 16px;
+    font-size:13px; font-weight:700;
+    background:var(--lavender-deep); color:#fff;
+  }
+  .btn:hover{ opacity:.9; }
+  .btn.secondary{ background:var(--yellow-deep); color:var(--ink); }
+  .btn.ghost{ background:var(--lavender-bg); color:var(--ink); }
+  .btn.small{ padding:6px 12px; font-size:12px; }
+  .btn:disabled{ opacity:.45; cursor:not-allowed; }
+
+  .file-row{
+    display:flex; align-items:center; gap:14px;
+    padding:12px 14px;
+    border:1px solid var(--lavender-line);
+    border-radius:12px;
+    margin-bottom:10px;
+    background:var(--paper);
+  }
+  .file-row .ic{ font-size:20px; width:28px; text-align:center; flex-shrink:0; }
+  .file-row .meta{ flex:1; min-width:0; }
+  .file-row .fname{ font-weight:600; font-size:14px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .file-row .fsub{ font-size:12px; color:var(--ink-soft); margin-top:2px; }
+  .file-row .actions{ display:flex; gap:6px; flex-shrink:0; }
+
+  .empty-state{
+    text-align:center; padding:50px 20px; color:var(--ink-soft);
+  }
+  .empty-state .ic{ font-size:38px; display:block; margin-bottom:10px; }
+
+  /* ---------- Attendance / student table ---------- */
+  .toolbar{ display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; align-items:center; }
+  .toolbar input[type=text]{
+    flex:1; min-width:160px;
+    padding:9px 12px; border-radius:10px; border:1px solid var(--lavender-line);
+    font-size:13px; background:var(--lavender-bg);
+  }
+  table.student-table{ width:100%; border-collapse:collapse; font-size:13px; }
+  table.student-table th{
+    text-align:left; padding:10px 12px; color:var(--ink-soft);
+    border-bottom:2px solid var(--lavender-line); font-weight:700; white-space:nowrap;
+  }
+  table.student-table td{ padding:10px 12px; border-bottom:1px solid var(--lavender-line); }
+  table.student-table tr:hover td{ background:var(--lavender-bg); }
+  .pill{ display:inline-block; padding:2px 10px; border-radius:99px; font-size:11px; font-weight:700; }
+
+  /* ---------- Subject tags ---------- */
+  .subject-tag{
+    display:inline-block; font-size:10px; font-weight:700; color:#3D8461;
+    background:#DCEFE2; padding:2px 9px; border-radius:99px; margin:2px 4px 0 0;
+  }
+  .subject-tag.subject-anqin{ color:#9A7C1B; background:var(--yellow-bg); }
+  .id-masked{
+    font-size:12px; color:var(--ink-soft); letter-spacing:1px;
+  }
+
+  /* ---------- Roster grid (attendance) ---------- */
+  table.roster-grid{ table-layout:auto; }
+  table.roster-grid th.date-col{ position:relative; padding-right:26px; }
+  table.roster-grid th.date-col .date-del{
+    position:absolute; right:4px; top:50%; transform:translateY(-50%);
+    border:none; background:transparent; color:var(--ink-soft); font-size:11px;
+    width:18px; height:18px; border-radius:50%; padding:0; line-height:18px;
+  }
+  table.roster-grid th.date-col .date-del:hover{ background:var(--danger); color:#fff; }
+  table.roster-grid tr.grade-row td{
+    background:linear-gradient(90deg, var(--lavender-deep), var(--yellow-deep));
+    color:#fff; font-weight:900; font-family:"Noto Serif TC",serif; letter-spacing:2px;
+    padding:8px 14px; border-bottom:none;
+  }
+  table.roster-grid tr.grade-row:first-child td{ border-radius:10px 10px 0 0; }
+  .sub-meta{ font-size:11px; color:var(--ink-soft); margin-top:2px; }
+  .att-cell, .note-cell{
+    width:64px; border:1px solid var(--lavender-line); border-radius:8px;
+    padding:6px 8px; font-size:12px; font-family:inherit; background:var(--paper);
+    color:var(--ink); text-align:center;
+  }
+  .note-cell{ width:130px; text-align:left; }
+  .att-cell:focus, .note-cell:focus{ outline:none; border-color:var(--lavender-deep); box-shadow:0 0 0 3px rgba(155,127,199,0.2); }
+
+  /* ---------- Sub tabs (student profile / attendance grid) ---------- */
+  .sub-tabs{ display:flex; gap:8px; margin-top:24px; border-bottom:2px solid var(--lavender-line); }
+  .sub-tab-btn{
+    border:none; background:transparent; padding:10px 16px; font-size:14px; font-weight:700;
+    color:var(--ink-soft); border-radius:10px 10px 0 0; position:relative; top:2px;
+  }
+  .sub-tab-btn.active{ background:var(--paper); color:var(--lavender-deep); box-shadow:0 -2px 8px rgba(90,66,130,0.06); }
+  .sub-tab-btn:hover{ color:var(--ink); }
+
+  /* ---------- Student profile cards ---------- */
+  .profile-grade-block{ margin-top:20px; }
+  .profile-grade-label{
+    display:inline-block; font-family:"Noto Serif TC",serif; font-weight:900; font-size:14px;
+    letter-spacing:2px; color:#fff; background:linear-gradient(90deg, var(--lavender-deep), var(--yellow-deep));
+    padding:6px 16px; border-radius:8px; margin-bottom:10px;
+  }
+  .profile-card-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(190px,1fr)); gap:12px; }
+  .profile-card{
+    text-align:left; background:var(--paper); border:1.5px solid var(--lavender-line); border-radius:14px;
+    padding:14px 16px; display:flex; flex-direction:column; gap:5px; transition:transform .15s ease, box-shadow .15s ease;
+    cursor:pointer;
+  }
+  .profile-card:hover{ transform:translateY(-2px); box-shadow:var(--shadow); border-color:var(--lavender-deep); }
+  .profile-card .pc-name{ font-weight:700; font-size:15px; }
+  .profile-card .pc-top-row{ display:flex; justify-content:space-between; align-items:flex-start; gap:8px; }
+  .status-badge{
+    flex-shrink:0; font-size:10px; font-weight:800; padding:2px 9px; border-radius:99px;
+    white-space:nowrap;
+  }
+  .status-badge.status-active{ background:#DCEFE2; color:#3D8461; }
+  .status-badge.status-new{ background:var(--yellow-bg); color:#9A7C1B; }
+  .status-badge.status-transfer{ background:#E4DBFA; color:var(--lavender-deep); }
+  .status-badge.status-left{ background:#F3E4E2; color:var(--danger); }
+  .profile-card .pc-meta{ font-size:12px; color:var(--ink-soft); }
+  .profile-card .pc-phone{ font-size:12px; color:var(--ink); }
+  .profile-card .pc-note{ font-size:11px; color:#9A7C1B; background:var(--yellow-bg); padding:3px 8px; border-radius:6px; margin-top:2px; }
+  .profile-card .pc-subjects{ margin-top:2px; }
+
+  .select-toolbar{
+    display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+    background:var(--lavender-bg); border-radius:12px; padding:10px 14px; margin-top:14px;
+    font-size:13px; font-weight:600; color:var(--ink);
+  }
+  .profile-card.selectable{ cursor:pointer; padding-top:30px; position:relative; }
+  .profile-card .pc-check{ position:absolute; top:10px; right:12px; font-size:16px; }
+  .profile-card.selected{ border-color:var(--lavender-deep); background:#F4EFFC; box-shadow:0 0 0 2px rgba(155,127,199,0.25); }
+
+  /* ---------- Profile lock screen ---------- */
+  .lock-screen{ display:flex; justify-content:center; padding:40px 14px; }
+  .lock-card{
+    width:100%; max-width:320px; text-align:center; background:var(--paper);
+    border:1.5px solid var(--lavender-line); border-radius:18px; padding:32px 24px;
+    box-shadow:var(--shadow);
+  }
+  .lock-icon{ font-size:34px; margin-bottom:8px; }
+  .lock-card h3{ margin:0 0 6px; font-size:17px; }
+  .lock-card .sub{ font-size:12px; color:var(--ink-soft); margin-bottom:16px; }
+  .lock-card input[type=password]{
+    width:100%; padding:11px 14px; border-radius:10px; border:1.5px solid var(--lavender-line);
+    font-size:16px; text-align:center; letter-spacing:3px; background:var(--lavender-bg); color:var(--ink);
+  }
+  .lock-error{ color:var(--danger); font-size:12px; margin-top:8px; height:16px; visibility:hidden; }
+  .lock-error.show{ visibility:visible; }
+
+  /* ---------- Modal ---------- */
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(69,54,89,0.35);
+    display:flex; align-items:center; justify-content:center; z-index:50;
+    padding:20px;
+  }
+  .modal{
+    background:var(--paper); border-radius:18px; padding:26px 28px;
+    width:100%; max-width:460px; box-shadow:var(--shadow);
+    max-height:88vh; overflow-y:auto;
+  }
+  .modal h3{ margin:0 0 4px; font-size:18px; }
+  .modal .sub{ font-size:12px; color:var(--ink-soft); margin-bottom:16px; }
+  .field{ margin-bottom:14px; }
+  .field label{ display:block; font-size:12px; font-weight:700; color:var(--ink-soft); margin-bottom:5px; }
+  .field input[type=text], .field input[type=tel], .field select, .field input[type=url], .field input[type=date], .field input[type=number]{
+    width:100%; padding:9px 12px; border-radius:10px; border:1px solid var(--lavender-line);
+    font-size:14px; background:var(--lavender-bg); color:var(--ink);
+  }
+  .field-row{ display:flex; gap:10px; }
+  .field-row .field{ flex:1; }
+  .modal-actions{ display:flex; justify-content:flex-end; gap:10px; margin-top:18px; }
+  .radio-group{ display:flex; gap:16px; margin-bottom:14px; }
+  .radio-group label{ font-size:13px; display:flex; align-items:center; gap:5px; font-weight:600; }
+
+  .checkbox-group{
+    display:flex; flex-wrap:wrap; gap:10px 16px;
+    background:var(--lavender-bg); border-radius:10px; padding:12px 14px;
+  }
+  .checkbox-group label{ font-size:13px; font-weight:600; display:flex; align-items:center; gap:6px; }
+
+  .prev-score-section{ margin-top:6px; margin-bottom:16px; }
+  .prev-score-section > summary{
+    cursor:pointer; font-size:13px; font-weight:700; color:var(--lavender-deep);
+    padding:8px 0; list-style:none;
+  }
+  .prev-score-section > summary::-webkit-details-marker{ display:none; }
+  .prev-score-section > summary::before{ content:'▸ '; }
+  .prev-score-section[open] > summary::before{ content:'▾ '; }
+  .prev-score-grid{
+    display:grid; grid-template-columns: 64px 1fr 1fr; gap:8px 10px;
+    align-items:center; margin-top:6px;
+  }
+  .prev-score-grid .ps-label{ font-size:12px; font-weight:700; color:var(--ink-soft); }
+  .prev-score-grid .ps-head{ font-size:11px; color:var(--ink-soft); text-align:center; }
+
+  /* ---------- Toast ---------- */
+  #toast-wrap{ position:fixed; bottom:22px; right:22px; display:flex; flex-direction:column; gap:8px; z-index:99; }
+  .toast{
+    background:var(--ink); color:#fff; padding:11px 18px; border-radius:10px;
+    font-size:13px; box-shadow:var(--shadow); animation:toastin .25s ease;
+    max-width:320px;
+  }
+  .toast.warn{ background:#B4562C; }
+  @keyframes toastin{ from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);} }
+
+  .helper-note{
+    font-size:12px; color:var(--ink-soft); background:var(--lavender-bg);
+    border-radius:10px; padding:10px 14px; margin-top:16px; line-height:1.6;
+  }
+  .link-text{ color:var(--lavender-deep); text-decoration:underline; cursor:pointer; }
+
+  @media (max-width:860px){
+    .app{ flex-direction:column; }
+    .tabnav{ flex-direction:row; padding:16px; width:100%; overflow-x:auto; }
+    .tabnav .brandmark{ display:none; }
+    .tab-btn{ transform:none !important; white-space:nowrap; }
+    .main-wrap{ padding:0 14px 24px; }
+    .two-col{ flex-direction:column; }
+    .folder-side{ width:100%; }
+    .stat-row, .nav-cards{ grid-template-columns:1fr; }
+  }
+
+  @media (max-width:520px){
+    body{ font-size:15px; }
+    .paper-card{ padding:18px 14px; border-radius:16px; }
+    .page-title{ font-size:20px; }
+    .field-row{ flex-direction:column; gap:0; }
+    .modal{ padding:20px 18px; border-radius:16px; max-height:92vh; }
+    .modal-overlay{ padding:12px; align-items:flex-end; }
+    .modal-actions{ flex-wrap:wrap; }
+    .modal-actions .btn{ flex:1; min-width:100px; }
+    .file-row{ flex-wrap:wrap; }
+    .file-row .meta{ flex-basis:100%; order:1; }
+    .file-row .actions{ order:2; margin-left:auto; flex-wrap:wrap; justify-content:flex-end; }
+    .file-panel-head{ flex-wrap:wrap; gap:10px; }
+    .file-panel-head > div{ width:100%; display:flex; }
+    .file-panel-head > div .btn{ flex:1; }
+    .file-panel-head > button.btn{ width:100%; }
+    .profile-card-grid, .folder-card-grid{ grid-template-columns:repeat(auto-fill, minmax(140px,1fr)); }
+    .sub-tabs{ overflow-x:auto; }
+    .select-toolbar{ flex-direction:column; align-items:stretch; }
+    .select-toolbar button{ width:100%; }
+    .select-toolbar span{ text-align:center; }
+    table.student-table{ font-size:12px; }
+    .att-cell{ width:48px; }
+    .note-cell{ width:90px; }
+    .prev-score-grid{ grid-template-columns: 48px 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+<div id="app" class="app">
+
+  <nav class="tabnav">
+    <span class="brandmark">大洋周文理補習班</span>
+    <button class="tab-btn" data-view="home">首頁<span class="en">HOME</span></button>
+    <button class="tab-btn" data-view="papers">檔案專區<span class="en">FILES</span></button>
+    <button class="tab-btn" data-view="attendance">學生檔案<br>及點名表<span class="en">STUDENTS</span></button>
+  </nav>
+
+  <div class="main-wrap">
+    <div class="paper-card">
+      <div class="content" id="content"><!-- rendered by JS --></div>
+    </div>
+  </div>
+</div>
+
+<div id="modal-root"></div>
+<div id="toast-wrap"></div>
+
+<script>
+/* ============ backend: local (this browser) or cloud (Google Apps Script) ============ */
+const LOCAL_PREFIX = 'dyzw_es_';
+const GAS_URL_KEY = 'dyzw_es_gas_url';
+
+/**
+ * 把您部署好的 Apps Script 網址（結尾 /exec）填在下面雙引號中間，
+ * 例如：const DEFAULT_GAS_URL = 'https://script.google.com/macros/s/AKfycb.../exec';
+ * 填好、存檔、上傳到 GitHub 後，任何人打開這個網站都會自動連到
+ * 同一個共用後台，完全不用再手動設定「⚙️ 同步設定」這一步。
+ * 留空 '' 則預設為每台裝置各自的本機模式，仍可在網頁裡手動設定。
+ * 注意：國小資料庫請部署「另一個」全新的 Apps Script 專案／試算表，
+ * 不要跟高中資料庫共用同一個網址，否則兩邊資料會混在一起。
+ */
+const DEFAULT_GAS_URL = '';
+const Backend = {
+  gasUrl: '',
+  cache: null, // 雲端模式下，開頁時一次讀回來的完整資料
+  cloudReady: false
+};
+
+async function initBackend(){
+  Backend.gasUrl = localStorage.getItem(GAS_URL_KEY) || DEFAULT_GAS_URL;
+  if(!Backend.gasUrl){
+    Backend.cloudReady = false;
+    return;
+  }
+  try{
+    const res = await fetch(Backend.gasUrl + '?action=getAll');
+    const json = await res.json();
+    if(json && json.ok){
+      Backend.cache = json.data || {};
+      Backend.cloudReady = true;
+    } else {
+      throw new Error(json && json.error || '後端回應異常');
+    }
+  }catch(e){
+    Backend.cloudReady = false;
+    Backend.cache = {};
+    showToast('連線 Google 後端失敗，暫時改用本機資料（不影響操作，但不會跨裝置同步）', 'warn');
+  }
+}
+
+async function storageGet(key, fallback){
+  if(Backend.gasUrl && Backend.cloudReady){
+    return Object.prototype.hasOwnProperty.call(Backend.cache, key) ? Backend.cache[key] : fallback;
+  }
+  try{
+    const raw = localStorage.getItem(LOCAL_PREFIX + key);
+    return raw ? JSON.parse(raw) : fallback;
+  }catch(e){ return fallback; }
+}
+
+async function storageSet(key, value){
+  if(Backend.gasUrl && Backend.cloudReady){
+    Backend.cache[key] = value;
+    try{
+      await fetch(Backend.gasUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action:'set', key, value })
+      });
+      return true;
+    }catch(e){
+      showToast('同步到雲端失敗，請檢查網路連線','warn');
+      return false;
+    }
+  }
+  try{
+    localStorage.setItem(LOCAL_PREFIX + key, JSON.stringify(value));
+    return true;
+  }catch(e){
+    showToast('本機儲存空間已滿，建議清理部分資料或改用雲端同步','warn');
+    return false;
+  }
+}
+
+/**
+ * 上傳檔案內容：雲端模式存進 Google 雲端硬碟（回傳 driveFileId）；
+ * 本機模式回傳 null，檔案內容改為直接內嵌存在本機資料裡。
+ */
+async function backendUploadFile(kind, folderName, fileName, dataUrl){
+  if(!(Backend.gasUrl && Backend.cloudReady)) return null;
+  const res = await fetch(Backend.gasUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify({ action:'uploadFile', kind, folderName, fileName, dataUrl })
+  });
+  const json = await res.json();
+  if(!json.ok) throw new Error(json.error || '上傳失敗');
+  return json.result; // { fileId, name, size }
+}
+
+async function backendDownloadFile(driveFileId){
+  const res = await fetch(Backend.gasUrl + '?action=getFile&id=' + encodeURIComponent(driveFileId));
+  const json = await res.json();
+  if(!json.ok) throw new Error(json.error || '下載失敗');
+  return json.file; // { name, mimeType, dataUrl }
+}
+
+async function backendDeleteFile(driveFileId){
+  if(!(Backend.gasUrl && Backend.cloudReady) || !driveFileId) return;
+  try{
+    await fetch(Backend.gasUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action:'deleteFile', fileId: driveFileId })
+    });
+  }catch(e){ /* 忽略刪除雲端檔案失敗，不影響網頁本身操作 */ }
+}
+
+/* ============ app state ============ */
+const state = {
+  view: 'home',
+  papers: { folders: [], files: {} },
+  videos: { folders: [], items: {} },
+  attendanceFiles: [],
+  students: [],
+  attendanceDates: [],
+  attendanceRecords: {},
+  settings: { gasUrl: '' },
+  activePaperFolder: null,
+  activeVideoFolder: null,
+  studentSearch: '',
+  attendanceSubView: 'profile',
+  paperSearch: '',
+  videoSearch: '',
+  profileSelectMode: false,
+  selectedStudentIds: [],
+  profileUnlocked: false,
+  profileStatusFilter: '全部',
+  profileSubjectFilter: '全部',
+  loaded: false
+};
+
+/* 國小年級（取代高中版的高一～專五） */
+const GRADE_ORDER = ['一年級','二年級','三年級','四年級','五年級','六年級'];
+const ALL_ID = '__all__';
+/* 建議之後在「設定」功能開放老師自行修改此密碼，目前先用固定值，記得部署前更換 */
+const STUDENT_PROFILE_PASSWORD = '29646498';
+const ENROLL_STATUS_OPTIONS = ['在班','新生','轉出','退班'];
+
+/* 補習科目（多選），安親班沒有對應的入班先備成績 */
+const SUBJECT_OPTIONS = ['國語','數學','英文','自然','社會','安親班'];
+/* 入班先備成績只問這 5 個學科，key 對應 prevScores 物件 */
+const PREV_SCORE_SUBJECTS = [
+  { key:'chinese', label:'國語' },
+  { key:'math', label:'數學' },
+  { key:'english', label:'英文' },
+  { key:'science', label:'自然' },
+  { key:'social', label:'社會' }
+];
+
+function generateStudentNo(){
+  const year = new Date().getFullYear();
+  const countThisYear = state.students.filter(s => s.studentNo && s.studentNo.startsWith(String(year))).length;
+  return `${year}${String(countThisYear + 1).padStart(3,'0')}`;
+}
+function enrollStatusClass(status){
+  if(status === '在班') return 'status-active';
+  if(status === '新生') return 'status-new';
+  if(status === '轉出') return 'status-transfer';
+  if(status === '退班') return 'status-left';
+  return 'status-active';
+}
+function todayLabel(){
+  const d = new Date();
+  const week = ['日','一','二','三','四','五','六'];
+  return `${d.getMonth()+1}/${d.getDate()}（${week[d.getDay()]}）`;
+}
+function studentFullName(s){ return s.en ? `${s.zh} ${s.en}` : s.zh; }
+function findDuplicateStudent(candidate, excludeId){
+  const phone = (candidate.phone||'').trim();
+  const zh = (candidate.zh||'').trim();
+  const birthday = (candidate.birthday||'').trim();
+  return state.students.find(s=>{
+    if(excludeId && s.id === excludeId) return false;
+    const phoneMatch = phone && (s.phone||'').trim() === phone;
+    const nameBirthdayMatch = zh && birthday && (s.zh||'').trim() === zh && (s.birthday||'').trim() === birthday;
+    return phoneMatch || nameBirthdayMatch;
+  });
+}
+
+/* ---------- subjects helpers ---------- */
+function subjectsToText(arr){ return (arr||[]).join('、'); }
+function textToSubjects(text){
+  if(!text) return [];
+  const parts = text.split(/[、,，\/\s]+/).map(s=>s.trim()).filter(Boolean);
+  return parts.filter(p => SUBJECT_OPTIONS.includes(p));
+}
+function subjectTagClass(subj){ return subj === '安親班' ? 'subject-tag subject-anqin' : 'subject-tag'; }
+
+/* ---------- ID number helpers (身分證字號，需妥善保護) ---------- */
+function looksLikeIdNumber(v){
+  return /^[A-Za-z][0-9]{9}$/.test((v||'').trim());
+}
+function maskIdNumber(v){
+  const s = (v||'').trim();
+  if(!s) return '';
+  if(s.length <= 4) return s[0] + '****';
+  return s.slice(0,1) + '****' + s.slice(-3);
+}
+
+/* ---------- prev scores helpers ---------- */
+function emptyPrevScores(){
+  const obj = {};
+  PREV_SCORE_SUBJECTS.forEach(s => { obj[s.key] = { mid:'', final:'' }; });
+  return obj;
+}
+function getPrevScore(s, key, term){
+  return (s.prevScores && s.prevScores[key] && s.prevScores[key][term] !== undefined) ? s.prevScores[key][term] : '';
+}
+
+function genId(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+function fmtSize(bytes){
+  if(bytes < 1024) return bytes + ' B';
+  if(bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB';
+  return (bytes/1024/1024).toFixed(1) + ' MB';
+}
+function fmtDate(iso){
+  const d = new Date(iso);
+  return `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`;
+}
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function showToast(msg, type){
+  const wrap = document.getElementById('toast-wrap');
+  const el = document.createElement('div');
+  el.className = 'toast' + (type === 'warn' ? ' warn' : '');
+  el.textContent = msg;
+  wrap.appendChild(el);
+  setTimeout(()=>{ el.remove(); }, 3600);
+}
+
+/* ============ load ============ */
+async function loadAll(){
+  await initBackend();
+  const [papers, videos, attendanceFiles, students, attendanceDates, attendanceRecords] = await Promise.all([
+    storageGet('papers', { folders: [], files: {} }),
+    storageGet('videos', { folders: [], items: {} }),
+    storageGet('attendance-files', []),
+    storageGet('students', []),
+    storageGet('attendance-dates', []),
+    storageGet('attendance-records', {})
+  ]);
+  state.papers = papers;
+  state.videos = videos;
+  if(!state.papers.files[ALL_ID]) state.papers.files[ALL_ID] = [];
+  if(!state.videos.items[ALL_ID]) state.videos.items[ALL_ID] = [];
+  state.attendanceFiles = attendanceFiles;
+  state.students = students;
+  state.attendanceDates = attendanceDates;
+  state.attendanceRecords = attendanceRecords;
+  state.settings = { gasUrl: Backend.gasUrl, cloudReady: Backend.cloudReady };
+  if(!state.activePaperFolder) state.activePaperFolder = ALL_ID;
+  if(!state.activeVideoFolder) state.activeVideoFolder = ALL_ID;
+  state.loaded = true;
+}
+
+/* ============ modal helpers ============ */
+function closeModal(){ document.getElementById('modal-root').innerHTML = ''; }
+function openModal(html){
+  document.getElementById('modal-root').innerHTML = `<div class="modal-overlay" id="modal-overlay"><div class="modal">${html}</div></div>`;
+  document.getElementById('modal-overlay').addEventListener('click', (e)=>{
+    if(e.target.id === 'modal-overlay') closeModal();
+  });
+}
+function confirmDialog(message, onYes, confirmLabel){
+  openModal(`
+    <h3>確認操作</h3>
+    <p class="sub" style="font-size:14px;color:var(--ink);margin-top:10px;">${escapeHtml(message)}</p>
+    <div class="modal-actions">
+      <button class="btn ghost" id="cd-cancel">取消</button>
+      <button class="btn" id="cd-yes" style="background:var(--danger);">${escapeHtml(confirmLabel || '確定刪除')}</button>
+    </div>
+  `);
+  document.getElementById('cd-cancel').onclick = closeModal;
+  document.getElementById('cd-yes').onclick = ()=>{ closeModal(); onYes(); };
+}
+
+/* ============ nav ============ */
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    if(state.view === 'attendance' && btn.dataset.view !== 'attendance'){
+      state.profileUnlocked = false; // 離開學生檔案及點名表分頁時自動重新鎖定
+    }
+    state.view = btn.dataset.view;
+    render();
+  });
+});
+
+/* ============ render root ============ */
+function render(){
+  document.querySelectorAll('.tab-btn').forEach(b=>{
+    b.classList.toggle('active', b.dataset.view === state.view);
+  });
+  const c = document.getElementById('content');
+  if(!state.loaded){
+    c.innerHTML = `<div class="empty-state"><span class="ic">⏳</span>資料載入中…</div>`;
+    return;
+  }
+  if(state.view === 'home') c.innerHTML = renderHome();
+  else if(state.view === 'papers') c.innerHTML = renderPapers();
+  else if(state.view === 'videos') c.innerHTML = renderVideos();
+  else if(state.view === 'attendance') c.innerHTML = renderAttendance();
+  bindViewEvents();
+}
+
+/* ============ HOME ============ */
+function renderHome(){
+  const paperCount = Object.values(state.papers.files).reduce((s,a)=>s+a.length,0);
+  return `
+    <div class="hero">
+      <p class="eyebrow">國小資料庫｜Daiyang Academic Center</p>
+      <h1>大洋周文理補習班</h1>
+      <p>檔案與學生點名資料，一站管理。淡紫與鵝黃，是這間資料室的顏色。</p>
+    </div>
+    <div class="stat-row" style="grid-template-columns:repeat(2,1fr);max-width:520px;">
+      <div class="stat-card"><div class="stat-num">${paperCount}</div><div class="stat-label">份檔案已建檔</div></div>
+      <div class="stat-card"><div class="stat-num">${state.students.length}</div><div class="stat-label">位學生資料</div></div>
+    </div>
+    <div class="nav-cards" style="grid-template-columns:repeat(2,1fr);">
+      <button class="nav-card" data-goto="papers"><span class="badge">🗂️</span><h3>檔案專區</h3><p>依科目、班別建立資料夾，上傳、下載、檢視各類講義與檔案。</p></button>
+      <button class="nav-card" data-goto="attendance"><span class="badge">📋</span><h3>學生檔案及點名表</h3><p>查閱學生基本資料檔案、每日點名，並可串接 Google Apps Script 同步至 Excel。</p></button>
+    </div>
+  `;
+}
+
+/* ============ PAPERS ============ */
+function getChildFolders(kind, parentId){
+  const data = kind === 'papers' ? state.papers : state.videos;
+  return data.folders.filter(f => (f.parentId || ALL_ID) === parentId);
+}
+
+function getFolderPath(kind, folderId){
+  if(folderId === ALL_ID) return [];
+  const data = kind === 'papers' ? state.papers : state.videos;
+  const path = [];
+  let current = data.folders.find(f=>f.id===folderId);
+  const guard = new Set();
+  while(current && !guard.has(current.id)){
+    path.unshift(current);
+    guard.add(current.id);
+    const parentId = current.parentId || ALL_ID;
+    if(parentId === ALL_ID) break;
+    current = data.folders.find(f=>f.id===parentId);
+  }
+  return path;
+}
+
+function getDescendantFolderIds(kind, folderId){
+  const ids = [];
+  const walk = (pid)=>{
+    getChildFolders(kind, pid).forEach(child=>{
+      ids.push(child.id);
+      walk(child.id);
+    });
+  };
+  walk(folderId);
+  return ids;
+}
+
+function renderFolderList(kind){
+  const data = kind === 'papers' ? state.papers : state.videos;
+  const activeId = kind === 'papers' ? state.activePaperFolder : state.activeVideoFolder;
+  const allLabel = kind === 'papers' ? '全部檔案' : '全部影片';
+  const pinned = `
+    <div class="folder-item pinned ${activeId === ALL_ID ? 'active' : ''}" data-folder="${ALL_ID}" data-kind="${kind}">
+      <span class="name" data-action="select-folder">🗂️ ${allLabel}</span>
+    </div>
+  `;
+  const topLevel = getChildFolders(kind, ALL_ID);
+  if(!topLevel.length){
+    return pinned + `<p style="font-size:12px;color:var(--ink-soft);margin:6px 0 10px;">尚無自訂資料夾</p>`;
+  }
+  return pinned + topLevel.map(f => `
+    <div class="folder-item ${f.id === activeId ? 'active' : ''}" data-folder="${f.id}" data-kind="${kind}">
+      <span class="name" data-action="select-folder">📁 ${escapeHtml(f.name)}</span>
+      <button class="del" data-action="rename-folder" title="修改資料夾名稱">✏️</button>
+      <button class="del" data-action="move-folder" title="移動資料夾">📂</button>
+      <button class="del" data-action="delete-folder" title="刪除資料夾">✕</button>
+    </div>
+  `).join('');
+}
+
+function searchFiles(kind, query){
+  const q = query.trim().toLowerCase();
+  if(!q) return null;
+  const data = kind === 'papers' ? state.papers : state.videos;
+  const bucket = kind === 'papers' ? data.files : data.items;
+  const results = [];
+  Object.keys(bucket).forEach(fid=>{
+    const folderName = fid === ALL_ID
+      ? (kind === 'papers' ? '全部檔案（未分類）' : '全部影片（未分類）')
+      : (data.folders.find(f=>f.id===fid)?.name || '（資料夾已刪除）');
+    (bucket[fid]||[]).forEach(f=>{
+      if(f.name.toLowerCase().includes(q)){
+        results.push(Object.assign({}, f, { _folderId: fid, _folderName: folderName }));
+      }
+    });
+  });
+  return results;
+}
+
+function renderFolderOverview(kind, parentId){
+  const bucket = kind === 'papers' ? state.papers.files : state.videos.items;
+  const children = getChildFolders(kind, parentId);
+  if(!children.length) return '';
+  return `
+    <div class="folder-overview">
+      <h4>子資料夾</h4>
+      <div class="folder-card-grid">
+        ${children.map(f => {
+          const childCount = getChildFolders(kind, f.id).length;
+          return `
+          <div class="folder-card">
+            <button class="folder-card-nav" data-goto-folder="${f.id}" data-kind="${kind}">
+              <span class="ic">📁</span>
+              <span class="name">${escapeHtml(f.name)}</span>
+              <span class="count">${(bucket[f.id]||[]).length} 份${childCount ? '・' + childCount + ' 個子資料夾' : ''}</span>
+            </button>
+            <div class="folder-card-actions">
+              <button class="del" data-action="rename-folder-card" data-folder="${f.id}" data-kind="${kind}" title="修改名稱">✏️</button>
+              <button class="del" data-action="move-folder" data-folder="${f.id}" data-kind="${kind}" title="移動資料夾">📂</button>
+              <button class="del" data-action="delete-folder-card" data-folder="${f.id}" data-kind="${kind}" title="刪除">✕</button>
+            </div>
+          </div>
+        `;
+        }).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function renderPapers(){
+  const activeId = state.activePaperFolder;
+  const isAll = activeId === ALL_ID;
+  const folder = isAll ? null : state.papers.folders.find(f=>f.id===activeId);
+  const files = state.papers.files[activeId] || [];
+  const query = state.paperSearch || '';
+  const searchResults = query.trim() ? searchFiles('papers', query) : null;
+  const path = getFolderPath('papers', activeId);
+  const breadcrumb = `
+    <div class="breadcrumb">
+      <span class="crumb ${isAll?'current':''}" data-crumb="${ALL_ID}" data-kind="papers">🗂️ 全部檔案</span>
+      ${path.map((f,i)=>`<span class="crumb-sep">›</span><span class="crumb ${i===path.length-1?'current':''}" data-crumb="${f.id}" data-kind="papers">${escapeHtml(f.name)}</span>`).join('')}
+    </div>
+  `;
+  return `
+    <div class="topbar">
+      <div><p class="eyebrow">FILE ARCHIVE</p><h2 class="page-title">檔案專區</h2></div>
+    </div>
+    <div class="toolbar" style="margin-bottom:14px;">
+      <input type="text" id="paper-search" placeholder="🔍 搜尋所有資料夾中的檔案名稱…" value="${escapeHtml(query)}" style="max-width:340px;">
+      ${query.trim() ? `<button class="btn ghost small" id="paper-search-clear">清除搜尋</button>` : ''}
+    </div>
+    ${searchResults !== null ? `
+      <div class="file-panel">
+        <div class="file-panel-head"><h3>搜尋結果（${searchResults.length} 筆）</h3></div>
+        <div>${renderFileRows(searchResults, 'papers')}</div>
+      </div>
+    ` : `
+    <div class="two-col">
+      <div class="folder-side">
+        <h4>資料夾</h4>
+        <div id="paper-folder-list">${renderFolderList('papers')}</div>
+        <button class="add-folder-btn" id="add-paper-folder">＋ 新增資料夾</button>
+      </div>
+      <div class="file-panel">
+        ${breadcrumb}
+        <div class="file-panel-head">
+          <h3>${isAll ? '全部檔案（未分類）' : escapeHtml(folder.name)}</h3>
+          <div>
+            <button class="btn ghost" id="add-paper-subfolder">＋ 子資料夾</button>
+            <input type="file" id="paper-file-input" multiple style="display:none">
+            <button class="btn" id="paper-upload-btn">＋ 上傳檔案</button>
+          </div>
+        </div>
+        ${isAll ? `<p class="helper-note" style="margin-top:0;">這裡放無法歸類到特定資料夾的檔案；下方是已建立的資料夾與子資料夾。</p>` : ''}
+        ${renderFolderOverview('papers', activeId)}
+        <div id="paper-file-list">
+          ${renderFileRows(files, 'papers', activeId)}
+        </div>
+      </div>
+    </div>
+    `}
+    <p class="helper-note">💡 檔案會儲存在瀏覽器可用的空間中，單檔上限約 4MB；超過大小的檔案會保留檔名紀錄，但無法直接下載，建議改用雲端硬碟連結分享大檔案。此頁資料為班內共用，所有老師登入皆可檢視與編輯。</p>
+  `;
+}
+
+function renderFileRows(files, kind, defaultFolderId){
+  if(!files.length){
+    return `<div class="empty-state"><span class="ic">📄</span>${defaultFolderId !== undefined ? '這個資料夾還沒有檔案。' : '沒有符合的檔案。'}</div>`;
+  }
+  return files.map((f, idx) => {
+    const folderId = f._folderId !== undefined ? f._folderId : defaultFolderId;
+    const isSearchResult = f._folderId !== undefined;
+    return `
+    <div class="file-row">
+      <div class="ic">${f.type && f.type.startsWith('video') ? '🎞️' : (f.linkType==='link' ? '🔗' : '📄')}</div>
+      <div class="meta">
+        <div class="fname">${escapeHtml(f.name)} ${f._folderName ? `<span class="folder-chip">📁 ${escapeHtml(f._folderName)}</span>` : ''}</div>
+        <div class="fsub">${f.linkType==='link' ? f.url : (f.tooLarge ? '檔案過大，僅記錄檔名・' + fmtSize(f.size) : fmtSize(f.size))} ・ ${fmtDate(f.date)}</div>
+      </div>
+      <div class="actions">
+        ${!isSearchResult ? `
+          <button class="btn small ghost" data-action="move-order-up" data-id="${f.id}" data-kind="${kind}" data-folder="${folderId}" title="上移" ${idx===0 ? 'disabled' : ''}>▲</button>
+          <button class="btn small ghost" data-action="move-order-down" data-id="${f.id}" data-kind="${kind}" data-folder="${folderId}" title="下移" ${idx===files.length-1 ? 'disabled' : ''}>▼</button>
+        ` : ''}
+        ${f.linkType==='link'
+          ? `<a class="btn small secondary" href="${escapeHtml(f.url)}" target="_blank" rel="noopener">開啟連結</a>`
+          : `<button class="btn small secondary" data-action="download" data-id="${f.id}" data-kind="${kind}" data-folder="${folderId}" ${f.tooLarge ? 'disabled' : ''}>下載</button>`
+        }
+        <button class="btn small ghost" data-action="rename-file" data-id="${f.id}" data-kind="${kind}" data-folder="${folderId}" title="修改名稱">✏️</button>
+        ${kind !== 'attendance' ? `<button class="btn small ghost" data-action="move-file" data-id="${f.id}" data-kind="${kind}" data-folder="${folderId}" title="移動到其他資料夾">📂</button>` : ''}
+        <button class="btn small ghost" data-action="delete-file" data-id="${f.id}" data-kind="${kind}" data-folder="${folderId}">刪除</button>
+      </div>
+    </div>
+  `;
+  }).join('');
+}
+
+/* ============ VIDEOS ============ */
+function renderVideos(){
+  const activeId = state.activeVideoFolder;
+  const isAll = activeId === ALL_ID;
+  const folder = isAll ? null : state.videos.folders.find(f=>f.id===activeId);
+  const items = state.videos.items[activeId] || [];
+  const query = state.videoSearch || '';
+  const searchResults = query.trim() ? searchFiles('videos', query) : null;
+  const path = getFolderPath('videos', activeId);
+  const breadcrumb = `
+    <div class="breadcrumb">
+      <span class="crumb ${isAll?'current':''}" data-crumb="${ALL_ID}" data-kind="videos">🗂️ 全部影片</span>
+      ${path.map((f,i)=>`<span class="crumb-sep">›</span><span class="crumb ${i===path.length-1?'current':''}" data-crumb="${f.id}" data-kind="videos">${escapeHtml(f.name)}</span>`).join('')}
+    </div>
+  `;
+  return `
+    <div class="topbar">
+      <div><p class="eyebrow">VIDEO LIBRARY</p><h2 class="page-title">課程影片</h2></div>
+    </div>
+    <div class="toolbar" style="margin-bottom:14px;">
+      <input type="text" id="video-search" placeholder="🔍 搜尋所有資料夾中的影片名稱…" value="${escapeHtml(query)}" style="max-width:340px;">
+      ${query.trim() ? `<button class="btn ghost small" id="video-search-clear">清除搜尋</button>` : ''}
+    </div>
+    ${searchResults !== null ? `
+      <div class="file-panel">
+        <div class="file-panel-head"><h3>搜尋結果（${searchResults.length} 筆）</h3></div>
+        <div>${renderFileRows(searchResults, 'videos')}</div>
+      </div>
+    ` : `
+    <div class="two-col">
+      <div class="folder-side">
+        <h4>資料夾</h4>
+        <div id="video-folder-list">${renderFolderList('videos')}</div>
+        <button class="add-folder-btn" id="add-video-folder">＋ 新增資料夾</button>
+      </div>
+      <div class="file-panel">
+        ${breadcrumb}
+        <div class="file-panel-head">
+          <h3>${isAll ? '全部影片（未分類）' : escapeHtml(folder.name)}</h3>
+          <div style="display:flex;gap:8px;">
+            <button class="btn ghost" id="add-video-subfolder">＋ 子資料夾</button>
+            <button class="btn" id="video-add-btn">＋ 新增影片</button>
+          </div>
+        </div>
+        ${isAll ? `<p class="helper-note" style="margin-top:0;">這裡放無法歸類到特定資料夾的影片；下方是已建立的資料夾與子資料夾。</p>` : ''}
+        ${renderFolderOverview('videos', activeId)}
+        <div id="video-item-list">
+          ${renderFileRows(items, 'videos', activeId)}
+        </div>
+      </div>
+    </div>
+    `}
+    <p class="helper-note">💡 影片檔通常較大，瀏覽器儲存無法保存完整影片內容，建議將影片上傳至 Google 雲端硬碟或 YouTube（可設不公開），再把連結貼在這裡；連結項目可直接點「開啟連結」播放。</p>
+  `;
+}
+
+/* ============ ATTENDANCE ============ */
+function renderAttendance(){
+  const sub = state.attendanceSubView || 'profile';
+  return `
+    <div class="topbar">
+      <div><p class="eyebrow">ROSTER &amp; STUDENTS</p><h2 class="page-title">學生檔案及點名表</h2></div>
+      <button class="icon-btn" id="open-settings" title="同步設定">⚙️</button>
+    </div>
+
+    <div class="file-panel-head">
+      <h3>點名表檔案（備份存檔）</h3>
+      <div>
+        <input type="file" id="attendance-file-input" multiple style="display:none">
+        <button class="btn" id="attendance-upload-btn">＋ 上傳點名表</button>
+      </div>
+    </div>
+    <div id="attendance-file-list">${renderFileRows(state.attendanceFiles, 'attendance')}</div>
+
+    <div class="sub-tabs">
+      <button class="sub-tab-btn ${sub==='profile'?'active':''}" data-subview="profile">🧑‍🎓 學生檔案</button>
+      <button class="sub-tab-btn ${sub==='grid'?'active':''}" data-subview="grid">📋 點名總表</button>
+    </div>
+
+    ${sub === 'profile' ? (state.profileUnlocked ? renderStudentProfiles() : renderProfileLockScreen()) : renderAttendanceGrid()}
+  `;
+}
+
+function renderProfileLockScreen(){
+  return `
+    <div class="lock-screen">
+      <div class="lock-card">
+        <div class="lock-icon">🔒</div>
+        <h3>學生檔案需要密碼</h3>
+        <p class="sub">內含學生聯絡資訊與身分證字號，請輸入密碼後查看</p>
+        <input type="password" id="profile-password-input" inputmode="numeric" placeholder="請輸入密碼" autocomplete="off">
+        <p class="lock-error" id="profile-password-error">密碼錯誤，請再試一次</p>
+        <button class="btn" id="profile-password-submit" style="width:100%;margin-top:10px;">解鎖</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderStudentProfiles(){
+  const q = state.studentSearch.trim().toLowerCase();
+  const statusFilter = state.profileStatusFilter || '全部';
+  const subjectFilter = state.profileSubjectFilter || '全部';
+  const students = state.students.filter(s =>
+    (!q || s.zh.toLowerCase().includes(q) || (s.en||'').toLowerCase().includes(q) || (s.school||'').toLowerCase().includes(q))
+    && (statusFilter === '全部' || (s.enrollStatus||'在班') === statusFilter)
+    && (subjectFilter === '全部' || (s.subjects||[]).includes(subjectFilter))
+  );
+  const groups = GRADE_ORDER.map(g => ({ grade: g, list: students.filter(s => s.grade === g) })).filter(g => g.list.length);
+  const otherGrades = [...new Set(students.map(s=>s.grade).filter(g=>!GRADE_ORDER.includes(g)))];
+  otherGrades.forEach(g => groups.push({ grade: g, list: students.filter(s=>s.grade===g) }));
+
+  const selectMode = state.profileSelectMode;
+  const selectedCount = state.selectedStudentIds.length;
+
+  return `
+    <div style="margin-top:26px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+      <h3 style="margin:0;font-size:16px;">學生檔案</h3>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        ${selectMode ? '' : `<button class="btn secondary" id="add-student-btn">＋ 新增學生</button>`}
+        <button class="btn ${selectMode ? '' : 'ghost'}" id="toggle-select-mode-btn">${selectMode ? '✕ 取消選取' : '☑ 多選刪除'}</button>
+        ${selectMode ? '' : `<button class="btn ghost" id="export-roster-csv-btn">⬇ 匯出學生名冊(CSV)</button>`}
+        ${selectMode ? '' : `<button class="btn ghost" id="export-insurance-csv-btn">⬇ 匯出保險名冊(CSV)</button>`}
+        ${selectMode ? '' : `<input type="file" id="import-roster-csv-input" accept=".csv" style="display:none">
+        <button class="btn ghost" id="import-roster-csv-btn">⬆ 匯入學生名冊(CSV)</button>`}
+        <button class="btn ghost" id="lock-profile-btn" title="離開座位前先鎖定">🔒 鎖定</button>
+      </div>
+    </div>
+    ${selectMode ? `
+      <div class="select-toolbar">
+        <span>已選取 ${selectedCount} 位</span>
+        <button class="btn ghost small" id="select-all-students-btn">全選（目前搜尋結果）</button>
+        <button class="btn ghost small" id="clear-select-students-btn">清除選取</button>
+        <button class="btn small" id="delete-selected-students-btn" style="background:var(--danger); margin-left:auto;" ${selectedCount ? '' : 'disabled'}>🗑 刪除已選取（${selectedCount}）</button>
+      </div>
+    ` : `<p class="helper-note" style="margin-top:8px;">💡 匯入時系統會先讀取標題列自動辨識每欄對應的欄位（就算欄位順序跟範本不同也沒關係）；每個欄位的內容也會做基本檢查。日常「學生名冊」匯出不含身分證字號與生日，這兩項只在「保險名冊」專用匯出時才會帶出，請妥善保管保險名冊檔案。可先按「匯出學生名冊」取得標準範本欄位。</p>`}
+    <div class="toolbar" style="margin-top:14px;">
+      <input type="text" id="student-search" placeholder="搜尋姓名或學校…" value="${escapeHtml(state.studentSearch)}">
+      <select id="profile-status-filter" style="padding:9px 12px;border-radius:10px;border:1px solid var(--lavender-line);background:var(--lavender-bg);font-size:13px;">
+        ${['全部', ...ENROLL_STATUS_OPTIONS].map(o=>`<option ${statusFilter===o?'selected':''}>${o}</option>`).join('')}
+      </select>
+      <select id="profile-subject-filter" style="padding:9px 12px;border-radius:10px;border:1px solid var(--lavender-line);background:var(--lavender-bg);font-size:13px;">
+        ${['全部', ...SUBJECT_OPTIONS].map(o=>`<option ${subjectFilter===o?'selected':''}>${o}</option>`).join('')}
+      </select>
+    </div>
+    ${groups.length ? groups.map(grp => `
+      <div class="profile-grade-block">
+        <div class="profile-grade-label">${escapeHtml(grp.grade)}</div>
+        <div class="profile-card-grid">
+          ${grp.list.map(s => {
+            const isSelected = state.selectedStudentIds.includes(s.id);
+            const status = s.enrollStatus || '在班';
+            return `
+            <div class="profile-card ${selectMode ? 'selectable' : ''} ${isSelected ? 'selected' : ''}" data-open-student="${s.id}" role="button" tabindex="0">
+              ${selectMode ? `<span class="pc-check">${isSelected ? '✅' : '⬜'}</span>` : ''}
+              <div class="pc-top-row">
+                <div class="pc-name">${escapeHtml(studentFullName(s))}</div>
+                <span class="status-badge ${enrollStatusClass(status)}">${escapeHtml(status)}</span>
+              </div>
+              ${s.studentNo ? `<div class="pc-meta">🔖 ${escapeHtml(s.studentNo)}</div>` : ''}
+              <div class="pc-meta">${escapeHtml(s.school||'未填寫學校')}</div>
+              ${s.idNumber ? `<div class="id-masked">🪪 ${escapeHtml(maskIdNumber(s.idNumber))}</div>` : ''}
+              <div class="pc-phone">📱 ${escapeHtml(s.phone||'—')}</div>
+              ${(s.subjects && s.subjects.length) ? `<div class="pc-subjects">${s.subjects.map(sub=>`<span class="${subjectTagClass(sub)}">${escapeHtml(sub)}</span>`).join('')}</div>` : ''}
+              ${s.note ? `<div class="pc-note">📝 ${escapeHtml(s.note)}</div>` : ''}
+            </div>
+          `;
+          }).join('')}
+        </div>
+      </div>
+    `).join('') : `<div class="empty-state" style="margin-top:14px;"><span class="ic">🧑‍🎓</span>還沒有學生資料，點選「新增學生」開始建檔。</div>`}
+  `;
+}
+
+function renderAttendanceGrid(){
+  const q = state.studentSearch.trim().toLowerCase();
+  const students = state.students.filter(s =>
+    !q || s.zh.toLowerCase().includes(q) || (s.en||'').toLowerCase().includes(q) || (s.school||'').toLowerCase().includes(q)
+  );
+  const dates = state.attendanceDates;
+  const groups = GRADE_ORDER.map(g => ({ grade: g, list: students.filter(s => s.grade === g) }))
+    .filter(g => g.list.length);
+  const otherGrades = [...new Set(students.map(s=>s.grade).filter(g=>!GRADE_ORDER.includes(g)))];
+  otherGrades.forEach(g => groups.push({ grade: g, list: students.filter(s=>s.grade===g) }));
+
+  const colCount = 4 + dates.length; // 姓名, 學生電話, 家長電話, ...dates, 備註
+
+  return `
+    <div style="margin-top:26px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+      <h3 style="margin:0;font-size:16px;">學生點名總表</h3>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="btn secondary" id="add-student-btn">＋ 新增學生</button>
+        <button class="btn secondary" id="add-date-btn">＋ 新增日期欄</button>
+        <button class="btn ghost" id="export-csv-btn">⬇ 匯出 Excel(CSV)</button>
+        <input type="file" id="import-csv-input" accept=".csv" style="display:none">
+        <button class="btn ghost" id="import-csv-btn">⬆ 匯入 CSV</button>
+      </div>
+    </div>
+    <div class="toolbar" style="margin-top:14px;">
+      <input type="text" id="student-search" placeholder="搜尋姓名或學校…" value="${escapeHtml(state.studentSearch)}">
+    </div>
+    <div style="overflow-x:auto;">
+      <table class="student-table roster-grid">
+        <thead>
+          <tr>
+            <th>班級 / 姓名</th><th>學生電話</th><th>家長電話</th>
+            ${dates.map(d => `<th class="date-col"><span>${escapeHtml(d.label)}</span><button class="date-del" data-date="${d.id}" title="刪除此日期欄">✕</button></th>`).join('')}
+            <th>備註</th><th></th>
+          </tr>
+        </thead>
+        <tbody>
+          ${groups.length ? groups.map(grp => `
+            <tr class="grade-row">
+              <td colspan="${colCount}">${escapeHtml(grp.grade)}</td>
+            </tr>
+            ${grp.list.map(s => `
+              <tr>
+                <td>${escapeHtml(studentFullName(s))}<div class="sub-meta">${escapeHtml(s.school||'')}</div></td>
+                <td>${escapeHtml(s.phone||'—')}</td>
+                <td>${escapeHtml(s.parentPhone||'—')}</td>
+                ${dates.map(d => `<td><input type="text" class="att-cell" data-student="${s.id}" data-date="${d.id}" value="${escapeHtml((state.attendanceRecords[s.id]||{})[d.id]||'')}" placeholder="到"></td>`).join('')}
+                <td><input type="text" class="note-cell" data-student="${s.id}" value="${escapeHtml(s.note||'')}" placeholder="備註"></td>
+                <td><button class="btn small ghost" data-action="delete-student" data-id="${s.id}">刪除</button></td>
+              </tr>
+            `).join('')}
+          `).join('') : `<tr><td colspan="${colCount+2}"><div class="empty-state"><span class="ic">🧑‍🎓</span>還沒有學生資料，點選「新增學生」開始建檔。</div></td></tr>`}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+/* ============ modals: folder create ============ */
+function promptCreateFolder(kind, parentId){
+  const targetParent = parentId || ALL_ID;
+  openModal(`
+    <h3>${targetParent === ALL_ID ? '新增資料夾' : '新增子資料夾'}</h3>
+    <p class="sub">${kind === 'papers' ? '例如：三年級數學、四年級國語講義' : '例如：五年級英文補課影片'}</p>
+    <div class="field"><label>資料夾名稱</label><input type="text" id="new-folder-name" placeholder="請輸入名稱" autofocus></div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="folder-cancel">取消</button>
+      <button class="btn" id="folder-save">新增</button>
+    </div>
+  `);
+  document.getElementById('folder-cancel').onclick = closeModal;
+  document.getElementById('folder-save').onclick = async ()=>{
+    const name = document.getElementById('new-folder-name').value.trim();
+    if(!name){ showToast('請輸入資料夾名稱','warn'); return; }
+    const id = genId();
+    if(kind === 'papers'){
+      state.papers.folders.push({id, name, parentId: targetParent});
+      state.papers.files[id] = [];
+      state.activePaperFolder = id;
+      await storageSet('papers', state.papers);
+    } else {
+      state.videos.folders.push({id, name, parentId: targetParent});
+      state.videos.items[id] = [];
+      state.activeVideoFolder = id;
+      await storageSet('videos', state.videos);
+    }
+    closeModal();
+    render();
+    showToast('資料夾已新增');
+  };
+}
+
+/* ============ video add modal ============ */
+function openAddVideoModal(){
+  openModal(`
+    <h3>新增課程影片</h3>
+    <p class="sub">選擇要上傳影片檔，或貼上雲端 / YouTube 連結</p>
+    <div class="radio-group">
+      <label><input type="radio" name="vtype" value="file" checked> 上傳檔案</label>
+      <label><input type="radio" name="vtype" value="link"> 貼上連結</label>
+    </div>
+    <div id="vtype-file-fields">
+      <div class="field"><label>選擇影片檔</label><input type="file" id="video-file-input" accept="video/*"></div>
+    </div>
+    <div id="vtype-link-fields" style="display:none;">
+      <div class="field"><label>影片名稱</label><input type="text" id="video-link-name" placeholder="例如：五年級數學 Lesson 5"></div>
+      <div class="field"><label>影片連結</label><input type="url" id="video-link-url" placeholder="https://..."></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="video-cancel">取消</button>
+      <button class="btn" id="video-save">新增</button>
+    </div>
+  `);
+  document.querySelectorAll('input[name=vtype]').forEach(r=>{
+    r.addEventListener('change', (e)=>{
+      const isLink = e.target.value === 'link';
+      document.getElementById('vtype-file-fields').style.display = isLink ? 'none' : 'block';
+      document.getElementById('vtype-link-fields').style.display = isLink ? 'block' : 'none';
+    });
+  });
+  document.getElementById('video-cancel').onclick = closeModal;
+  document.getElementById('video-save').onclick = async ()=>{
+    const isLink = document.querySelector('input[name=vtype]:checked').value === 'link';
+    const folderId = state.activeVideoFolder;
+    if(isLink){
+      const name = document.getElementById('video-link-name').value.trim();
+      const url = document.getElementById('video-link-url').value.trim();
+      if(!name || !url){ showToast('請填寫名稱與連結','warn'); return; }
+      state.videos.items[folderId].push({ id: genId(), name, linkType:'link', url, date: new Date().toISOString() });
+      await storageSet('videos', state.videos);
+      closeModal(); render(); showToast('影片連結已新增');
+    } else {
+      const input = document.getElementById('video-file-input');
+      const file = input.files[0];
+      if(!file){ showToast('請選擇檔案','warn'); return; }
+      await addFileToStore('videos', folderId, file);
+      closeModal(); render();
+    }
+  };
+}
+
+/* ============ shared file add logic ============ */
+const MAX_INLINE_SIZE = 4 * 1024 * 1024; // 4MB
+
+function readFileAsDataUrl(file){
+  return new Promise((resolve, reject)=>{
+    const r = new FileReader();
+    r.onload = ()=> resolve(r.result);
+    r.onerror = ()=> reject(new Error('讀取檔案失敗'));
+    r.readAsDataURL(file);
+  });
+}
+
+async function addFileToStore(kind, folderIdOrNull, file){
+  const cloudMode = Backend.gasUrl && Backend.cloudReady;
+  // 雲端模式檔案交給 Google 雲端硬碟保管，容量寬鬆很多；本機模式才需要 4MB 內嵌限制
+  const tooLarge = !cloudMode && file.size > MAX_INLINE_SIZE;
+  let dataUrl = null;
+  if(!tooLarge){
+    try{ dataUrl = await readFileAsDataUrl(file); }
+    catch(e){ showToast('檔案讀取失敗：' + file.name, 'warn'); return; }
+  }
+
+  let entry = {
+    id: genId(),
+    name: file.name,
+    size: file.size,
+    type: file.type,
+    date: new Date().toISOString(),
+    dataUrl,
+    driveFileId: null,
+    tooLarge
+  };
+
+  if(cloudMode && dataUrl){
+    try{
+      showToast(`「${file.name}」上傳中…`);
+      const result = await backendUploadFile(kind, resolveFolderName(kind, folderIdOrNull), file.name, dataUrl);
+      entry.driveFileId = result.fileId;
+      entry.dataUrl = null; // 內容已經在雲端硬碟，本機資料只留參照，避免資料庫爆量
+      entry.tooLarge = false;
+    }catch(e){
+      showToast(`「${file.name}」雲端上傳失敗，將只暫存在本機：${e.message||e}`, 'warn');
+    }
+  }
+
+  if(kind === 'papers'){
+    state.papers.files[folderIdOrNull].push(entry);
+    await storageSet('papers', state.papers);
+  } else if(kind === 'videos'){
+    state.videos.items[folderIdOrNull].push(entry);
+    await storageSet('videos', state.videos);
+  } else if(kind === 'attendance'){
+    state.attendanceFiles.push(entry);
+    await storageSet('attendance-files', state.attendanceFiles);
+  }
+
+  if(entry.tooLarge){
+    showToast(`「${file.name}」超過 4MB，僅記錄檔名，無法下載。建議改用雲端同步或雲端連結。`, 'warn');
+  } else {
+    showToast(`「${file.name}」已上傳${entry.driveFileId ? '並同步到雲端硬碟' : ''}`);
+  }
+  render();
+}
+
+function resolveFolderName(kind, folderId){
+  if(kind === 'attendance') return null;
+  if(!folderId || folderId === ALL_ID) return null;
+  const data = kind === 'papers' ? state.papers : state.videos;
+  const f = data.folders.find(x => x.id === folderId);
+  return f ? f.name : null;
+}
+
+/* ============ folder rename / file rename & move ============ */
+function promptRenameFolder(kind, folderId){
+  const data = kind === 'papers' ? state.papers : state.videos;
+  const folder = data.folders.find(f=>f.id===folderId);
+  if(!folder) return;
+  openModal(`
+    <h3>修改資料夾名稱</h3>
+    <div class="field"><label>資料夾名稱</label><input type="text" id="rename-folder-input" value="${escapeHtml(folder.name)}" autofocus></div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="rename-folder-cancel">取消</button>
+      <button class="btn" id="rename-folder-save">儲存</button>
+    </div>
+  `);
+  document.getElementById('rename-folder-cancel').onclick = closeModal;
+  document.getElementById('rename-folder-save').onclick = async ()=>{
+    const newName = document.getElementById('rename-folder-input').value.trim();
+    if(!newName){ showToast('請輸入資料夾名稱','warn'); return; }
+    folder.name = newName;
+    await storageSet(kind === 'papers' ? 'papers' : 'videos', data);
+    closeModal();
+    render();
+    showToast('資料夾名稱已更新');
+  };
+}
+
+function promptRenameFile(kind, folderId, fileId){
+  const bucket = kind === 'papers' ? state.papers.files : kind === 'videos' ? state.videos.items : null;
+  const entry = kind === 'attendance'
+    ? state.attendanceFiles.find(f=>f.id===fileId)
+    : (bucket[folderId]||[]).find(f=>f.id===fileId);
+  if(!entry) return;
+  const isLink = entry.linkType === 'link';
+  openModal(`
+    <h3>修改${isLink ? '連結' : '檔案'}名稱</h3>
+    <div class="field"><label>名稱</label><input type="text" id="rename-file-input" value="${escapeHtml(entry.name)}" autofocus></div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="rename-file-cancel">取消</button>
+      <button class="btn" id="rename-file-save">儲存</button>
+    </div>
+  `);
+  document.getElementById('rename-file-cancel').onclick = closeModal;
+  document.getElementById('rename-file-save').onclick = async ()=>{
+    const newName = document.getElementById('rename-file-input').value.trim();
+    if(!newName){ showToast('請輸入名稱','warn'); return; }
+    entry.name = newName;
+    if(kind === 'papers') await storageSet('papers', state.papers);
+    else if(kind === 'videos') await storageSet('videos', state.videos);
+    else await storageSet('attendance-files', state.attendanceFiles);
+    closeModal();
+    render();
+    showToast('名稱已更新');
+  };
+}
+
+async function moveFileOrder(kind, folderId, fileId, direction){
+  let arr;
+  if(kind === 'attendance'){
+    arr = state.attendanceFiles;
+  } else {
+    const bucket = kind === 'papers' ? state.papers.files : state.videos.items;
+    arr = bucket[folderId];
+  }
+  if(!arr) return;
+  const idx = arr.findIndex(f=>f.id===fileId);
+  const newIdx = idx + direction;
+  if(idx < 0 || newIdx < 0 || newIdx >= arr.length) return;
+  [arr[idx], arr[newIdx]] = [arr[newIdx], arr[idx]];
+  if(kind === 'papers') await storageSet('papers', state.papers);
+  else if(kind === 'videos') await storageSet('videos', state.videos);
+  else await storageSet('attendance-files', state.attendanceFiles);
+  render();
+}
+
+function promptMoveFolder(kind, folderId){
+  const data = kind === 'papers' ? state.papers : state.videos;
+  const folder = data.folders.find(f=>f.id===folderId);
+  if(!folder) return;
+  const blocked = new Set([folderId, ...getDescendantFolderIds(kind, folderId)]);
+  const currentParent = folder.parentId || ALL_ID;
+  const allLabel = kind === 'papers' ? '全部檔案（頂層）' : '全部影片（頂層）';
+  const options = [
+    { id: ALL_ID, name: allLabel },
+    ...data.folders.filter(f => !blocked.has(f.id)).map(f => ({ id: f.id, name: getFolderPath(kind, f.id).map(p=>p.name).join(' / ') }))
+  ].filter(o => o.id !== currentParent);
+  if(!options.length){ showToast('沒有可以移動過去的資料夾','warn'); return; }
+  openModal(`
+    <h3>移動「${escapeHtml(folder.name)}」</h3>
+    <p class="sub">選擇要移動到哪個資料夾底下（無法移動到自己或自己的子資料夾裡）</p>
+    <div class="field">
+      <label>目的資料夾</label>
+      <select id="move-folder-target">
+        ${options.map(o=>`<option value="${o.id}">${escapeHtml(o.name)}</option>`).join('')}
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="move-folder-cancel">取消</button>
+      <button class="btn" id="move-folder-save">移動</button>
+    </div>
+  `);
+  document.getElementById('move-folder-cancel').onclick = closeModal;
+  document.getElementById('move-folder-save').onclick = async ()=>{
+    const targetId = document.getElementById('move-folder-target').value;
+    folder.parentId = targetId;
+    await storageSet(kind === 'papers' ? 'papers' : 'videos', data);
+    closeModal();
+    render();
+    showToast('資料夾已移動');
+  };
+}
+
+function promptMoveFile(kind, fromFolderId, fileId){
+  const data = kind === 'papers' ? state.papers : state.videos;
+  const bucket = kind === 'papers' ? state.papers.files : state.videos.items;
+  const entry = (bucket[fromFolderId]||[]).find(f=>f.id===fileId);
+  if(!entry) return;
+  const allLabel = kind === 'papers' ? '全部檔案（未分類）' : '全部影片（未分類）';
+  const options = [
+    { id: ALL_ID, name: allLabel },
+    ...data.folders.map(f => ({ id: f.id, name: getFolderPath(kind, f.id).map(p=>p.name).join(' / ') }))
+  ].filter(f=>f.id !== fromFolderId);
+  if(!options.length){ showToast('沒有其他資料夾可以移動','warn'); return; }
+  openModal(`
+    <h3>移動「${escapeHtml(entry.name)}」</h3>
+    <p class="sub">選擇要移動到的資料夾</p>
+    <div class="field">
+      <label>目的資料夾</label>
+      <select id="move-file-target">
+        ${options.map(f=>`<option value="${f.id}">${escapeHtml(f.name)}</option>`).join('')}
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="move-file-cancel">取消</button>
+      <button class="btn" id="move-file-save">移動</button>
+    </div>
+  `);
+  document.getElementById('move-file-cancel').onclick = closeModal;
+  document.getElementById('move-file-save').onclick = async ()=>{
+    const targetId = document.getElementById('move-file-target').value;
+    bucket[fromFolderId] = (bucket[fromFolderId]||[]).filter(f=>f.id!==fileId);
+    if(!bucket[targetId]) bucket[targetId] = [];
+    bucket[targetId].push(entry);
+    await storageSet(kind === 'papers' ? 'papers' : 'videos', data);
+    closeModal();
+    render();
+    showToast('已移動');
+  };
+}
+
+async function downloadFile(entry){
+  if(entry.driveFileId){
+    try{
+      showToast(`正在從雲端硬碟取得「${entry.name}」…`);
+      const file = await backendDownloadFile(entry.driveFileId);
+      const a = document.createElement('a');
+      a.href = file.dataUrl;
+      a.download = file.name || entry.name;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }catch(e){
+      showToast('從雲端硬碟下載失敗：' + (e.message||e), 'warn');
+    }
+    return;
+  }
+  if(!entry.dataUrl){ showToast('此檔案過大，未儲存內容，無法下載','warn'); return; }
+  const a = document.createElement('a');
+  a.href = entry.dataUrl;
+  a.download = entry.name;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+}
+
+/* ============ student modal (add + edit) ============ */
+function openStudentModal(studentId){
+  const editing = !!studentId;
+  const s = editing ? state.students.find(x=>x.id===studentId) : null;
+  if(editing && !s){ showToast('找不到這位學生的資料','warn'); return; }
+  const prevScores = editing ? Object.assign(emptyPrevScores(), s.prevScores||{}) : emptyPrevScores();
+  const studentSubjects = editing ? (s.subjects||[]) : [];
+
+  openModal(`
+    <h3>${editing ? '編輯學生資料' : '新增學生'}</h3>
+    <p class="sub">${editing ? '修改後按「儲存」即可更新檔案' : '建立學生基本資料'}</p>
+    <div class="field-row">
+      <div class="field">
+        <label>學生編號</label>
+        <div style="display:flex; gap:6px;">
+          <input type="text" id="s-studentno" value="${editing ? escapeHtml(s.studentNo||'') : ''}" placeholder="按右側按鈕自動產生" style="flex:1;">
+          <button type="button" class="btn ghost small" id="s-gen-no" style="white-space:nowrap;">自動產生</button>
+        </div>
+      </div>
+      <div class="field">
+        <label>在班狀態</label>
+        <select id="s-enroll-status">
+          ${ENROLL_STATUS_OPTIONS.map(o=>`<option ${editing ? (s.enrollStatus===o?'selected':'') : (o==='新生'?'selected':'')}>${o}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+    <div class="field"><label>狀態異動日期</label><input type="date" id="s-enroll-date" value="${editing ? escapeHtml(s.enrollStatusDate||'') : new Date().toISOString().slice(0,10)}"></div>
+    <div class="field-row">
+      <div class="field"><label>中文姓名 *</label><input type="text" id="s-zh" value="${editing ? escapeHtml(s.zh) : ''}"></div>
+      <div class="field"><label>英文姓名</label><input type="text" id="s-en" value="${editing ? escapeHtml(s.en||'') : ''}"></div>
+    </div>
+    <div class="field"><label>就讀學校</label><input type="text" id="s-school" value="${editing ? escapeHtml(s.school||'') : ''}"></div>
+    <div class="field-row">
+      <div class="field"><label>身分證字號</label><input type="text" id="s-idnumber" placeholder="A123456789" maxlength="10" value="${editing ? escapeHtml(s.idNumber||'') : ''}"></div>
+      <div class="field">
+        <label>就讀年級</label>
+        <select id="s-grade">
+          ${GRADE_ORDER.map(g=>`<option ${editing && s.grade===g ? 'selected':''}>${g}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+    <div class="field">
+      <label>補習科目（可複選）</label>
+      <div class="checkbox-group">
+        ${SUBJECT_OPTIONS.map(sub=>`<label><input type="checkbox" name="s-subject" value="${escapeHtml(sub)}" ${studentSubjects.includes(sub)?'checked':''}> ${escapeHtml(sub)}</label>`).join('')}
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>生日</label><input type="date" id="s-birthday" value="${editing ? escapeHtml(s.birthday||'') : ''}"></div>
+      <div class="field"><label>學生電話</label><input type="tel" id="s-phone" placeholder="09xx-xxx-xxx" value="${editing ? escapeHtml(s.phone||'') : ''}"></div>
+    </div>
+    <div class="field"><label>家長電話</label><input type="tel" id="s-parent-phone" placeholder="09xx-xxx-xxx" value="${editing ? escapeHtml(s.parentPhone||'') : ''}"></div>
+    <div class="field"><label>備註</label><input type="text" id="s-note" placeholder="例如：週一不進班" value="${editing ? escapeHtml(s.note||'') : ''}"></div>
+
+    <details class="prev-score-section">
+      <summary>入班先備成績（選填，僅入班時登記一次）</summary>
+      <div class="prev-score-grid">
+        <div></div><div class="ps-head">期中</div><div class="ps-head">期末</div>
+        ${PREV_SCORE_SUBJECTS.map(ps => `
+          <div class="ps-label">${escapeHtml(ps.label)}</div>
+          <input type="number" min="0" max="100" id="s-prev-${ps.key}-mid" placeholder="—" value="${escapeHtml(prevScores[ps.key].mid || '')}">
+          <input type="number" min="0" max="100" id="s-prev-${ps.key}-final" placeholder="—" value="${escapeHtml(prevScores[ps.key].final || '')}">
+        `).join('')}
+      </div>
+    </details>
+
+    <div class="modal-actions">
+      ${editing ? `<button class="btn ghost" id="student-delete" style="color:var(--danger);margin-right:auto;">刪除學生</button>` : ''}
+      <button class="btn ghost" id="student-cancel">取消</button>
+      <button class="btn" id="student-save">${editing ? '儲存' : '新增學生'}</button>
+    </div>
+  `);
+  document.getElementById('s-gen-no').addEventListener('click', ()=>{
+    document.getElementById('s-studentno').value = generateStudentNo();
+  });
+  document.getElementById('student-cancel').onclick = closeModal;
+  if(editing){
+    document.getElementById('student-delete').onclick = ()=>{
+      confirmDialog('確定要刪除這位學生的資料嗎？', async ()=>{
+        state.students = state.students.filter(x=>x.id!==studentId);
+        delete state.attendanceRecords[studentId];
+        await Promise.all([
+          storageSet('students', state.students),
+          storageSet('attendance-records', state.attendanceRecords)
+        ]);
+        closeModal();
+        render();
+        showToast('學生資料已刪除');
+      });
+    };
+  }
+  document.getElementById('student-save').onclick = async ()=>{
+    const zh = document.getElementById('s-zh').value.trim();
+    if(!zh){ showToast('請輸入中文姓名','warn'); return; }
+    const idNumberVal = document.getElementById('s-idnumber').value.trim().toUpperCase();
+    if(idNumberVal && !looksLikeIdNumber(idNumberVal)){
+      showToast('身分證字號格式看起來不對（應為1碼英文字母＋9碼數字），請確認後再儲存','warn');
+      return;
+    }
+    const selectedSubjects = Array.from(document.querySelectorAll('input[name="s-subject"]:checked')).map(el=>el.value);
+    const newPrevScores = {};
+    PREV_SCORE_SUBJECTS.forEach(ps=>{
+      newPrevScores[ps.key] = {
+        mid: document.getElementById(`s-prev-${ps.key}-mid`).value.trim(),
+        final: document.getElementById(`s-prev-${ps.key}-final`).value.trim()
+      };
+    });
+    const fields = {
+      zh,
+      en: document.getElementById('s-en').value.trim(),
+      idNumber: idNumberVal,
+      school: document.getElementById('s-school').value.trim(),
+      grade: document.getElementById('s-grade').value,
+      subjects: selectedSubjects,
+      birthday: document.getElementById('s-birthday').value,
+      phone: document.getElementById('s-phone').value.trim(),
+      parentPhone: document.getElementById('s-parent-phone').value.trim(),
+      note: document.getElementById('s-note').value.trim(),
+      studentNo: document.getElementById('s-studentno').value.trim() || generateStudentNo(),
+      enrollStatus: document.getElementById('s-enroll-status').value,
+      enrollStatusDate: document.getElementById('s-enroll-date').value,
+      prevScores: newPrevScores
+    };
+    const dup = findDuplicateStudent(fields, editing ? studentId : null);
+    const proceedSave = async ()=>{
+      if(editing){
+        Object.assign(s, fields);
+        await storageSet('students', state.students);
+        closeModal();
+        render();
+        showToast('學生資料已更新');
+      } else {
+        const student = { id: genId(), ...fields, createdAt: new Date().toISOString() };
+        state.students.push(student);
+        await storageSet('students', state.students);
+        closeModal();
+        render();
+        showToast('學生已新增');
+      }
+    };
+    if(dup){
+      confirmDialog(`系統偵測到「${studentFullName(dup)}」（${dup.grade||''}）的手機號碼或「姓名+生日」與此筆相同，可能是重複資料。確定仍要儲存這筆嗎？`, proceedSave, '仍要儲存');
+    } else {
+      await proceedSave();
+    }
+  };
+}
+
+/* ============ attendance date columns ============ */
+function promptAddDateColumn(){
+  openModal(`
+    <h3>新增日期欄</h3>
+    <p class="sub">預設帶入今天日期，可自行修改文字（例如 7/8（三））</p>
+    <div class="field"><label>日期標籤</label><input type="text" id="new-date-label" value="${escapeHtml(todayLabel())}" autofocus></div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="date-cancel">取消</button>
+      <button class="btn" id="date-save">新增</button>
+    </div>
+  `);
+  document.getElementById('date-cancel').onclick = closeModal;
+  document.getElementById('date-save').onclick = async ()=>{
+    const label = document.getElementById('new-date-label').value.trim();
+    if(!label){ showToast('請輸入日期標籤','warn'); return; }
+    state.attendanceDates.push({ id: genId(), label });
+    await storageSet('attendance-dates', state.attendanceDates);
+    closeModal();
+    render();
+    showToast('已新增日期欄');
+  };
+}
+
+async function deleteDateColumn(dateId){
+  confirmDialog('刪除此日期欄後，該欄的出缺席紀錄也會一併刪除，確定嗎？', async ()=>{
+    state.attendanceDates = state.attendanceDates.filter(d => d.id !== dateId);
+    Object.keys(state.attendanceRecords).forEach(sid=>{
+      if(state.attendanceRecords[sid]) delete state.attendanceRecords[sid][dateId];
+    });
+    await Promise.all([
+      storageSet('attendance-dates', state.attendanceDates),
+      storageSet('attendance-records', state.attendanceRecords)
+    ]);
+    render();
+    showToast('已刪除日期欄');
+  });
+}
+
+async function setAttendanceCell(studentId, dateId, value){
+  if(!state.attendanceRecords[studentId]) state.attendanceRecords[studentId] = {};
+  state.attendanceRecords[studentId][dateId] = value;
+  await storageSet('attendance-records', state.attendanceRecords);
+}
+
+async function setStudentNote(studentId, note){
+  const s = state.students.find(s=>s.id===studentId);
+  if(!s) return;
+  s.note = note;
+  await storageSet('students', state.students);
+}
+
+/* ============ student roster CSV (daily use — no ID number / birthday) ============ */
+function exportStudentRosterCsv(){
+  const rows = [];
+  rows.push(['學生編號','在班狀態','狀態異動日期','中文姓名','英文姓名','就讀學校','就讀年級','補習科目','學生電話','家長電話','備註',
+    '國語期中','國語期末','數學期中','數學期末','英文期中','英文期末','自然期中','自然期末','社會期中','社會期末']);
+  const order = GRADE_ORDER.concat([...new Set(state.students.map(s=>s.grade).filter(g=>!GRADE_ORDER.includes(g)))]);
+  order.forEach(grade=>{
+    state.students.filter(s=>s.grade===grade).forEach(s=>{
+      const ps = Object.assign(emptyPrevScores(), s.prevScores||{});
+      rows.push([
+        s.studentNo||'', s.enrollStatus||'在班', s.enrollStatusDate||'', s.zh, s.en||'', s.school||'', s.grade||'',
+        subjectsToText(s.subjects), s.phone||'', s.parentPhone||'', s.note||'',
+        ps.chinese.mid, ps.chinese.final, ps.math.mid, ps.math.final, ps.english.mid, ps.english.final,
+        ps.science.mid, ps.science.final, ps.social.mid, ps.social.final
+      ]);
+    });
+  });
+  const csv = '\uFEFF' + rows.map(r => r.map(csvField).join(',')).join('\r\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `學生名冊_${todayLabel().replace(/[（）]/g,'')}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+/* ============ insurance roster CSV (contains ID number + birthday — handle with care) ============ */
+function exportInsuranceRosterCsv(){
+  const rows = [];
+  rows.push(['學生編號','中文姓名','英文姓名','身分證字號','生日','就讀學校','就讀年級','家長電話','在班狀態']);
+  const order = GRADE_ORDER.concat([...new Set(state.students.map(s=>s.grade).filter(g=>!GRADE_ORDER.includes(g)))]);
+  order.forEach(grade=>{
+    state.students.filter(s=>s.grade===grade).forEach(s=>{
+      rows.push([s.studentNo||'', s.zh, s.en||'', s.idNumber||'', s.birthday||'', s.school||'', s.grade||'', s.parentPhone||'', s.enrollStatus||'在班']);
+    });
+  });
+  const csv = '\uFEFF' + rows.map(r => r.map(csvField).join(',')).join('\r\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `保險名冊_${todayLabel().replace(/[（）]/g,'')}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+  showToast('保險名冊已匯出，內含身分證字號與生日，請妥善保管此檔案', 'warn');
+}
+
+/* ---------- field-type sanity checks for CSV import ---------- */
+const FIELD_SYNONYMS = {
+  studentNo: ['學生編號','編號','學號'],
+  enrollStatus: ['在班狀態','狀態','就讀狀態'],
+  enrollStatusDate: ['狀態異動日期','異動日期','狀態日期'],
+  zh: ['中文姓名','姓名','學生姓名','中文名'],
+  en: ['英文姓名','英文名','英文'],
+  idNumber: ['身分證字號','身分證','身份證字號'],
+  school: ['就讀學校','學校','就讀之學校'],
+  grade: ['就讀年級','年級','班級'],
+  subjects: ['補習科目','科目'],
+  birthday: ['生日','出生日期','生日期'],
+  phone: ['學生電話','電話','學生手機','手機'],
+  parentPhone: ['家長電話','家長手機','監護人電話','緊急聯絡電話'],
+  note: ['備註','備注'],
+  prevScore_chinese_mid: ['國語期中'],
+  prevScore_chinese_final: ['國語期末'],
+  prevScore_math_mid: ['數學期中'],
+  prevScore_math_final: ['數學期末'],
+  prevScore_english_mid: ['英文期中'],
+  prevScore_english_final: ['英文期末'],
+  prevScore_science_mid: ['自然期中'],
+  prevScore_science_final: ['自然期末'],
+  prevScore_social_mid: ['社會期中'],
+  prevScore_social_final: ['社會期末']
+};
+function mapCsvHeaderToFields(headerRow){
+  const map = {};
+  const trimmed = headerRow.map(c => (c||'').trim());
+  // 第一輪：整欄標題文字須與同義詞完全相同才算數（避免「姓名」「電話」這類短字互相搶著比對）
+  trimmed.forEach((v, idx)=>{
+    if(!v || map[idx] !== undefined) return;
+    for(const field of Object.keys(FIELD_SYNONYMS)){
+      if(FIELD_SYNONYMS[field].includes(v)){ map[idx] = field; break; }
+    }
+  });
+  // 第二輪：第一輪還沒配到的欄位，才放寬用「標題包含同義詞」模糊比對
+  trimmed.forEach((v, idx)=>{
+    if(!v || map[idx] !== undefined) return;
+    for(const field of Object.keys(FIELD_SYNONYMS)){
+      if(FIELD_SYNONYMS[field].some(n => v.includes(n))){ map[idx] = field; break; }
+    }
+  });
+  return map;
+}
+function containsLetters(v){ return /[\u4e00-\u9fa5A-Za-z]/.test(v||''); }
+function looksLikePhoneText(v){
+  const s = (v||'').toString().trim();
+  if(!s || containsLetters(s)) return false; // 含中文/英文字母就不可能是電話
+  const digits = s.replace(/[^\d]/g,'');
+  return digits.length >= 7 && digits.length <= 12;
+}
+function looksLikeDateText(v){
+  const s = (v||'').toString().trim();
+  return /^\d{2,4}[-/]\d{1,2}[-/]\d{1,2}$/.test(s);
+}
+function looksLikeScoreText(v){
+  const s = (v||'').toString().trim();
+  if(!s) return true; // 允許留空
+  const n = Number(s);
+  return !isNaN(n) && n >= 0 && n <= 100;
+}
+function normalizeDateText(v){ return v.trim().replace(/\//g,'-'); }
+function fuzzyMatchGrade(v){
+  const s = (v||'').trim();
+  if(GRADE_ORDER.includes(s)) return s;
+  return GRADE_ORDER.find(g => s.includes(g)) || '';
+}
+
+async function importStudentRosterCsv(file){
+  const text = await file.text();
+  const lines = text.replace(/^\uFEFF/,'').split(/\r\n|\n/).filter(l => l.length);
+  if(lines.length < 2){ showToast('CSV 內容不足，無法匯入','warn'); return; }
+
+  const headerRow = parseCsvLine(lines[0]);
+  let colMap = mapCsvHeaderToFields(headerRow);
+  if(Object.keys(colMap).length < 3){
+    // 標題列無法辨識，改用預設欄位順序（跟「匯出學生名冊」的格式一致）
+    colMap = { 0:'studentNo', 1:'enrollStatus', 2:'enrollStatusDate', 3:'zh', 4:'en', 5:'school', 6:'grade',
+      7:'subjects', 8:'phone', 9:'parentPhone', 10:'note',
+      11:'prevScore_chinese_mid', 12:'prevScore_chinese_final', 13:'prevScore_math_mid', 14:'prevScore_math_final',
+      15:'prevScore_english_mid', 16:'prevScore_english_final', 17:'prevScore_science_mid', 18:'prevScore_science_final',
+      19:'prevScore_social_mid', 20:'prevScore_social_final' };
+  }
+
+  let added = 0, skippedDup = 0, skippedNoName = 0, blankedFields = 0;
+  const skippedNames = [];
+
+  for(let i=1;i<lines.length;i++){
+    const cols = parseCsvLine(lines[i]);
+    const raw = {};
+    Object.entries(colMap).forEach(([idx, field])=>{ raw[field] = (cols[idx]||'').trim(); });
+
+    if(!raw.zh || looksLikePhoneText(raw.zh)){ skippedNoName++; continue; }
+
+    const candidate = { zh: raw.zh };
+
+    candidate.studentNo = raw.studentNo || generateStudentNo();
+
+    candidate.enrollStatus = ENROLL_STATUS_OPTIONS.includes(raw.enrollStatus) ? raw.enrollStatus : '在班';
+    if(raw.enrollStatus && candidate.enrollStatus !== raw.enrollStatus) blankedFields++;
+
+    candidate.enrollStatusDate = looksLikeDateText(raw.enrollStatusDate) ? normalizeDateText(raw.enrollStatusDate) : '';
+
+    candidate.en = (raw.en && !looksLikePhoneText(raw.en)) ? raw.en : '';
+    if(raw.en && !candidate.en) blankedFields++;
+
+    candidate.idNumber = looksLikeIdNumber(raw.idNumber) ? raw.idNumber.toUpperCase() : '';
+    if(raw.idNumber && !candidate.idNumber) blankedFields++;
+
+    candidate.school = (raw.school && !looksLikePhoneText(raw.school) && !GRADE_ORDER.includes(raw.school)) ? raw.school : '';
+    if(raw.school && !candidate.school) blankedFields++;
+
+    candidate.grade = fuzzyMatchGrade(raw.grade);
+    if(raw.grade && !candidate.grade) blankedFields++;
+
+    candidate.subjects = textToSubjects(raw.subjects);
+    if(raw.subjects && !candidate.subjects.length) blankedFields++;
+
+    candidate.birthday = looksLikeDateText(raw.birthday) ? normalizeDateText(raw.birthday) : '';
+    if(raw.birthday && !candidate.birthday) blankedFields++;
+
+    candidate.phone = looksLikePhoneText(raw.phone) ? raw.phone.trim() : '';
+    if(raw.phone && !candidate.phone) blankedFields++;
+
+    candidate.parentPhone = looksLikePhoneText(raw.parentPhone) ? raw.parentPhone.trim() : '';
+    if(raw.parentPhone && !candidate.parentPhone) blankedFields++;
+
+    candidate.note = raw.note || '';
+
+    candidate.prevScores = {};
+    PREV_SCORE_SUBJECTS.forEach(ps=>{
+      const midRaw = raw[`prevScore_${ps.key}_mid`] || '';
+      const finalRaw = raw[`prevScore_${ps.key}_final`] || '';
+      const mid = looksLikeScoreText(midRaw) ? midRaw : '';
+      const final = looksLikeScoreText(finalRaw) ? finalRaw : '';
+      if((midRaw && !mid) || (finalRaw && !final)) blankedFields++;
+      candidate.prevScores[ps.key] = { mid, final };
+    });
+
+    const dup = findDuplicateStudent(candidate, null);
+    if(dup){
+      skippedDup++;
+      skippedNames.push(raw.zh);
+      continue;
+    }
+    state.students.push({ id: genId(), ...candidate, createdAt: new Date().toISOString() });
+    added++;
+  }
+
+  await storageSet('students', state.students);
+  render();
+
+  const parts = [`已新增 ${added} 位學生`];
+  if(skippedDup) parts.push(`${skippedDup} 筆偵測到重複已略過（${skippedNames.slice(0,5).join('、')}${skippedNames.length>5?' 等':''}）`);
+  if(skippedNoName) parts.push(`${skippedNoName} 筆缺少有效姓名已跳過`);
+  if(blankedFields) parts.push(`${blankedFields} 個欄位內容格式看起來不對，已自動留空避免存錯，請自行確認補齊`);
+  showToast(parts.join('；'), (skippedDup || skippedNoName || blankedFields) ? 'warn' : undefined);
+}
+
+/* ============ CSV export / import (attendance grid) ============ */
+function csvField(v){
+  const s = String(v==null?'':v);
+  return /[",\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s;
+}
+function exportAttendanceCsv(){
+  const dates = state.attendanceDates;
+  const rows = [];
+  rows.push(['大洋周文理補習班｜點名總表']);
+  rows.push(['班級/姓名','學生電話','家長電話', ...dates.map(d=>d.label), '備註']);
+  GRADE_ORDER.concat([...new Set(state.students.map(s=>s.grade).filter(g=>!GRADE_ORDER.includes(g)))]).forEach(grade=>{
+    const list = state.students.filter(s=>s.grade===grade);
+    if(!list.length) return;
+    rows.push([grade]);
+    list.forEach(s=>{
+      const rec = state.attendanceRecords[s.id] || {};
+      rows.push([studentFullName(s), s.phone||'', s.parentPhone||'', ...dates.map(d=>rec[d.id]||''), s.note||'']);
+    });
+    rows.push([]);
+  });
+  const csv = '\uFEFF' + rows.map(r => r.map(csvField).join(',')).join('\r\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `點名總表_${todayLabel().replace(/[（）]/g,'')}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+function parseCsvLine(line){
+  const out = [];
+  let cur = '', inQuotes = false;
+  for(let i=0;i<line.length;i++){
+    const c = line[i];
+    if(inQuotes){
+      if(c === '"'){
+        if(line[i+1] === '"'){ cur += '"'; i++; } else { inQuotes = false; }
+      } else { cur += c; }
+    } else {
+      if(c === '"'){ inQuotes = true; }
+      else if(c === ','){ out.push(cur); cur=''; }
+      else { cur += c; }
+    }
+  }
+  out.push(cur);
+  return out;
+}
+
+async function importAttendanceCsv(file){
+  const text = await file.text();
+  const lines = text.replace(/^\uFEFF/,'').split(/\r\n|\n/).filter(l => l.length);
+  if(lines.length < 2){ showToast('CSV 內容不足，無法匯入','warn'); return; }
+  const header = parseCsvLine(lines[0]);
+  let dateLabels = [];
+  let startRow = 1;
+  // header row could be the title row or the real header row depending on file source
+  if(header[0] && header[0].includes('點名')){
+    const header2 = parseCsvLine(lines[1]);
+    dateLabels = header2.slice(3, header2.length-1);
+    startRow = 2;
+  } else {
+    dateLabels = header.slice(3, header.length-1);
+    startRow = 1;
+  }
+  // map date labels to existing/new date columns
+  const dateIdByLabel = {};
+  state.attendanceDates.forEach(d => dateIdByLabel[d.label] = d.id);
+  dateLabels.forEach(label=>{
+    if(label && !dateIdByLabel[label]){
+      const id = genId();
+      dateIdByLabel[label] = id;
+      state.attendanceDates.push({ id, label });
+    }
+  });
+
+  let updated = 0, unmatched = [];
+  for(let i=startRow;i<lines.length;i++){
+    const cols = parseCsvLine(lines[i]);
+    if(!cols[0] || !cols[0].trim()) continue; // blank separator row
+    if(GRADE_ORDER.includes(cols[0].trim()) && !cols[1] && !cols[2]) continue; // grade header row
+    const name = cols[0].trim();
+    const student = state.students.find(s => studentFullName(s).trim() === name || s.zh.trim() === name);
+    if(!student){ unmatched.push(name); continue; }
+    dateLabels.forEach((label, idx)=>{
+      if(!label) return;
+      const val = cols[3+idx];
+      if(val === undefined) return;
+      if(!state.attendanceRecords[student.id]) state.attendanceRecords[student.id] = {};
+      state.attendanceRecords[student.id][dateIdByLabel[label]] = val;
+    });
+    const noteVal = cols[3+dateLabels.length];
+    if(noteVal !== undefined && noteVal.trim()) student.note = noteVal.trim();
+    updated++;
+  }
+
+  await Promise.all([
+    storageSet('attendance-dates', state.attendanceDates),
+    storageSet('attendance-records', state.attendanceRecords),
+    storageSet('students', state.students)
+  ]);
+  render();
+  showToast(`已匯入，更新 ${updated} 位學生${unmatched.length ? '，' + unmatched.length + ' 筆姓名找不到對應學生' : ''}`, unmatched.length ? 'warn' : undefined);
+}
+
+/* ============ settings modal ============ */
+function openSettingsModal(){
+  const cloudOn = Backend.gasUrl && Backend.cloudReady;
+  const cloudSetButNotReady = Backend.gasUrl && !Backend.cloudReady;
+  const statusHtml = cloudOn
+    ? `<p class="sub" style="color:#3D8461;font-weight:700;">✅ 目前為雲端模式，資料存在你的 Google 試算表／雲端硬碟，所有裝置看到同一份。</p>`
+    : cloudSetButNotReady
+      ? `<p class="sub" style="color:var(--danger);font-weight:700;">⚠️ 已設定雲端網址，但剛剛連線失敗，目前暫時使用本機資料。請確認網址與部署設定是否正確。</p>`
+      : `<p class="sub" style="color:var(--ink-soft);font-weight:700;">💻 目前為本機模式，資料只存在這台裝置的瀏覽器裡，換裝置看不到。</p>`;
+
+  openModal(`
+    <h3>雲端硬碟同步設定</h3>
+    ${statusHtml}
+    <p class="sub">貼上你部署好的 Google Apps Script 網頁應用程式網址，即可把所有資料（學生、點名、檔案專區檔案）改成存在你的 Google 試算表／雲端硬碟，多台裝置、多位老師都能看到同一份資料。<strong>國小資料庫請部署獨立的一份 Apps Script／試算表，不要跟高中資料庫共用同一個網址。</strong></p>
+    <div class="field">
+      <label>Apps Script 網頁應用程式網址</label>
+      <input type="url" id="gas-url" placeholder="https://script.google.com/macros/s/.../exec" value="${escapeHtml(Backend.gasUrl||'')}">
+    </div>
+    <p class="sub" style="margin-top:-6px;">留空並儲存＝改回本機模式（資料只留在這台裝置）。第一次連上雲端時，會直接讀取雲端現有的資料，本機原本的資料不會自動搬過去。</p>
+    <div class="modal-actions" style="flex-wrap:wrap;">
+      <button class="btn ghost" id="settings-reset" style="margin-right:auto;">清除全部資料</button>
+      <button class="btn ghost" id="settings-cancel">取消</button>
+      <button class="btn" id="settings-save">儲存並套用</button>
+    </div>
+  `);
+
+  document.getElementById('settings-cancel').onclick = closeModal;
+
+  document.getElementById('settings-save').onclick = async ()=>{
+    const url = document.getElementById('gas-url').value.trim();
+    localStorage.setItem(GAS_URL_KEY, url);
+    closeModal();
+    state.loaded = false;
+    render();
+    await loadAll();
+    render();
+    showToast(url ? '正在連線雲端後端…' : '已改回本機模式');
+  };
+
+  document.getElementById('settings-reset').onclick = ()=>{
+    confirmDialog('這將清除所有檔案、點名表與學生資料，且無法復原，確定要繼續嗎？', async ()=>{
+      state.papers = { folders: [], files: { [ALL_ID]: [] } };
+      state.videos = { folders: [], items: { [ALL_ID]: [] } };
+      state.attendanceFiles = [];
+      state.students = [];
+      state.attendanceDates = [];
+      state.attendanceRecords = {};
+      state.activePaperFolder = ALL_ID;
+      state.activeVideoFolder = ALL_ID;
+      await Promise.all([
+        storageSet('papers', state.papers),
+        storageSet('videos', state.videos),
+        storageSet('attendance-files', state.attendanceFiles),
+        storageSet('students', state.students),
+        storageSet('attendance-dates', state.attendanceDates),
+        storageSet('attendance-records', state.attendanceRecords)
+      ]);
+      closeModal();
+      render();
+      showToast('資料已清除');
+    });
+  };
+}
+
+/* ============ event binding per view ============ */
+function bindViewEvents(){
+  // home nav cards
+  document.querySelectorAll('[data-goto]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{ state.view = btn.dataset.goto; render(); });
+  });
+
+  // papers
+  const paperSearchInput = document.getElementById('paper-search');
+  if(paperSearchInput) paperSearchInput.addEventListener('input', (e)=>{
+    state.paperSearch = e.target.value;
+    render();
+    const el = document.getElementById('paper-search');
+    if(el){ el.focus(); el.selectionStart = el.selectionEnd = el.value.length; }
+  });
+  const paperSearchClear = document.getElementById('paper-search-clear');
+  if(paperSearchClear) paperSearchClear.addEventListener('click', ()=>{ state.paperSearch=''; render(); });
+
+  const addPaperFolderBtn = document.getElementById('add-paper-folder');
+  if(addPaperFolderBtn) addPaperFolderBtn.addEventListener('click', ()=> promptCreateFolder('papers', ALL_ID));
+  const addPaperSubfolderBtn = document.getElementById('add-paper-subfolder');
+  if(addPaperSubfolderBtn) addPaperSubfolderBtn.addEventListener('click', ()=> promptCreateFolder('papers', state.activePaperFolder));
+
+  const paperUploadBtn = document.getElementById('paper-upload-btn');
+  const paperFileInput = document.getElementById('paper-file-input');
+  if(paperUploadBtn) paperUploadBtn.addEventListener('click', ()=> paperFileInput.click());
+  if(paperFileInput) paperFileInput.addEventListener('change', async (e)=>{
+    const folderId = state.activePaperFolder;
+    for(const file of Array.from(e.target.files)){
+      await addFileToStore('papers', folderId, file);
+    }
+    e.target.value = '';
+    render();
+  });
+
+  // videos
+  const videoSearchInput = document.getElementById('video-search');
+  if(videoSearchInput) videoSearchInput.addEventListener('input', (e)=>{
+    state.videoSearch = e.target.value;
+    render();
+    const el = document.getElementById('video-search');
+    if(el){ el.focus(); el.selectionStart = el.selectionEnd = el.value.length; }
+  });
+  const videoSearchClear = document.getElementById('video-search-clear');
+  if(videoSearchClear) videoSearchClear.addEventListener('click', ()=>{ state.videoSearch=''; render(); });
+
+  const addVideoFolderBtn = document.getElementById('add-video-folder');
+  if(addVideoFolderBtn) addVideoFolderBtn.addEventListener('click', ()=> promptCreateFolder('videos', ALL_ID));
+  const addVideoSubfolderBtn = document.getElementById('add-video-subfolder');
+  if(addVideoSubfolderBtn) addVideoSubfolderBtn.addEventListener('click', ()=> promptCreateFolder('videos', state.activeVideoFolder));
+  const videoAddBtn = document.getElementById('video-add-btn');
+  if(videoAddBtn) videoAddBtn.addEventListener('click', openAddVideoModal);
+
+  // breadcrumb navigation
+  document.querySelectorAll('[data-crumb]').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const id = el.dataset.crumb;
+      const kind = el.dataset.kind;
+      if(kind === 'papers') state.activePaperFolder = id;
+      else state.activeVideoFolder = id;
+      render();
+    });
+  });
+
+  // folder selection / deletion (papers + videos)
+  document.querySelectorAll('.folder-item').forEach(item=>{
+    const kind = item.dataset.kind;
+    const folderId = item.dataset.folder;
+    item.querySelector('[data-action="select-folder"]').addEventListener('click', ()=>{
+      if(kind === 'papers') state.activePaperFolder = folderId;
+      else state.activeVideoFolder = folderId;
+      render();
+    });
+    const delBtn = item.querySelector('[data-action="delete-folder"]');
+    if(delBtn) delBtn.addEventListener('click', ()=>{
+      const descendantCount = getDescendantFolderIds(kind, folderId).length;
+      const msg = descendantCount
+        ? `這個資料夾裡還有 ${descendantCount} 個子資料夾，刪除後會一併刪除全部子資料夾與裡面的所有檔案，確定要刪除嗎？`
+        : '刪除資料夾將一併刪除其中所有檔案，確定要刪除嗎？';
+      confirmDialog(msg, async ()=>{
+        const idsToRemove = [folderId, ...getDescendantFolderIds(kind, folderId)];
+        if(kind === 'papers'){
+          state.papers.folders = state.papers.folders.filter(f=>!idsToRemove.includes(f.id));
+          idsToRemove.forEach(id=> delete state.papers.files[id]);
+          if(idsToRemove.includes(state.activePaperFolder)){
+            state.activePaperFolder = ALL_ID;
+          }
+          await storageSet('papers', state.papers);
+        } else {
+          state.videos.folders = state.videos.folders.filter(f=>!idsToRemove.includes(f.id));
+          idsToRemove.forEach(id=> delete state.videos.items[id]);
+          if(idsToRemove.includes(state.activeVideoFolder)){
+            state.activeVideoFolder = ALL_ID;
+          }
+          await storageSet('videos', state.videos);
+        }
+        render();
+        showToast('資料夾已刪除');
+      });
+    });
+    const renameBtn = item.querySelector('[data-action="rename-folder"]');
+    if(renameBtn) renameBtn.addEventListener('click', ()=> promptRenameFolder(kind, folderId));
+    const moveFolderBtn = item.querySelector('[data-action="move-folder"]');
+    if(moveFolderBtn) moveFolderBtn.addEventListener('click', ()=> promptMoveFolder(kind, folderId));
+  });
+
+  // folder cards (subfolders shown inside a folder) — rename / move / delete
+  document.querySelectorAll('[data-action="rename-folder-card"]').forEach(btn=>{
+    btn.addEventListener('click', ()=> promptRenameFolder(btn.dataset.kind, btn.dataset.folder));
+  });
+  document.querySelectorAll('[data-action="move-folder"][data-folder]').forEach(btn=>{
+    btn.addEventListener('click', ()=> promptMoveFolder(btn.dataset.kind, btn.dataset.folder));
+  });
+  document.querySelectorAll('[data-action="delete-folder-card"]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const kind = btn.dataset.kind;
+      const folderId = btn.dataset.folder;
+      const descendantCount = getDescendantFolderIds(kind, folderId).length;
+      const msg = descendantCount
+        ? `這個資料夾裡還有 ${descendantCount} 個子資料夾，刪除後會一併刪除全部子資料夾與裡面的所有檔案，確定要刪除嗎？`
+        : '刪除資料夾將一併刪除其中所有檔案，確定要刪除嗎？';
+      confirmDialog(msg, async ()=>{
+        const idsToRemove = [folderId, ...getDescendantFolderIds(kind, folderId)];
+        if(kind === 'papers'){
+          state.papers.folders = state.papers.folders.filter(f=>!idsToRemove.includes(f.id));
+          idsToRemove.forEach(id=> delete state.papers.files[id]);
+          if(idsToRemove.includes(state.activePaperFolder)) state.activePaperFolder = ALL_ID;
+          await storageSet('papers', state.papers);
+        } else {
+          state.videos.folders = state.videos.folders.filter(f=>!idsToRemove.includes(f.id));
+          idsToRemove.forEach(id=> delete state.videos.items[id]);
+          if(idsToRemove.includes(state.activeVideoFolder)) state.activeVideoFolder = ALL_ID;
+          await storageSet('videos', state.videos);
+        }
+        render();
+        showToast('資料夾已刪除');
+      });
+    });
+  });
+
+  // folder overview cards (only shown on 全部檔案 / 全部影片)
+  document.querySelectorAll('[data-goto-folder]').forEach(card=>{
+    card.addEventListener('click', ()=>{
+      const kind = card.dataset.kind;
+      const folderId = card.dataset.gotoFolder;
+      if(kind === 'papers') state.activePaperFolder = folderId;
+      else state.activeVideoFolder = folderId;
+      render();
+    });
+  });
+
+  // file download / delete (papers + videos + attendance)
+  document.querySelectorAll('[data-action="download"]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const kind = btn.dataset.kind;
+      const id = btn.dataset.id;
+      const folderId = btn.dataset.folder;
+      let entry;
+      if(kind === 'papers') entry = (state.papers.files[folderId]||[]).find(f=>f.id===id);
+      else if(kind === 'videos') entry = (state.videos.items[folderId]||[]).find(f=>f.id===id);
+      else entry = state.attendanceFiles.find(f=>f.id===id);
+      if(entry) downloadFile(entry);
+    });
+  });
+  document.querySelectorAll('[data-action="move-order-up"]').forEach(btn=>{
+    btn.addEventListener('click', ()=> moveFileOrder(btn.dataset.kind, btn.dataset.folder, btn.dataset.id, -1));
+  });
+  document.querySelectorAll('[data-action="move-order-down"]').forEach(btn=>{
+    btn.addEventListener('click', ()=> moveFileOrder(btn.dataset.kind, btn.dataset.folder, btn.dataset.id, 1));
+  });
+  document.querySelectorAll('[data-action="rename-file"]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      promptRenameFile(btn.dataset.kind, btn.dataset.folder, btn.dataset.id);
+    });
+  });
+  document.querySelectorAll('[data-action="move-file"]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      promptMoveFile(btn.dataset.kind, btn.dataset.folder, btn.dataset.id);
+    });
+  });
+  document.querySelectorAll('[data-action="delete-file"]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const kind = btn.dataset.kind;
+      const id = btn.dataset.id;
+      const folderId = btn.dataset.folder;
+      confirmDialog('確定要刪除這個檔案嗎？', async ()=>{
+        let entry;
+        if(kind === 'papers'){
+          entry = (state.papers.files[folderId]||[]).find(f=>f.id===id);
+          state.papers.files[folderId] = (state.papers.files[folderId]||[]).filter(f=>f.id!==id);
+          await storageSet('papers', state.papers);
+        } else if(kind === 'videos'){
+          entry = (state.videos.items[folderId]||[]).find(f=>f.id===id);
+          state.videos.items[folderId] = (state.videos.items[folderId]||[]).filter(f=>f.id!==id);
+          await storageSet('videos', state.videos);
+        } else {
+          entry = state.attendanceFiles.find(f=>f.id===id);
+          state.attendanceFiles = state.attendanceFiles.filter(f=>f.id!==id);
+          await storageSet('attendance-files', state.attendanceFiles);
+        }
+        if(entry && entry.driveFileId) backendDeleteFile(entry.driveFileId);
+        render();
+        showToast('檔案已刪除');
+      });
+    });
+  });
+
+  // attendance file upload
+  const attUploadBtn = document.getElementById('attendance-upload-btn');
+  const attFileInput = document.getElementById('attendance-file-input');
+  if(attUploadBtn) attUploadBtn.addEventListener('click', ()=> attFileInput.click());
+  if(attFileInput) attFileInput.addEventListener('change', async (e)=>{
+    for(const file of Array.from(e.target.files)){
+      await addFileToStore('attendance', null, file);
+    }
+    e.target.value = '';
+    render();
+  });
+
+  // settings
+  const settingsBtn = document.getElementById('open-settings');
+  if(settingsBtn) settingsBtn.addEventListener('click', openSettingsModal);
+
+  // students
+  document.querySelectorAll('.sub-tab-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      state.attendanceSubView = btn.dataset.subview;
+      render();
+    });
+  });
+
+  // profile password lock
+  const profilePwSubmit = document.getElementById('profile-password-submit');
+  const profilePwInput = document.getElementById('profile-password-input');
+  if(profilePwSubmit && profilePwInput){
+    const tryUnlock = ()=>{
+      if(profilePwInput.value === STUDENT_PROFILE_PASSWORD){
+        state.profileUnlocked = true;
+        render();
+      } else {
+        const err = document.getElementById('profile-password-error');
+        if(err) err.classList.add('show');
+        profilePwInput.value = '';
+        profilePwInput.focus();
+      }
+    };
+    profilePwSubmit.addEventListener('click', tryUnlock);
+    profilePwInput.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') tryUnlock(); });
+    profilePwInput.focus();
+  }
+  const lockProfileBtn = document.getElementById('lock-profile-btn');
+  if(lockProfileBtn) lockProfileBtn.addEventListener('click', ()=>{
+    state.profileUnlocked = false;
+    state.profileSelectMode = false;
+    state.selectedStudentIds = [];
+    render();
+  });
+
+  document.querySelectorAll('[data-open-student]').forEach(card=>{
+    card.addEventListener('click', ()=>{
+      const id = card.dataset.openStudent;
+      if(state.profileSelectMode){
+        const idx = state.selectedStudentIds.indexOf(id);
+        if(idx >= 0) state.selectedStudentIds.splice(idx,1);
+        else state.selectedStudentIds.push(id);
+        render();
+      } else {
+        openStudentModal(id);
+      }
+    });
+    card.addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); card.click(); }
+    });
+  });
+  const toggleSelectBtn = document.getElementById('toggle-select-mode-btn');
+  if(toggleSelectBtn) toggleSelectBtn.addEventListener('click', ()=>{
+    state.profileSelectMode = !state.profileSelectMode;
+    state.selectedStudentIds = [];
+    render();
+  });
+  const selectAllBtn = document.getElementById('select-all-students-btn');
+  if(selectAllBtn) selectAllBtn.addEventListener('click', ()=>{
+    const q = state.studentSearch.trim().toLowerCase();
+    const visible = state.students.filter(s =>
+      !q || s.zh.toLowerCase().includes(q) || (s.en||'').toLowerCase().includes(q) || (s.school||'').toLowerCase().includes(q)
+    );
+    state.selectedStudentIds = visible.map(s=>s.id);
+    render();
+  });
+  const clearSelectBtn = document.getElementById('clear-select-students-btn');
+  if(clearSelectBtn) clearSelectBtn.addEventListener('click', ()=>{
+    state.selectedStudentIds = [];
+    render();
+  });
+  const deleteSelectedBtn = document.getElementById('delete-selected-students-btn');
+  if(deleteSelectedBtn) deleteSelectedBtn.addEventListener('click', ()=>{
+    const ids = state.selectedStudentIds;
+    if(!ids.length) return;
+    const names = state.students.filter(s=>ids.includes(s.id)).map(s=>studentFullName(s));
+    confirmDialog(
+      `確定要刪除以下 ${ids.length} 位學生的資料嗎？此操作無法復原：${names.slice(0,8).join('、')}${names.length>8?' 等':''}`,
+      async ()=>{
+        state.students = state.students.filter(s=>!ids.includes(s.id));
+        ids.forEach(id=> delete state.attendanceRecords[id]);
+        await Promise.all([
+          storageSet('students', state.students),
+          storageSet('attendance-records', state.attendanceRecords)
+        ]);
+        state.selectedStudentIds = [];
+        state.profileSelectMode = false;
+        render();
+        showToast(`已刪除 ${ids.length} 位學生的資料`);
+      },
+      `確定刪除這 ${ids.length} 位`
+    );
+  });
+  const addStudentBtn = document.getElementById('add-student-btn');
+  if(addStudentBtn) addStudentBtn.addEventListener('click', ()=> openStudentModal());
+  const exportRosterBtn = document.getElementById('export-roster-csv-btn');
+  if(exportRosterBtn) exportRosterBtn.addEventListener('click', exportStudentRosterCsv);
+  const exportInsuranceBtn = document.getElementById('export-insurance-csv-btn');
+  if(exportInsuranceBtn) exportInsuranceBtn.addEventListener('click', ()=>{
+    confirmDialog('保險名冊會包含身分證字號與生日等敏感資料，匯出後請妥善保管此檔案，確定要匯出嗎？', exportInsuranceRosterCsv, '確定匯出');
+  });
+  const importRosterBtn = document.getElementById('import-roster-csv-btn');
+  const importRosterInput = document.getElementById('import-roster-csv-input');
+  if(importRosterBtn) importRosterBtn.addEventListener('click', ()=> importRosterInput.click());
+  if(importRosterInput) importRosterInput.addEventListener('change', async (e)=>{
+    const file = e.target.files[0];
+    if(file) await importStudentRosterCsv(file);
+    e.target.value = '';
+  });
+  const searchInput = document.getElementById('student-search');
+  if(searchInput) searchInput.addEventListener('input', (e)=>{
+    state.studentSearch = e.target.value;
+    render();
+    document.getElementById('student-search').focus();
+    const val = document.getElementById('student-search');
+    val.selectionStart = val.selectionEnd = val.value.length;
+  });
+  const statusFilterSelect = document.getElementById('profile-status-filter');
+  if(statusFilterSelect) statusFilterSelect.addEventListener('change', (e)=>{
+    state.profileStatusFilter = e.target.value;
+    render();
+  });
+  const subjectFilterSelect = document.getElementById('profile-subject-filter');
+  if(subjectFilterSelect) subjectFilterSelect.addEventListener('change', (e)=>{
+    state.profileSubjectFilter = e.target.value;
+    render();
+  });
+  document.querySelectorAll('[data-action="delete-student"]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const id = btn.dataset.id;
+      confirmDialog('確定要刪除這位學生的資料嗎？', async ()=>{
+        state.students = state.students.filter(s=>s.id!==id);
+        delete state.attendanceRecords[id];
+        await Promise.all([
+          storageSet('students', state.students),
+          storageSet('attendance-records', state.attendanceRecords)
+        ]);
+        render();
+        showToast('學生資料已刪除');
+      });
+    });
+  });
+
+  // attendance date columns + grid cells
+  const addDateBtn = document.getElementById('add-date-btn');
+  if(addDateBtn) addDateBtn.addEventListener('click', promptAddDateColumn);
+  document.querySelectorAll('.date-del').forEach(btn=>{
+    btn.addEventListener('click', ()=> deleteDateColumn(btn.dataset.date));
+  });
+  document.querySelectorAll('.att-cell').forEach(input=>{
+    input.addEventListener('change', (e)=>{
+      setAttendanceCell(input.dataset.student, input.dataset.date, e.target.value);
+    });
+  });
+  document.querySelectorAll('.note-cell').forEach(input=>{
+    input.addEventListener('change', (e)=>{
+      setStudentNote(input.dataset.student, e.target.value);
+    });
+  });
+
+  // csv export / import
+  const exportCsvBtn = document.getElementById('export-csv-btn');
+  if(exportCsvBtn) exportCsvBtn.addEventListener('click', exportAttendanceCsv);
+  const importCsvBtn = document.getElementById('import-csv-btn');
+  const importCsvInput = document.getElementById('import-csv-input');
+  if(importCsvBtn) importCsvBtn.addEventListener('click', ()=> importCsvInput.click());
+  if(importCsvInput) importCsvInput.addEventListener('change', async (e)=>{
+    const file = e.target.files[0];
+    if(file) await importAttendanceCsv(file);
+    e.target.value = '';
+  });
+}
+
+/* ============ init ============ */
+(async function init(){
+  render(); // loading state
+  await loadAll();
+  render();
+})();
+</script>
+</body>
+</html>
