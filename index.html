@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>大洋周文理補習班｜高中資料庫</title>
+<title>大洋周文理補習班｜國小資料庫</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700;900&family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -11,8 +11,8 @@
     --lavender-bg:#EEE7F8;
     --lavender-deep:#9B7FC7;
     --lavender-line:#D9CBEF;
-    --yellow-bg:#FFF7DC;
-    --yellow-deep:#F0C94A;
+    --yellow-bg:#DCEAFA;
+    --yellow-deep:#5B9BD5;
     --ink:#453659;
     --ink-soft:#7A6C93;
     --paper:#FFFFFF;
@@ -347,9 +347,16 @@
   table.student-table td{ padding:10px 12px; border-bottom:1px solid var(--lavender-line); }
   table.student-table tr:hover td{ background:var(--lavender-bg); }
   .pill{ display:inline-block; padding:2px 10px; border-radius:99px; font-size:11px; font-weight:700; }
-  .pill.track-高中{ background:#E4DBFA; color:var(--lavender-deep); }
-  .pill.track-高職{ background:var(--yellow-bg); color:#9A7C1B; }
-  .pill.track-五專{ background:#DCEFE2; color:#3D8461; }
+
+  /* ---------- Subject tags ---------- */
+  .subject-tag{
+    display:inline-block; font-size:10px; font-weight:700; color:#3D8461;
+    background:#DCEFE2; padding:2px 9px; border-radius:99px; margin:2px 4px 0 0;
+  }
+  .subject-tag.subject-anqin{ color:#2F6690; background:var(--yellow-bg); }
+  .id-masked{
+    font-size:12px; color:var(--ink-soft); letter-spacing:1px;
+  }
 
   /* ---------- Roster grid (attendance) ---------- */
   table.roster-grid{ table-layout:auto; }
@@ -405,12 +412,14 @@
     white-space:nowrap;
   }
   .status-badge.status-active{ background:#DCEFE2; color:#3D8461; }
-  .status-badge.status-new{ background:var(--yellow-bg); color:#9A7C1B; }
+  .status-badge.status-new{ background:var(--yellow-bg); color:#2F6690; }
   .status-badge.status-transfer{ background:#E4DBFA; color:var(--lavender-deep); }
   .status-badge.status-left{ background:#F3E4E2; color:var(--danger); }
+  .status-badge.status-grad{ background:#DCE9FA; color:#3D6B9A; }
   .profile-card .pc-meta{ font-size:12px; color:var(--ink-soft); }
   .profile-card .pc-phone{ font-size:12px; color:var(--ink); }
-  .profile-card .pc-note{ font-size:11px; color:#9A7C1B; background:var(--yellow-bg); padding:3px 8px; border-radius:6px; margin-top:2px; }
+  .profile-card .pc-note{ font-size:11px; color:#2F6690; background:var(--yellow-bg); padding:3px 8px; border-radius:6px; margin-top:2px; }
+  .profile-card .pc-subjects{ margin-top:2px; }
 
   .select-toolbar{
     display:flex; align-items:center; gap:10px; flex-wrap:wrap;
@@ -438,24 +447,6 @@
   .lock-error{ color:var(--danger); font-size:12px; margin-top:8px; height:16px; visibility:hidden; }
   .lock-error.show{ visibility:visible; }
 
-  .status-history{ max-height:120px; overflow-y:auto; border:1px solid var(--lavender-line); border-radius:10px; padding:8px 10px; background:var(--lavender-bg); }
-  .status-history-row{ display:flex; justify-content:space-between; align-items:center; font-size:12px; padding:4px 0; border-bottom:1px dashed var(--lavender-line); }
-  .status-history-row:last-child{ border-bottom:none; }
-  .batch-field{ border:1px solid var(--lavender-line); border-radius:10px; padding:10px 12px; margin-bottom:10px; }
-  .batch-field label{ font-size:13px; font-weight:700; display:flex; align-items:center; gap:6px; }
-  .batch-field select:disabled, .batch-field input:disabled{ opacity:.45; }
-  .settings-section{ border-top:1.5px dashed var(--lavender-line); margin-top:16px; padding-top:14px; }
-  .settings-section h4{ margin:0 0 6px; font-size:14px; }
-
-  .help-section{
-    background:var(--paper); border:1.5px solid var(--lavender-line); border-radius:14px;
-    padding:18px 20px; margin-bottom:16px;
-  }
-  .help-section h3{ margin:0 0 10px; font-size:15px; color:var(--lavender-deep); font-family:"Noto Serif TC",serif; }
-  .help-section ul{ margin:0; padding-left:20px; display:flex; flex-direction:column; gap:8px; }
-  .help-section li{ font-size:13.5px; line-height:1.6; color:var(--ink); }
-  .help-section li b{ color:var(--lavender-deep); }
-
   /* ---------- Modal ---------- */
   .modal-overlay{
     position:fixed; inset:0; background:rgba(69,54,89,0.35);
@@ -471,7 +462,7 @@
   .modal .sub{ font-size:12px; color:var(--ink-soft); margin-bottom:16px; }
   .field{ margin-bottom:14px; }
   .field label{ display:block; font-size:12px; font-weight:700; color:var(--ink-soft); margin-bottom:5px; }
-  .field input[type=text], .field input[type=tel], .field select, .field input[type=url], .field input[type=date]{
+  .field input[type=text], .field input[type=tel], .field select, .field input[type=url], .field input[type=date], .field input[type=number]{
     width:100%; padding:9px 12px; border-radius:10px; border:1px solid var(--lavender-line);
     font-size:14px; background:var(--lavender-bg); color:var(--ink);
   }
@@ -480,6 +471,27 @@
   .modal-actions{ display:flex; justify-content:flex-end; gap:10px; margin-top:18px; }
   .radio-group{ display:flex; gap:16px; margin-bottom:14px; }
   .radio-group label{ font-size:13px; display:flex; align-items:center; gap:5px; font-weight:600; }
+
+  .checkbox-group{
+    display:flex; flex-wrap:wrap; gap:10px 16px;
+    background:var(--lavender-bg); border-radius:10px; padding:12px 14px;
+  }
+  .checkbox-group label{ font-size:13px; font-weight:600; display:flex; align-items:center; gap:6px; }
+
+  .prev-score-section{ margin-top:6px; margin-bottom:16px; }
+  .prev-score-section > summary{
+    cursor:pointer; font-size:13px; font-weight:700; color:var(--lavender-deep);
+    padding:8px 0; list-style:none;
+  }
+  .prev-score-section > summary::-webkit-details-marker{ display:none; }
+  .prev-score-section > summary::before{ content:'▸ '; }
+  .prev-score-section[open] > summary::before{ content:'▾ '; }
+  .prev-score-grid{
+    display:grid; grid-template-columns: 64px 1fr 1fr; gap:8px 10px;
+    align-items:center; margin-top:6px;
+  }
+  .prev-score-grid .ps-label{ font-size:12px; font-weight:700; color:var(--ink-soft); }
+  .prev-score-grid .ps-head{ font-size:11px; color:var(--ink-soft); text-align:center; }
 
   /* ---------- Toast ---------- */
   #toast-wrap{ position:fixed; bottom:22px; right:22px; display:flex; flex-direction:column; gap:8px; z-index:99; }
@@ -532,6 +544,7 @@
     table.student-table{ font-size:12px; }
     .att-cell{ width:48px; }
     .note-cell{ width:90px; }
+    .prev-score-grid{ grid-template-columns: 48px 1fr 1fr; }
   }
 </style>
 </head>
@@ -541,10 +554,8 @@
   <nav class="tabnav">
     <span class="brandmark">大洋周文理補習班</span>
     <button class="tab-btn" data-view="home">首頁<span class="en">HOME</span></button>
-    <button class="tab-btn" data-view="papers">試卷專區<span class="en">EXAMS</span></button>
-    <button class="tab-btn" data-view="videos">課程影片<span class="en">VIDEOS</span></button>
+    <button class="tab-btn" data-view="papers">檔案專區<span class="en">FILES</span></button>
     <button class="tab-btn" data-view="attendance">學生檔案<br>及點名表<span class="en">STUDENTS</span></button>
-    <button class="tab-btn" data-view="help">📖 使用說明<span class="en">HELP</span></button>
   </nav>
 
   <div class="main-wrap">
@@ -559,8 +570,8 @@
 
 <script>
 /* ============ backend: local (this browser) or cloud (Google Apps Script) ============ */
-const LOCAL_PREFIX = 'dyzw_';
-const GAS_URL_KEY = 'dyzw_gas_url';
+const LOCAL_PREFIX = 'dyzw_es_';
+const GAS_URL_KEY = 'dyzw_es_gas_url';
 
 /**
  * 把您部署好的 Apps Script 網址（結尾 /exec）填在下面雙引號中間，
@@ -568,8 +579,10 @@ const GAS_URL_KEY = 'dyzw_gas_url';
  * 填好、存檔、上傳到 GitHub 後，任何人打開這個網站都會自動連到
  * 同一個共用後台，完全不用再手動設定「⚙️ 同步設定」這一步。
  * 留空 '' 則預設為每台裝置各自的本機模式，仍可在網頁裡手動設定。
+ * 注意：國小資料庫請部署「另一個」全新的 Apps Script 專案／試算表，
+ * 不要跟高中資料庫共用同一個網址，否則兩邊資料會混在一起。
  */
-const DEFAULT_GAS_URL = 'https://script.google.com/macros/s/AKfycbyAvOsJzamjnyIs1_FlytDiUkm5TaG4rpb_7BXBUSXOsgUbxxyiV3ycPzKEuxU3pVaJiA/exec';
+const DEFAULT_GAS_URL = '';
 const Backend = {
   gasUrl: '',
   cache: null, // 雲端模式下，開頁時一次讀回來的完整資料
@@ -680,32 +693,55 @@ const state = {
   activeVideoFolder: null,
   studentSearch: '',
   attendanceSubView: 'profile',
+  sessions: [],
+  activeSessionId: null,
+  attendanceFileSearch: '',
+  pendingAttendanceUploadCategory: '點名表',
+  sessionPaymentFilter: '全部',
   paperSearch: '',
   videoSearch: '',
   profileSelectMode: false,
   selectedStudentIds: [],
   profileUnlocked: false,
   profileStatusFilter: '全部',
-  yearSnapshots: [],
+  profileSubjectFilter: '全部',
+  profileViewMode: 'grade',
+  customClasses: [],
+  archives: [],
   loaded: false
 };
 
-const GRADE_ORDER = ['高一','高二','高三','專一','專二','專三','專四','專五'];
+/* 國小年級（取代高中版的高一～專五） */
+const GRADE_ORDER = ['G1','G2','G3','G4','G5','G6'];
 const ALL_ID = '__all__';
+/* 建議之後在「設定」功能開放老師自行修改此密碼，目前先用固定值，記得部署前更換 */
 const STUDENT_PROFILE_PASSWORD = '29646498';
-const ENROLL_STATUS_OPTIONS = ['在班','新生','轉出','退班'];
-const CLASS_PRESETS = ['G1','G2','G3','G4','G5','G6'];
-const NEXT_GRADE = { '高一':'高二', '高二':'高三', '專一':'專二', '專二':'專三', '專三':'專四', '專四':'專五' };
+const ENROLL_STATUS_OPTIONS = ['在班','新生','畢業生（銜接中）','轉出','退班'];
+const PAYMENT_STATUS_OPTIONS = ['未繳','部分繳','已繳'];
+const ATTENDANCE_CATEGORIES = ['點名表','學生檔案','梯次名冊','保險檔案'];
 
+/* 補習科目（多選），安親班沒有對應的入班先備成績 */
+const SUBJECT_OPTIONS = ['國語','數學','英文','自然','社會','安親班'];
+/* 入班先備成績只問這 5 個學科，key 對應 prevScores 物件 */
+const PREV_SCORE_SUBJECTS = [
+  { key:'chinese', label:'國語' },
+  { key:'math', label:'數學' },
+  { key:'english', label:'英文' },
+  { key:'science', label:'自然' },
+  { key:'social', label:'社會' }
+];
+
+const STUDENT_NO_PREFIX = 'E'; // 國小專用前綴，避免跟高中資料庫的學生編號重複
 function generateStudentNo(){
   const year = new Date().getFullYear();
-  const prefix = 'H' + year;
-  const countThisYear = state.students.filter(s => s.studentNo && s.studentNo.startsWith(prefix)).length;
-  return `${prefix}${String(countThisYear + 1).padStart(3,'0')}`;
+  const prefixedYear = STUDENT_NO_PREFIX + year;
+  const countThisYear = state.students.filter(s => s.studentNo && s.studentNo.startsWith(prefixedYear)).length;
+  return `${prefixedYear}${String(countThisYear + 1).padStart(3,'0')}`;
 }
 function enrollStatusClass(status){
   if(status === '在班') return 'status-active';
   if(status === '新生') return 'status-new';
+  if(status === '畢業生（銜接中）') return 'status-grad';
   if(status === '轉出') return 'status-transfer';
   if(status === '退班') return 'status-left';
   return 'status-active';
@@ -726,6 +762,48 @@ function findDuplicateStudent(candidate, excludeId){
     const nameBirthdayMatch = zh && birthday && (s.zh||'').trim() === zh && (s.birthday||'').trim() === birthday;
     return phoneMatch || nameBirthdayMatch;
   });
+}
+
+/* ---------- 學生異動歷程記錄 ---------- */
+function addHistoryEntry(student, label){
+  if(!student.history) student.history = [];
+  student.history.push({ date: new Date().toISOString().slice(0,10), label });
+}
+
+/* ---------- subjects helpers ---------- */
+function subjectsToText(arr){ return (arr||[]).join('、'); }
+function textToSubjects(text){
+  if(!text) return [];
+  const parts = text.split(/[、,，\/\s]+/).map(s=>s.trim()).filter(Boolean);
+  return parts.filter(p => SUBJECT_OPTIONS.includes(p));
+}
+function subjectTagClass(subj){ return subj === '安親班' ? 'subject-tag subject-anqin' : 'subject-tag'; }
+
+/* 取得學生在某科目「實際上課的年級」：預設跟學生本身年級一樣，
+   只有跳級/降級的科目才會有 subjectClassGrade 覆寫值 */
+function getSubjectClassGrade(s, subject){
+  return (s.subjectClassGrade && s.subjectClassGrade[subject]) || s.grade;
+}
+
+/* ---------- ID number helpers (身分證字號，需妥善保護) ---------- */
+function looksLikeIdNumber(v){
+  return /^[A-Za-z][0-9]{9}$/.test((v||'').trim());
+}
+function maskIdNumber(v){
+  const s = (v||'').trim();
+  if(!s) return '';
+  if(s.length <= 4) return s[0] + '****';
+  return s.slice(0,1) + '****' + s.slice(-3);
+}
+
+/* ---------- prev scores helpers ---------- */
+function emptyPrevScores(){
+  const obj = {};
+  PREV_SCORE_SUBJECTS.forEach(s => { obj[s.key] = { mid:'', final:'' }; });
+  return obj;
+}
+function getPrevScore(s, key, term){
+  return (s.prevScores && s.prevScores[key] && s.prevScores[key][term] !== undefined) ? s.prevScores[key][term] : '';
 }
 
 function genId(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
@@ -753,14 +831,16 @@ function showToast(msg, type){
 /* ============ load ============ */
 async function loadAll(){
   await initBackend();
-  const [papers, videos, attendanceFiles, students, attendanceDates, attendanceRecords, yearSnapshots] = await Promise.all([
+  const [papers, videos, attendanceFiles, students, attendanceDates, attendanceRecords, customClasses, sessions, archives] = await Promise.all([
     storageGet('papers', { folders: [], files: {} }),
     storageGet('videos', { folders: [], items: {} }),
     storageGet('attendance-files', []),
     storageGet('students', []),
     storageGet('attendance-dates', []),
     storageGet('attendance-records', {}),
-    storageGet('year-snapshots', [])
+    storageGet('custom-classes', ['G6私']),
+    storageGet('sessions', []),
+    storageGet('archives', [])
   ]);
   state.papers = papers;
   state.videos = videos;
@@ -770,11 +850,100 @@ async function loadAll(){
   state.students = students;
   state.attendanceDates = attendanceDates;
   state.attendanceRecords = attendanceRecords;
-  state.yearSnapshots = yearSnapshots;
+  state.customClasses = customClasses;
+  state.sessions = sessions;
+  state.archives = archives;
   state.settings = { gasUrl: Backend.gasUrl, cloudReady: Backend.cloudReady };
   if(!state.activePaperFolder) state.activePaperFolder = ALL_ID;
   if(!state.activeVideoFolder) state.activeVideoFolder = ALL_ID;
   state.loaded = true;
+}
+
+/* ============ 每年7月：一鍵升年級 ============ */
+function computePromotionSummary(){
+  const active = state.students.filter(s => (s.enrollStatus||'在班') === '在班' || s.enrollStatus === '新生');
+  const lastGrade = GRADE_ORDER[GRADE_ORDER.length - 1];
+  const promoteCount = active.filter(s => GRADE_ORDER.includes(s.grade) && s.grade !== lastGrade).length;
+  const graduateCount = active.filter(s => s.grade === lastGrade).length;
+  const skippedCount = active.length - promoteCount - graduateCount; // 年級欄位是自訂值、不在 GRADE_ORDER 裡的學生，不會被自動升級
+  return { promoteCount, graduateCount, skippedCount };
+}
+
+async function promoteAllGrades(){
+  const active = state.students.filter(s => (s.enrollStatus||'在班') === '在班' || s.enrollStatus === '新生');
+  const lastGrade = GRADE_ORDER[GRADE_ORDER.length - 1];
+  const todayIso = new Date().toISOString().slice(0,10);
+
+  await createArchiveSnapshot(String(new Date().getFullYear()) + '學年（升級前）');
+
+  let promoted = 0, graduated = 0;
+  active.forEach(s=>{
+    const idx = GRADE_ORDER.indexOf(s.grade);
+    if(idx === -1) return; // 自訂年級值，跳過不處理，避免誤動
+    if(s.grade !== lastGrade){
+      addHistoryEntry(s, `升年級：${s.grade} → ${GRADE_ORDER[idx+1]}`);
+      s.grade = GRADE_ORDER[idx+1];
+      promoted++;
+    } else {
+      addHistoryEntry(s, `畢業銜接：${s.enrollStatus||'在班'} → 畢業生（銜接中）`);
+      s.enrollStatus = '畢業生（銜接中）';
+      s.enrollStatusDate = todayIso;
+      graduated++;
+    }
+  });
+  await storageSet('students', state.students);
+  render();
+  showToast(`已自動建立升級前快照。升年級完成：${promoted} 位學生升了一個年級，${graduated} 位 ${lastGrade} 學生轉為「畢業生（銜接中）」`);
+}
+
+/* ============ 學年封存快照（唯讀備份，方便日後回查） ============ */
+async function createArchiveSnapshot(label){
+  const snapshot = {
+    id: genId(),
+    label: label || `${new Date().getFullYear()}學年`,
+    createdAt: new Date().toISOString(),
+    studentCount: state.students.length,
+    students: JSON.parse(JSON.stringify(state.students))
+  };
+  state.archives = state.archives || [];
+  state.archives.push(snapshot);
+  await storageSet('archives', state.archives);
+  return snapshot;
+}
+
+function exportArchiveSnapshotCsv(archiveId){
+  const archive = state.archives.find(a=>a.id===archiveId);
+  if(!archive) return;
+  downloadCsv(`封存快照_${archive.label}_${todayLabel().replace(/[（）]/g,'')}.csv`, rowsToCsv(buildStudentRosterRows(archive.students)));
+}
+
+async function deleteArchiveSnapshot(archiveId){
+  const archive = state.archives.find(a=>a.id===archiveId);
+  if(!archive) return;
+  confirmDialog(`確定要刪除「${archive.label}」這份封存快照嗎？刪除後無法復原。`, async ()=>{
+    state.archives = state.archives.filter(a=>a.id!==archiveId);
+    await storageSet('archives', state.archives);
+    openSettingsModal();
+    showToast('封存快照已刪除');
+  }, '確定刪除');
+}
+
+/* ============ 自訂班級 ============ */
+async function addCustomClass(name){
+  if(!name || GRADE_ORDER.includes(name) || state.customClasses.includes(name)){
+    if(name) showToast('這個班級名稱已經存在了','warn');
+    return false;
+  }
+  state.customClasses.push(name);
+  await storageSet('custom-classes', state.customClasses);
+  document.querySelectorAll('select[id^="s-classgrade-"]').forEach(sel=>{
+    const opt = document.createElement('option');
+    opt.value = name;
+    opt.textContent = name;
+    sel.appendChild(opt);
+  });
+  showToast(`已新增班級「${name}」，可以在下方選單選擇`);
+  return true;
 }
 
 /* ============ modal helpers ============ */
@@ -823,101 +992,24 @@ function render(){
   else if(state.view === 'papers') c.innerHTML = renderPapers();
   else if(state.view === 'videos') c.innerHTML = renderVideos();
   else if(state.view === 'attendance') c.innerHTML = renderAttendance();
-  else if(state.view === 'help') c.innerHTML = renderHelp();
   bindViewEvents();
-}
-
-/* ============ HELP ============ */
-function renderHelp(){
-  const section = (title, bodyHtml) => `
-    <div class="help-section">
-      <h3>${title}</h3>
-      ${bodyHtml}
-    </div>
-  `;
-  return `
-    <div class="topbar">
-      <div><p class="eyebrow">USER GUIDE</p><h2 class="page-title">使用說明</h2></div>
-    </div>
-    <p class="helper-note" style="margin-top:0;">這頁整理了系統每個功能怎麼用，遇到問題可以先來這裡找答案。</p>
-
-    ${section('🗂️ 試卷專區 / 課程影片', `
-      <ul>
-        <li>資料夾清單最上方有一個固定的「🗂️ 全部」，放無法歸類的檔案，也能瀏覽已建立的資料夾。</li>
-        <li>資料夾可以無限層層建立子資料夾：打開任一資料夾，按「＋ 子資料夾」即可在目前這層底下再建一層，上方會出現麵包屑導覽（例如 全部試卷 › 高一 › 數學）可以點回上層。</li>
-        <li>每個檔案/連結列表可以：✏️改名、📂移動到其他資料夾、▲▼調整排序、下載／開啟連結、刪除。</li>
-        <li>資料夾本身也能 ✏️改名、📂移動（變成別的資料夾的子資料夾）、✕刪除（會連同子資料夾與檔案一起刪除，系統會先提醒）。</li>
-        <li>搜尋列會跨「所有資料夾」搜尋檔名，不用一個個資料夾找。</li>
-        <li>試卷檔案單檔上限約 4MB（本機模式）；雲端模式沒有這個限制，會直接存進 Google 雲端硬碟。影片建議用連結（YouTube／雲端硬碟分享連結），不要直接上傳大檔案。</li>
-      </ul>
-    `)}
-
-    ${section('🧑‍🎓 學生檔案', `
-      <ul>
-        <li>進入這個分頁需要輸入密碼（保護學生聯絡資訊），右上角「🔒 鎖定」可以隨時手動鎖回去；切換到其他主分頁再回來也會自動重新鎖定。</li>
-        <li>「＋ 新增學生」建立學生資料，「學生編號」可按「自動產生」（格式 H+年份+流水號，例如 H2026003，H 代表高中資料庫，避免跟未來的國中／國小資料庫搞混）。</li>
-        <li>新增/編輯時系統會自動比對「手機號碼」或「姓名＋生日」是否重複，避免建立雙胞胎資料。</li>
-        <li>「在班狀態」（在班／新生／轉出／退班）每次修改都會留下歷程紀錄，編輯視窗裡可以看到完整時間軸，方便回頭查「這位學生什麼時候發生了什麼事」。</li>
-        <li>「班級」欄位可以填 G1～G6 或自訂名稱（跟「年級」是不同欄位，年級是高一/高二/高三，班級是您自訂的分班方式），「選修科目」用逗號分隔輸入多個科目。</li>
-        <li><b>多選刪除／批次編輯</b>：按「☑ 多選刪除」進入多選模式，可以勾選多位學生後：刪除、或按「✏️ 批次編輯」一次修改這些人的在班狀態／年級／班級／加退選科目（只會套用您有勾選的項目）。</li>
-        <li>「⬇ 匯出學生名冊(CSV)」「⬆ 匯入學生名冊(CSV)」用來跟 Excel 交換完整學生資料，匯入時會自動辨識欄位、偵測重複、格式不對的欄位會自動留空並提醒您。</li>
-      </ul>
-    `)}
-
-    ${section('📋 點名總表', `
-      <ul>
-        <li>依年級分組顯示所有學生，「＋ 新增日期欄」手動加一欄（可自訂文字），出缺席格子直接打字。</li>
-        <li>「⬇ 備份點名表」會先跳出視窗：預設「全部班級」匯出成一份合併總表；取消勾選後可以只選特定班級，勾選幾個就會各自產生一份獨立檔案（例如 備份_點名總表_G3_日期.csv）。</li>
-        <li>如果已連上雲端模式，匯出的同時也會自動備份一份到您的 Google 雲端硬碟（點名表檔案資料夾），下載＋雲端備份一次完成。</li>
-        <li>「⬆ 匯入 CSV」可以把老師編輯過的點名表 CSV 匯入回來，依姓名比對更新出缺席紀錄。</li>
-      </ul>
-    `)}
-
-    ${section('🎓 學年度升級與快照（在「⚙️ 同步設定」裡）', `
-      <ul>
-        <li>「學年度升級」會先把目前所有學生資料存成一份唯讀快照，再自動把所有學生的年級往上升一級（高三／專五會轉為「轉出」並標記畢業）。</li>
-        <li>這是不可逆的批次操作，執行前系統會要求輸入學年度名稱並二次確認。</li>
-        <li>「查看歷史快照」可以回頭看某個學年度當時每位學生的年級/班級/狀態，快照本身唯讀不能編輯，也可以個別刪除舊快照。</li>
-      </ul>
-    `)}
-
-    ${section('⚙️ 雲端硬碟同步設定', `
-      <ul>
-        <li>本機模式：不用設定，資料只存在目前這台裝置的瀏覽器裡。</li>
-        <li>雲端模式：貼上部署好的 Google Apps Script 網址，資料改存到您的 Google 試算表／雲端硬碟，所有裝置、所有老師打開都是同一份資料。</li>
-        <li>設定畫面上方會顯示目前是「✅ 雲端模式」還是「💻 本機模式」還是「⚠️ 連線失敗」。</li>
-        <li>「清除全部資料」是危險操作，會清掉試卷、影片、點名表、學生資料（不含歷史學年度快照的刪除是分開按鈕），執行前會二次確認。</li>
-      </ul>
-    `)}
-
-    ${section('🔐 關於資料安全與備份', `
-      <ul>
-        <li>網頁本身只是操作介面，資料實際存在您自己的 Google 試算表與雲端硬碟裡；就算網頁不見了，資料不會不見，重新放一份網頁檔案上去就能接回原本的資料。</li>
-        <li>建議習慣：定期用「⬇匯出學生名冊」「⬇備份點名表」存一份 CSV 起來，這是最容易讀懂的備份格式，緊急時就算網頁跟 Google 都出狀況，這份 CSV 還是能直接用 Excel 打開救急。</li>
-        <li>學生檔案的密碼鎖是網頁前端的防護，能擋住一般人隨手翻看，但不是嚴密的加密保護，懂技術的人理論上仍有辦法繞過，這點請留意。</li>
-      </ul>
-    `)}
-  `;
 }
 
 /* ============ HOME ============ */
 function renderHome(){
   const paperCount = Object.values(state.papers.files).reduce((s,a)=>s+a.length,0);
-  const videoCount = Object.values(state.videos.items).reduce((s,a)=>s+a.length,0);
   return `
     <div class="hero">
-      <p class="eyebrow">高中資料庫｜Daiyang Academic Center</p>
+      <p class="eyebrow">國小資料庫｜Daiyang Academic Center</p>
       <h1>大洋周文理補習班</h1>
-      <p>試卷、課程影片、學生點名資料，一站管理。淡紫與鵝黃，是這間資料室的顏色。</p>
+      <p>檔案與學生點名資料，一站管理。淡紫與鵝黃，是這間資料室的顏色。</p>
     </div>
-    <div class="stat-row">
-      <div class="stat-card"><div class="stat-num">${paperCount}</div><div class="stat-label">份試卷已建檔</div></div>
-      <div class="stat-card"><div class="stat-num">${videoCount}</div><div class="stat-label">支課程影片／連結</div></div>
+    <div class="stat-row" style="grid-template-columns:repeat(2,1fr);max-width:520px;">
+      <div class="stat-card"><div class="stat-num">${paperCount}</div><div class="stat-label">份檔案已建檔</div></div>
       <div class="stat-card"><div class="stat-num">${state.students.length}</div><div class="stat-label">位學生資料</div></div>
     </div>
-    <div class="nav-cards">
-      <button class="nav-card" data-goto="papers"><span class="badge">🗂️</span><h3>試卷專區</h3><p>依科目、班別建立資料夾，上傳、下載、檢視各次段考與講義試卷。</p></button>
-      <button class="nav-card" data-goto="videos"><span class="badge">🎬</span><h3>課程影片</h3><p>補課影音集中管理，可放檔案或雲端連結，依資料夾分類整理。</p></button>
+    <div class="nav-cards" style="grid-template-columns:repeat(2,1fr);">
+      <button class="nav-card" data-goto="papers"><span class="badge">🗂️</span><h3>檔案專區</h3><p>依科目、班別建立資料夾，上傳、下載、檢視各類講義與檔案。</p></button>
       <button class="nav-card" data-goto="attendance"><span class="badge">📋</span><h3>學生檔案及點名表</h3><p>查閱學生基本資料檔案、每日點名，並可串接 Google Apps Script 同步至 Excel。</p></button>
     </div>
   `;
@@ -960,7 +1052,7 @@ function getDescendantFolderIds(kind, folderId){
 function renderFolderList(kind){
   const data = kind === 'papers' ? state.papers : state.videos;
   const activeId = kind === 'papers' ? state.activePaperFolder : state.activeVideoFolder;
-  const allLabel = kind === 'papers' ? '全部試卷' : '全部影片';
+  const allLabel = kind === 'papers' ? '全部檔案' : '全部影片';
   const pinned = `
     <div class="folder-item pinned ${activeId === ALL_ID ? 'active' : ''}" data-folder="${ALL_ID}" data-kind="${kind}">
       <span class="name" data-action="select-folder">🗂️ ${allLabel}</span>
@@ -988,7 +1080,7 @@ function searchFiles(kind, query){
   const results = [];
   Object.keys(bucket).forEach(fid=>{
     const folderName = fid === ALL_ID
-      ? (kind === 'papers' ? '全部試卷（未分類）' : '全部影片（未分類）')
+      ? (kind === 'papers' ? '全部檔案（未分類）' : '全部影片（未分類）')
       : (data.folders.find(f=>f.id===fid)?.name || '（資料夾已刪除）');
     (bucket[fid]||[]).forEach(f=>{
       if(f.name.toLowerCase().includes(q)){
@@ -1039,16 +1131,16 @@ function renderPapers(){
   const path = getFolderPath('papers', activeId);
   const breadcrumb = `
     <div class="breadcrumb">
-      <span class="crumb ${isAll?'current':''}" data-crumb="${ALL_ID}" data-kind="papers">🗂️ 全部試卷</span>
+      <span class="crumb ${isAll?'current':''}" data-crumb="${ALL_ID}" data-kind="papers">🗂️ 全部檔案</span>
       ${path.map((f,i)=>`<span class="crumb-sep">›</span><span class="crumb ${i===path.length-1?'current':''}" data-crumb="${f.id}" data-kind="papers">${escapeHtml(f.name)}</span>`).join('')}
     </div>
   `;
   return `
     <div class="topbar">
-      <div><p class="eyebrow">EXAM ARCHIVE</p><h2 class="page-title">試卷專區</h2></div>
+      <div><p class="eyebrow">FILE ARCHIVE</p><h2 class="page-title">檔案專區</h2></div>
     </div>
     <div class="toolbar" style="margin-bottom:14px;">
-      <input type="text" id="paper-search" placeholder="🔍 搜尋所有資料夾中的試卷檔名…" value="${escapeHtml(query)}" style="max-width:340px;">
+      <input type="text" id="paper-search" placeholder="🔍 搜尋所有資料夾中的檔案名稱…" value="${escapeHtml(query)}" style="max-width:340px;">
       ${query.trim() ? `<button class="btn ghost small" id="paper-search-clear">清除搜尋</button>` : ''}
     </div>
     ${searchResults !== null ? `
@@ -1066,14 +1158,14 @@ function renderPapers(){
       <div class="file-panel">
         ${breadcrumb}
         <div class="file-panel-head">
-          <h3>${isAll ? '全部試卷（未分類）' : escapeHtml(folder.name)}</h3>
+          <h3>${isAll ? '全部檔案（未分類）' : escapeHtml(folder.name)}</h3>
           <div>
             <button class="btn ghost" id="add-paper-subfolder">＋ 子資料夾</button>
             <input type="file" id="paper-file-input" multiple style="display:none">
-            <button class="btn" id="paper-upload-btn">＋ 上傳試卷</button>
+            <button class="btn" id="paper-upload-btn">＋ 上傳檔案</button>
           </div>
         </div>
-        ${isAll ? `<p class="helper-note" style="margin-top:0;">這裡放無法歸類到特定資料夾的試卷；下方是已建立的資料夾與子資料夾。</p>` : ''}
+        ${isAll ? `<p class="helper-note" style="margin-top:0;">這裡放無法歸類到特定資料夾的檔案；下方是已建立的資料夾與子資料夾。</p>` : ''}
         ${renderFolderOverview('papers', activeId)}
         <div id="paper-file-list">
           ${renderFileRows(files, 'papers', activeId)}
@@ -1174,8 +1266,6 @@ function renderVideos(){
 }
 
 /* ============ ATTENDANCE ============ */
-function trackPillClass(track){ return 'pill track-' + track; }
-
 function renderAttendance(){
   const sub = state.attendanceSubView || 'profile';
   return `
@@ -1184,21 +1274,62 @@ function renderAttendance(){
       <button class="icon-btn" id="open-settings" title="同步設定">⚙️</button>
     </div>
 
-    <div class="file-panel-head">
-      <h3>點名表檔案（備份存檔）</h3>
-      <div>
-        <input type="file" id="attendance-file-input" multiple style="display:none">
-        <button class="btn" id="attendance-upload-btn">＋ 上傳點名表</button>
-      </div>
-    </div>
-    <div id="attendance-file-list">${renderFileRows(state.attendanceFiles, 'attendance')}</div>
+    ${state.profileUnlocked ? renderAttendanceFileArchive() : renderFileArchiveLockScreen()}
 
     <div class="sub-tabs">
       <button class="sub-tab-btn ${sub==='profile'?'active':''}" data-subview="profile">🧑‍🎓 學生檔案</button>
       <button class="sub-tab-btn ${sub==='grid'?'active':''}" data-subview="grid">📋 點名總表</button>
+      <button class="sub-tab-btn ${sub==='sessions'?'active':''}" data-subview="sessions">🏕️ 梯次名冊</button>
     </div>
 
-    ${sub === 'profile' ? (state.profileUnlocked ? renderStudentProfiles() : renderProfileLockScreen()) : renderAttendanceGrid()}
+    ${sub === 'profile' ? (state.profileUnlocked ? renderStudentProfiles() : renderProfileLockScreen())
+      : sub === 'sessions' ? (state.profileUnlocked ? renderSessionsView() : renderProfileLockScreen())
+      : renderAttendanceGrid()}
+  `;
+}
+
+function attendanceFileCategory(f){ return f.category || '點名表'; }
+function attendanceFilesByCategory(category, search){
+  const q = (search||'').trim().toLowerCase();
+  return state.attendanceFiles.filter(f => attendanceFileCategory(f) === category && (!q || f.name.toLowerCase().includes(q)));
+}
+
+function renderAttendanceFileArchive(){
+  const search = state.attendanceFileSearch || '';
+  return `
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px;align-items:center;">
+      <button class="btn ghost" id="backup-all-btn">💾 一鍵備份全部（學生＋點名＋梯次＋保險）</button>
+    </div>
+    <p class="helper-note" style="margin-top:6px;">💡 學生檔案、點名總表、梯次名冊各自分頁上都有自己專屬的「💾 備份」按鈕，互不影響；這裡的「一鍵備份全部」則是一次把三者都備份好。備份的 CSV 會依分類直接存進下面的檔案庫，接上雲端後端時會同步存進 Google 雲端硬碟裡對應的分類資料夾。</p>
+    <div class="toolbar" style="margin-top:10px;">
+      <input type="text" id="attendance-file-search" placeholder="🔍 搜尋所有分類中的檔案名稱…" value="${escapeHtml(search)}">
+    </div>
+    ${ATTENDANCE_CATEGORIES.map(cat => {
+      const files = attendanceFilesByCategory(cat, search);
+      return `
+        <div class="file-panel-head" style="margin-top:18px;">
+          <h3>${escapeHtml(cat)}（${files.length}）</h3>
+          <button class="btn small ghost" data-attendance-upload-cat="${escapeHtml(cat)}">＋ 上傳${escapeHtml(cat)}</button>
+        </div>
+        <div>${renderFileRows(files, 'attendance', cat)}</div>
+      `;
+    }).join('')}
+    <input type="file" id="attendance-file-input" multiple style="display:none">
+  `;
+}
+
+function renderFileArchiveLockScreen(){
+  return `
+    <div class="lock-screen">
+      <div class="lock-card">
+        <div class="lock-icon">🔒</div>
+        <h3>點名表檔案需要密碼</h3>
+        <p class="sub">內含名冊備份與保險資料，請輸入密碼後查看</p>
+        <input type="password" id="file-password-input" inputmode="numeric" placeholder="請輸入密碼" autocomplete="off">
+        <p class="lock-error" id="file-password-error">密碼錯誤，請再試一次</p>
+        <button class="btn" id="file-password-submit" style="width:100%;margin-top:10px;">解鎖</button>
+      </div>
+    </div>
   `;
 }
 
@@ -1208,7 +1339,7 @@ function renderProfileLockScreen(){
       <div class="lock-card">
         <div class="lock-icon">🔒</div>
         <h3>學生檔案需要密碼</h3>
-        <p class="sub">內含學生聯絡資訊，請輸入密碼後查看</p>
+        <p class="sub">內含學生聯絡資訊與身分證字號，請輸入密碼後查看</p>
         <input type="password" id="profile-password-input" inputmode="numeric" placeholder="請輸入密碼" autocomplete="off">
         <p class="lock-error" id="profile-password-error">密碼錯誤，請再試一次</p>
         <button class="btn" id="profile-password-submit" style="width:100%;margin-top:10px;">解鎖</button>
@@ -1217,16 +1348,81 @@ function renderProfileLockScreen(){
   `;
 }
 
+function renderStudentCard(s, selectMode){
+  const isSelected = state.selectedStudentIds.includes(s.id);
+  const status = s.enrollStatus || '在班';
+  return `
+    <div class="profile-card ${selectMode ? 'selectable' : ''} ${isSelected ? 'selected' : ''}" data-open-student="${s.id}" role="button" tabindex="0">
+      ${selectMode ? `<span class="pc-check">${isSelected ? '✅' : '⬜'}</span>` : ''}
+      <div class="pc-top-row">
+        <div class="pc-name">${escapeHtml(studentFullName(s))}</div>
+        <span class="status-badge ${enrollStatusClass(status)}">${escapeHtml(status)}</span>
+      </div>
+      ${s.studentNo ? `<div class="pc-meta">🔖 ${escapeHtml(s.studentNo)}</div>` : ''}
+      <div class="pc-meta">${escapeHtml(s.school||'未填寫學校')}</div>
+      ${s.idNumber ? `<div class="id-masked">🪪 ${escapeHtml(maskIdNumber(s.idNumber))}</div>` : ''}
+      <div class="pc-phone">📱 ${escapeHtml(s.phone||'—')}</div>
+      ${(s.subjects && s.subjects.length) ? `<div class="pc-subjects">${s.subjects.map(sub=>`<span class="${subjectTagClass(sub)}">${escapeHtml(sub)}</span>`).join('')}</div>` : ''}
+      ${s.note ? `<div class="pc-note">📝 ${escapeHtml(s.note)}</div>` : ''}
+    </div>
+  `;
+}
+
+/* 依年級分組（原本的檢視方式） */
+function renderProfileGroupsByGrade(students, selectMode){
+  const groups = GRADE_ORDER.map(g => ({ label: g, list: students.filter(s => s.grade === g) })).filter(g => g.list.length);
+  const otherGrades = [...new Set(students.map(s=>s.grade).filter(g=>!GRADE_ORDER.includes(g)))];
+  otherGrades.forEach(g => groups.push({ label: g, list: students.filter(s=>s.grade===g) }));
+  if(!groups.length) return `<div class="empty-state" style="margin-top:14px;"><span class="ic">🧑‍🎓</span>還沒有學生資料，點選「新增學生」開始建檔。</div>`;
+  return groups.map(grp => `
+    <div class="profile-grade-block">
+      <div class="profile-grade-label">${escapeHtml(grp.label)}</div>
+      <div class="profile-card-grid">
+        ${grp.list.map(s => renderStudentCard(s, selectMode)).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+/* 依補習科目分班，班內再依年級（實際上課年級，若有跳級/降級會用調整後的年級）排列 */
+function renderProfileGroupsBySubject(students, selectMode){
+  const sections = SUBJECT_OPTIONS.map(subject => {
+    const inSubject = students.filter(s => (s.subjects||[]).includes(subject));
+    if(!inSubject.length) return null;
+    const gradeGroups = GRADE_ORDER.map(g => ({
+      label: g,
+      list: inSubject.filter(s => getSubjectClassGrade(s, subject) === g)
+    })).filter(g => g.list.length);
+    const otherGrades = [...new Set(inSubject.map(s=>getSubjectClassGrade(s, subject)).filter(g=>!GRADE_ORDER.includes(g)))];
+    otherGrades.forEach(g => gradeGroups.push({ label: g, list: inSubject.filter(s=>getSubjectClassGrade(s, subject)===g) }));
+    return { subject, gradeGroups, count: inSubject.length };
+  }).filter(Boolean);
+  if(!sections.length) return `<div class="empty-state" style="margin-top:14px;"><span class="ic">🧑‍🎓</span>沒有符合條件的學生資料。</div>`;
+  return sections.map(sec => `
+    <div class="profile-grade-block">
+      <div class="profile-grade-label">${escapeHtml(sec.subject)} 班（共 ${sec.count} 人）</div>
+      ${sec.gradeGroups.map(grp => `
+        <div style="margin:10px 0 10px 4px;">
+          <div style="font-size:12px;font-weight:700;color:var(--ink-soft);margin-bottom:8px;">${escapeHtml(grp.label)}${grp.list.some(s=>getSubjectClassGrade(s, sec.subject) !== s.grade) ? '　<span style="color:var(--danger);">（含跳級／降級學生）</span>' : ''}</div>
+          <div class="profile-card-grid">
+            ${grp.list.map(s => renderStudentCard(s, selectMode)).join('')}
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+}
+
 function renderStudentProfiles(){
   const q = state.studentSearch.trim().toLowerCase();
   const statusFilter = state.profileStatusFilter || '全部';
+  const subjectFilter = state.profileSubjectFilter || '全部';
+  const viewMode = state.profileViewMode || 'grade';
   const students = state.students.filter(s =>
     (!q || s.zh.toLowerCase().includes(q) || (s.en||'').toLowerCase().includes(q) || (s.school||'').toLowerCase().includes(q))
     && (statusFilter === '全部' || (s.enrollStatus||'在班') === statusFilter)
+    && (subjectFilter === '全部' || (s.subjects||[]).includes(subjectFilter))
   );
-  const groups = GRADE_ORDER.map(g => ({ grade: g, list: students.filter(s => s.grade === g) })).filter(g => g.list.length);
-  const otherGrades = [...new Set(students.map(s=>s.grade).filter(g=>!GRADE_ORDER.includes(g)))];
-  otherGrades.forEach(g => groups.push({ grade: g, list: students.filter(s=>s.grade===g) }));
 
   const selectMode = state.profileSelectMode;
   const selectedCount = state.selectedStudentIds.length;
@@ -1236,8 +1432,11 @@ function renderStudentProfiles(){
       <h3 style="margin:0;font-size:16px;">學生檔案</h3>
       <div style="display:flex; gap:8px; flex-wrap:wrap;">
         ${selectMode ? '' : `<button class="btn secondary" id="add-student-btn">＋ 新增學生</button>`}
-        <button class="btn ${selectMode ? '' : 'ghost'}" id="toggle-select-mode-btn">${selectMode ? '✕ 取消選取' : '☑ 多選刪除'}</button>
+        <button class="btn ${selectMode ? '' : 'ghost'}" id="toggle-select-mode-btn">${selectMode ? '✕ 取消選取' : '☑ 多選批次操作'}</button>
         ${selectMode ? '' : `<button class="btn ghost" id="export-roster-csv-btn">⬇ 匯出學生名冊(CSV)</button>`}
+        ${selectMode ? '' : `<button class="btn ghost" id="export-insurance-csv-btn">⬇ 匯出保險名冊(CSV)</button>`}
+        ${selectMode ? '' : `<button class="btn secondary" id="backup-students-btn">💾 備份學生名冊</button>`}
+        ${selectMode ? '' : `<button class="btn secondary" id="backup-insurance-btn">💾 備份保險名冊</button>`}
         ${selectMode ? '' : `<input type="file" id="import-roster-csv-input" accept=".csv" style="display:none">
         <button class="btn ghost" id="import-roster-csv-btn">⬆ 匯入學生名冊(CSV)</button>`}
         <button class="btn ghost" id="lock-profile-btn" title="離開座位前先鎖定">🔒 鎖定</button>
@@ -1248,42 +1447,27 @@ function renderStudentProfiles(){
         <span>已選取 ${selectedCount} 位</span>
         <button class="btn ghost small" id="select-all-students-btn">全選（目前搜尋結果）</button>
         <button class="btn ghost small" id="clear-select-students-btn">清除選取</button>
-        <button class="btn secondary small" id="batch-edit-students-btn" ${selectedCount ? '' : 'disabled'}>✏️ 批次編輯（${selectedCount}）</button>
+        <button class="btn ghost small" id="batch-status-btn" ${selectedCount ? '' : 'disabled'}>批次改狀態</button>
+        <button class="btn ghost small" id="batch-add-subject-btn" ${selectedCount ? '' : 'disabled'}>批次加科目</button>
+        <button class="btn ghost small" id="batch-remove-subject-btn" ${selectedCount ? '' : 'disabled'}>批次退科目</button>
+        <button class="btn ghost small" id="batch-grade-btn" ${selectedCount ? '' : 'disabled'}>批次改年級</button>
         <button class="btn small" id="delete-selected-students-btn" style="background:var(--danger); margin-left:auto;" ${selectedCount ? '' : 'disabled'}>🗑 刪除已選取（${selectedCount}）</button>
       </div>
-    ` : `<p class="helper-note" style="margin-top:8px;">💡 匯入時系統會先讀取標題列自動辨識每欄對應的欄位（就算欄位順序跟範本不同也沒關係）；每個欄位的內容也會做基本檢查，例如電話欄若不是像電話的內容、學校欄若看起來像電話號碼，都會自動留空、不會存錯地方，並在完成後提醒您有幾筆需要自行補齊。另外也會用「手機號碼」或「姓名+生日」偵測重複資料並略過。可先按「匯出學生名冊」取得標準範本欄位。</p>`}
+    ` : `<p class="helper-note" style="margin-top:8px;">💡 匯入時系統會先讀取標題列自動辨識每欄對應的欄位（就算欄位順序跟範本不同也沒關係）；每個欄位的內容也會做基本檢查。日常「學生名冊」匯出不含身分證字號與生日，這兩項只在「保險名冊」專用匯出時才會帶出，請妥善保管保險名冊檔案。可先按「匯出學生名冊」取得標準範本欄位。</p>`}
     <div class="toolbar" style="margin-top:14px;">
       <input type="text" id="student-search" placeholder="搜尋姓名或學校…" value="${escapeHtml(state.studentSearch)}">
       <select id="profile-status-filter" style="padding:9px 12px;border-radius:10px;border:1px solid var(--lavender-line);background:var(--lavender-bg);font-size:13px;">
         ${['全部', ...ENROLL_STATUS_OPTIONS].map(o=>`<option ${statusFilter===o?'selected':''}>${o}</option>`).join('')}
       </select>
+      <select id="profile-subject-filter" style="padding:9px 12px;border-radius:10px;border:1px solid var(--lavender-line);background:var(--lavender-bg);font-size:13px;">
+        ${['全部', ...SUBJECT_OPTIONS].map(o=>`<option ${subjectFilter===o?'selected':''}>${o}</option>`).join('')}
+      </select>
     </div>
-    ${groups.length ? groups.map(grp => `
-      <div class="profile-grade-block">
-        <div class="profile-grade-label">${escapeHtml(grp.grade)}</div>
-        <div class="profile-card-grid">
-          ${grp.list.map(s => {
-            const isSelected = state.selectedStudentIds.includes(s.id);
-            const status = s.enrollStatus || '在班';
-            return `
-            <div class="profile-card ${selectMode ? 'selectable' : ''} ${isSelected ? 'selected' : ''}" data-open-student="${s.id}" role="button" tabindex="0">
-              ${selectMode ? `<span class="pc-check">${isSelected ? '✅' : '⬜'}</span>` : ''}
-              <div class="pc-top-row">
-                <div class="pc-name">${escapeHtml(studentFullName(s))}</div>
-                <span class="status-badge ${enrollStatusClass(status)}">${escapeHtml(status)}</span>
-              </div>
-              ${s.studentNo ? `<div class="pc-meta">🔖 ${escapeHtml(s.studentNo)}</div>` : ''}
-              <div class="pc-meta">${escapeHtml(s.school||'未填寫學校')}${s.track ? '・' + escapeHtml(s.track) : ''}${s.className ? '・' + escapeHtml(s.className) : ''}</div>
-              ${(s.subjects||[]).length ? `<div class="pc-meta">📚 ${escapeHtml((s.subjects||[]).join('、'))}</div>` : ''}
-              ${s.birthday ? `<div class="pc-meta">🎂 ${escapeHtml(s.birthday)}</div>` : ''}
-              <div class="pc-phone">📱 ${escapeHtml(s.phone||'—')}</div>
-              ${s.note ? `<div class="pc-note">📝 ${escapeHtml(s.note)}</div>` : ''}
-            </div>
-          `;
-          }).join('')}
-        </div>
-      </div>
-    `).join('') : `<div class="empty-state" style="margin-top:14px;"><span class="ic">🧑‍🎓</span>還沒有學生資料，點選「新增學生」開始建檔。</div>`}
+    <div class="sub-tabs" style="margin-top:16px;border-bottom:none;gap:6px;">
+      <button class="sub-tab-btn ${viewMode==='grade'?'active':''}" data-profile-viewmode="grade" style="border:1px solid var(--lavender-line);">依年級檢視</button>
+      <button class="sub-tab-btn ${viewMode==='subject'?'active':''}" data-profile-viewmode="subject" style="border:1px solid var(--lavender-line);">依科目分班檢視</button>
+    </div>
+    ${viewMode === 'subject' ? renderProfileGroupsBySubject(students, selectMode) : renderProfileGroupsByGrade(students, selectMode)}
   `;
 }
 
@@ -1298,7 +1482,7 @@ function renderAttendanceGrid(){
   const otherGrades = [...new Set(students.map(s=>s.grade).filter(g=>!GRADE_ORDER.includes(g)))];
   otherGrades.forEach(g => groups.push({ grade: g, list: students.filter(s=>s.grade===g) }));
 
-  const colCount = 4 + dates.length; // 姓名, 學生電話, 家長電話, ...dates, 備註
+  const colCount = 3 + dates.length; // 姓名, 家長電話, ...dates, 備註
 
   return `
     <div style="margin-top:26px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
@@ -1306,7 +1490,8 @@ function renderAttendanceGrid(){
       <div style="display:flex; gap:8px; flex-wrap:wrap;">
         <button class="btn secondary" id="add-student-btn">＋ 新增學生</button>
         <button class="btn secondary" id="add-date-btn">＋ 新增日期欄</button>
-        <button class="btn ghost" id="export-csv-btn">⬇ 備份點名表</button>
+        <button class="btn ghost" id="export-csv-btn">⬇ 匯出 Excel(CSV)</button>
+        <button class="btn secondary" id="backup-attendance-btn">💾 備份點名表</button>
         <input type="file" id="import-csv-input" accept=".csv" style="display:none">
         <button class="btn ghost" id="import-csv-btn">⬆ 匯入 CSV</button>
       </div>
@@ -1318,7 +1503,7 @@ function renderAttendanceGrid(){
       <table class="student-table roster-grid">
         <thead>
           <tr>
-            <th>班級 / 姓名</th><th>學生電話</th><th>家長電話</th>
+            <th>班級 / 姓名</th><th>家長電話</th>
             ${dates.map(d => `<th class="date-col"><span>${escapeHtml(d.label)}</span><button class="date-del" data-date="${d.id}" title="刪除此日期欄">✕</button></th>`).join('')}
             <th>備註</th><th></th>
           </tr>
@@ -1330,8 +1515,7 @@ function renderAttendanceGrid(){
             </tr>
             ${grp.list.map(s => `
               <tr>
-                <td>${escapeHtml(studentFullName(s))}<div class="sub-meta">${escapeHtml(s.school||'')}${s.school && s.track ? '・' : ''}${escapeHtml(s.track||'')}</div></td>
-                <td>${escapeHtml(s.phone||'—')}</td>
+                <td>${escapeHtml(studentFullName(s))}<div class="sub-meta">${escapeHtml(s.school||'')}</div></td>
                 <td>${escapeHtml(s.parentPhone||'—')}</td>
                 ${dates.map(d => `<td><input type="text" class="att-cell" data-student="${s.id}" data-date="${d.id}" value="${escapeHtml((state.attendanceRecords[s.id]||{})[d.id]||'')}" placeholder="到"></td>`).join('')}
                 <td><input type="text" class="note-cell" data-student="${s.id}" value="${escapeHtml(s.note||'')}" placeholder="備註"></td>
@@ -1345,12 +1529,373 @@ function renderAttendanceGrid(){
   `;
 }
 
+/* ============ 梯次名冊（寒暑假營隊／衝刺班） ============ */
+const SESSION_TYPE_OPTIONS = ['暑假營隊','寒假營隊','衝刺班','其他'];
+
+function getSession(sessionId){
+  return state.sessions.find(sess => sess.id === sessionId);
+}
+function paymentStatusOf(session, studentId){
+  return (session.payments && session.payments[studentId]) || '未繳';
+}
+
+function renderSessionsView(){
+  const session = state.activeSessionId ? getSession(state.activeSessionId) : null;
+  if(session) return renderSessionDetail(session);
+  return renderSessionsList();
+}
+
+function renderSessionsList(){
+  const sessions = [...state.sessions].sort((a,b)=> String(b.year||'').localeCompare(String(a.year||'')) || (b.createdAt||'').localeCompare(a.createdAt||''));
+  return `
+    <div style="margin-top:26px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+      <h3 style="margin:0;font-size:16px;">梯次名冊</h3>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="btn secondary" id="add-session-btn">＋ 新增梯次</button>
+        ${sessions.length ? `<button class="btn ghost" id="backup-sessions-btn">💾 備份所有梯次</button>` : ''}
+      </div>
+    </div>
+    <p class="helper-note" style="margin-top:10px;">💡 梯次名冊用來管理寒暑假營隊或衝刺班：每個梯次有自己的名單、繳費狀態、跟自己的點名表，跟平常的科目補習點名分開，互不影響。</p>
+    ${sessions.length ? `
+      <div class="profile-card-grid" style="margin-top:16px;">
+        ${sessions.map(sess => `
+          <div class="profile-card" data-open-session="${sess.id}" role="button" tabindex="0">
+            <div class="pc-top-row">
+              <div class="pc-name">${escapeHtml(sess.name)}</div>
+              <span class="status-badge status-transfer">${escapeHtml(sess.type||'其他')}</span>
+            </div>
+            <div class="pc-meta">${escapeHtml(sess.year||'')}年度</div>
+            <div class="pc-meta">👥 ${(sess.studentIds||[]).length} 人</div>
+            ${sess.note ? `<div class="pc-note">📝 ${escapeHtml(sess.note)}</div>` : ''}
+          </div>
+        `).join('')}
+      </div>
+    ` : `<div class="empty-state" style="margin-top:14px;"><span class="ic">🏕️</span>還沒有梯次，點選「新增梯次」開始建立。</div>`}
+  `;
+}
+
+function renderSessionDetail(session){
+  const allStudents = (session.studentIds||[]).map(id => state.students.find(s=>s.id===id)).filter(Boolean);
+  const paymentFilter = state.sessionPaymentFilter || '全部';
+  const students = allStudents.filter(s => paymentFilter === '全部' || paymentStatusOf(session, s.id) === paymentFilter);
+  const dates = session.attendanceDates || [];
+  const colCount = 4 + dates.length;
+  const counts = { '未繳':0, '部分繳':0, '已繳':0 };
+  allStudents.forEach(s => { counts[paymentStatusOf(session, s.id)] = (counts[paymentStatusOf(session, s.id)]||0) + 1; });
+  return `
+    <div style="margin-top:26px; display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px;">
+      <div>
+        <button class="btn ghost small" id="back-to-sessions-btn" style="margin-bottom:8px;">← 回梯次列表</button>
+        <h3 style="margin:0;font-size:16px;">${escapeHtml(session.name)} <span class="folder-chip">${escapeHtml(session.type||'其他')}・${escapeHtml(session.year||'')}</span></h3>
+      </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="btn ghost" id="edit-session-btn">✏️ 編輯梯次資訊</button>
+        <button class="btn ghost" id="manage-session-students-btn">👥 管理名單</button>
+        <button class="btn ghost" id="add-session-date-btn">＋ 新增日期欄</button>
+        <button class="btn ghost" id="export-session-csv-btn">⬇ 匯出梯次名冊(CSV)</button>
+        <button class="btn ghost" id="export-session-insurance-csv-btn">⬇ 匯出保險名冊(CSV)</button>
+        <button class="btn secondary" id="backup-session-btn">💾 備份此梯次</button>
+        <button class="btn" id="delete-session-btn" style="background:var(--danger);">🗑 刪除梯次</button>
+      </div>
+    </div>
+    ${session.note ? `<p class="helper-note">📝 ${escapeHtml(session.note)}</p>` : ''}
+    <div class="stat-row" style="grid-template-columns:repeat(3,1fr);max-width:520px;margin-top:16px;">
+      <div class="stat-card" data-payment-quickfilter="未繳" style="cursor:pointer;${paymentFilter==='未繳'?`border-color:var(--danger);box-shadow:0 0 0 2px rgba(217,105,95,0.25);`:''}"><div class="stat-num" style="color:var(--danger);">${counts['未繳']}</div><div class="stat-label">未繳</div></div>
+      <div class="stat-card" data-payment-quickfilter="部分繳" style="cursor:pointer;${paymentFilter==='部分繳'?`border-color:#2F6690;box-shadow:0 0 0 2px rgba(47,102,144,0.2);`:''}"><div class="stat-num" style="color:#2F6690;">${counts['部分繳']}</div><div class="stat-label">部分繳</div></div>
+      <div class="stat-card" data-payment-quickfilter="已繳" style="cursor:pointer;${paymentFilter==='已繳'?`border-color:#3D8461;box-shadow:0 0 0 2px rgba(61,132,97,0.2);`:''}"><div class="stat-num" style="color:#3D8461;">${counts['已繳']}</div><div class="stat-label">已繳</div></div>
+    </div>
+    <div class="toolbar" style="margin-top:14px;max-width:320px;">
+      <select id="session-payment-filter" style="padding:9px 12px;border-radius:10px;border:1px solid var(--lavender-line);background:var(--lavender-bg);font-size:13px;">
+        ${['全部', ...PAYMENT_STATUS_OPTIONS].map(o=>`<option ${paymentFilter===o?'selected':''}>${o}</option>`).join('')}
+      </select>
+    </div>
+    <div style="overflow-x:auto;margin-top:10px;">
+      <table class="student-table roster-grid">
+        <thead>
+          <tr>
+            <th>姓名</th><th>年級</th><th>家長電話</th><th>繳費狀態</th>
+            ${dates.map(d => `<th class="date-col"><span>${escapeHtml(d.label)}</span><button class="date-del" data-session-date="${d.id}" title="刪除此日期欄">✕</button></th>`).join('')}
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          ${students.length ? students.map(s => `
+            <tr>
+              <td>${escapeHtml(studentFullName(s))}</td>
+              <td>${escapeHtml(s.grade||'')}</td>
+              <td>${escapeHtml(s.parentPhone||'—')}</td>
+              <td>
+                <select class="session-payment-select" data-session-student="${s.id}" style="padding:6px 8px;border-radius:8px;border:1px solid var(--lavender-line);background:var(--paper);font-size:12px;">
+                  ${PAYMENT_STATUS_OPTIONS.map(o=>`<option ${paymentStatusOf(session, s.id)===o?'selected':''}>${o}</option>`).join('')}
+                </select>
+              </td>
+              ${dates.map(d => `<td><input type="text" class="att-cell" data-session-student-cell="${s.id}" data-session-date="${d.id}" value="${escapeHtml(((session.attendanceRecords||{})[s.id]||{})[d.id]||'')}" placeholder="到"></td>`).join('')}
+              <td><button class="btn small ghost" data-action="remove-session-student" data-id="${s.id}">移除</button></td>
+            </tr>
+          `).join('') : `<tr><td colspan="${colCount+1}"><div class="empty-state"><span class="ic">🧑‍🎓</span>${allStudents.length ? '沒有符合篩選條件的學生。' : '這個梯次還沒有學生，點選「管理名單」加入。'}</div></td></tr>`}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function promptCreateSession(){
+  openModal(`
+    <h3>新增梯次</h3>
+    <div class="field"><label>梯次名稱</label><input type="text" id="sess-name" placeholder="例如：2026暑假營隊" autofocus></div>
+    <div class="field-row">
+      <div class="field">
+        <label>類型</label>
+        <select id="sess-type">${SESSION_TYPE_OPTIONS.map(o=>`<option>${o}</option>`).join('')}<option value="__custom__">自訂...</option></select>
+      </div>
+      <div class="field"><label>年度</label><input type="text" id="sess-year" value="${new Date().getFullYear()}"></div>
+    </div>
+    <div class="field" id="sess-type-custom-field" style="display:none;"><label>自訂類型名稱</label><input type="text" id="sess-type-custom" placeholder="例如：週末棋藝營"></div>
+    <div class="field"><label>備註</label><input type="text" id="sess-note" placeholder="選填"></div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="sess-cancel">取消</button>
+      <button class="btn" id="sess-save">新增</button>
+    </div>
+  `);
+  document.getElementById('sess-type').addEventListener('change', (e)=>{
+    document.getElementById('sess-type-custom-field').style.display = e.target.value === '__custom__' ? 'block' : 'none';
+  });
+  document.getElementById('sess-cancel').onclick = closeModal;
+  document.getElementById('sess-save').onclick = async ()=>{
+    const name = document.getElementById('sess-name').value.trim();
+    if(!name){ showToast('請輸入梯次名稱','warn'); return; }
+    const typeSel = document.getElementById('sess-type').value;
+    const type = typeSel === '__custom__' ? document.getElementById('sess-type-custom').value.trim() : typeSel;
+    if(typeSel === '__custom__' && !type){ showToast('請輸入自訂類型名稱','warn'); return; }
+    const session = {
+      id: genId(),
+      name,
+      type,
+      year: document.getElementById('sess-year').value.trim(),
+      note: document.getElementById('sess-note').value.trim(),
+      studentIds: [],
+      payments: {},
+      attendanceDates: [],
+      attendanceRecords: {},
+      createdAt: new Date().toISOString()
+    };
+    state.sessions.push(session);
+    await storageSet('sessions', state.sessions);
+    state.activeSessionId = session.id;
+    closeModal();
+    render();
+    showToast('梯次已新增，接著可以按「管理名單」加入學生');
+  };
+}
+
+function promptEditSessionInfo(sessionId){
+  const session = getSession(sessionId);
+  if(!session) return;
+  const isKnownType = SESSION_TYPE_OPTIONS.includes(session.type);
+  openModal(`
+    <h3>編輯梯次資訊</h3>
+    <div class="field"><label>梯次名稱</label><input type="text" id="sess-name" value="${escapeHtml(session.name)}" autofocus></div>
+    <div class="field-row">
+      <div class="field">
+        <label>類型</label>
+        <select id="sess-type">${SESSION_TYPE_OPTIONS.map(o=>`<option ${session.type===o?'selected':''}>${o}</option>`).join('')}<option value="__custom__" ${!isKnownType?'selected':''}>自訂...</option></select>
+      </div>
+      <div class="field"><label>年度</label><input type="text" id="sess-year" value="${escapeHtml(session.year||'')}"></div>
+    </div>
+    <div class="field" id="sess-type-custom-field" style="display:${!isKnownType?'block':'none'};"><label>自訂類型名稱</label><input type="text" id="sess-type-custom" placeholder="例如：週末棋藝營" value="${!isKnownType?escapeHtml(session.type||''):''}"></div>
+    <div class="field"><label>備註</label><input type="text" id="sess-note" value="${escapeHtml(session.note||'')}"></div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="sess-cancel">取消</button>
+      <button class="btn" id="sess-save">儲存</button>
+    </div>
+  `);
+  document.getElementById('sess-type').addEventListener('change', (e)=>{
+    document.getElementById('sess-type-custom-field').style.display = e.target.value === '__custom__' ? 'block' : 'none';
+  });
+  document.getElementById('sess-cancel').onclick = closeModal;
+  document.getElementById('sess-save').onclick = async ()=>{
+    const name = document.getElementById('sess-name').value.trim();
+    if(!name){ showToast('請輸入梯次名稱','warn'); return; }
+    const typeSel = document.getElementById('sess-type').value;
+    const type = typeSel === '__custom__' ? document.getElementById('sess-type-custom').value.trim() : typeSel;
+    if(typeSel === '__custom__' && !type){ showToast('請輸入自訂類型名稱','warn'); return; }
+    session.name = name;
+    session.type = type;
+    session.year = document.getElementById('sess-year').value.trim();
+    session.note = document.getElementById('sess-note').value.trim();
+    await storageSet('sessions', state.sessions);
+    closeModal();
+    render();
+    showToast('梯次資訊已更新');
+  };
+}
+
+function deleteSession(sessionId){
+  const session = getSession(sessionId);
+  if(!session) return;
+  confirmDialog(`確定要刪除梯次「${session.name}」嗎？這只會刪除這個梯次的名單／繳費／點名紀錄，不會刪除學生本身的資料。`, async ()=>{
+    state.sessions = state.sessions.filter(s=>s.id!==sessionId);
+    await storageSet('sessions', state.sessions);
+    state.activeSessionId = null;
+    render();
+    showToast('梯次已刪除');
+  }, '確定刪除');
+}
+
+/* 管理梯次名單：搜尋＋勾選加入/移出，用顯示/隱藏做搜尋篩選，避免破壞勾選狀態 */
+function openSessionStudentPicker(sessionId){
+  const session = getSession(sessionId);
+  if(!session) return;
+  const groups = GRADE_ORDER.map(g => ({
+    label: g,
+    list: state.students.filter(s=>s.grade===g).sort((a,b)=>a.zh.localeCompare(b.zh,'zh-Hant'))
+  })).filter(g=>g.list.length);
+  const otherGrades = [...new Set(state.students.map(s=>s.grade).filter(g=>!GRADE_ORDER.includes(g)))];
+  otherGrades.forEach(g => groups.push({ label: g, list: state.students.filter(s=>s.grade===g).sort((a,b)=>a.zh.localeCompare(b.zh,'zh-Hant')) }));
+
+  openModal(`
+    <h3>管理「${escapeHtml(session.name)}」名單</h3>
+    <p class="sub">勾選要加入這個梯次的學生，取消勾選即移出（不會刪除學生本身資料）</p>
+    <div class="field"><input type="text" id="sess-picker-search" placeholder="搜尋姓名或學校…"></div>
+    <div id="sess-picker-list" style="max-height:360px;overflow-y:auto;margin-top:8px;">
+      ${groups.map(grp => `
+        <div style="font-size:11px;font-weight:800;letter-spacing:1px;color:#fff;background:linear-gradient(90deg, var(--lavender-deep), var(--yellow-deep));padding:4px 10px;border-radius:6px;margin:10px 0 6px;">${escapeHtml(grp.label)}</div>
+        <div style="display:flex;flex-direction:column;gap:4px;">
+          ${grp.list.map(s => `
+            <label data-picker-row data-search-text="${escapeHtml((s.zh+' '+(s.en||'')+' '+(s.school||'')).toLowerCase())}" style="display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:8px;background:var(--lavender-bg);font-size:13px;">
+              <input type="checkbox" data-picker-student="${s.id}" ${(session.studentIds||[]).includes(s.id)?'checked':''}>
+              <span style="flex:1;">${escapeHtml(studentFullName(s))}</span>
+            </label>
+          `).join('')}
+        </div>
+      `).join('')}
+    </div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="sess-picker-cancel">取消</button>
+      <button class="btn" id="sess-picker-save">完成</button>
+    </div>
+  `);
+  document.getElementById('sess-picker-search').addEventListener('input', (e)=>{
+    const q = e.target.value.trim().toLowerCase();
+    document.querySelectorAll('[data-picker-row]').forEach(row=>{
+      row.style.display = (!q || row.dataset.searchText.includes(q)) ? 'flex' : 'none';
+    });
+  });
+  document.getElementById('sess-picker-cancel').onclick = closeModal;
+  document.getElementById('sess-picker-save').onclick = async ()=>{
+    const checked = Array.from(document.querySelectorAll('[data-picker-student]:checked')).map(el=>el.dataset.pickerStudent);
+    session.studentIds = checked;
+    await storageSet('sessions', state.sessions);
+    closeModal();
+    render();
+    showToast(`名單已更新，共 ${checked.length} 人`);
+  };
+}
+
+async function removeStudentFromSession(sessionId, studentId){
+  const session = getSession(sessionId);
+  if(!session) return;
+  session.studentIds = (session.studentIds||[]).filter(id=>id!==studentId);
+  await storageSet('sessions', state.sessions);
+  render();
+  showToast('已從梯次名單移除（學生本身資料不受影響）');
+}
+
+async function setSessionPayment(sessionId, studentId, status){
+  const session = getSession(sessionId);
+  if(!session) return;
+  if(!session.payments) session.payments = {};
+  session.payments[studentId] = status;
+  await storageSet('sessions', state.sessions);
+}
+
+function promptAddSessionDateColumn(sessionId){
+  openModal(`
+    <h3>新增日期欄</h3>
+    <p class="sub">預設帶入今天日期，可自行修改文字</p>
+    <div class="field"><label>日期標籤</label><input type="text" id="new-session-date-label" value="${escapeHtml(todayLabel())}" autofocus></div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="session-date-cancel">取消</button>
+      <button class="btn" id="session-date-save">新增</button>
+    </div>
+  `);
+  document.getElementById('session-date-cancel').onclick = closeModal;
+  document.getElementById('session-date-save').onclick = async ()=>{
+    const label = document.getElementById('new-session-date-label').value.trim();
+    if(!label){ showToast('請輸入日期標籤','warn'); return; }
+    const session = getSession(sessionId);
+    if(!session.attendanceDates) session.attendanceDates = [];
+    session.attendanceDates.push({ id: genId(), label });
+    await storageSet('sessions', state.sessions);
+    closeModal();
+    render();
+    showToast('已新增日期欄');
+  };
+}
+
+async function deleteSessionDateColumn(sessionId, dateId){
+  const session = getSession(sessionId);
+  if(!session) return;
+  confirmDialog('刪除此日期欄後，該欄的出缺席紀錄也會一併刪除，確定嗎？', async ()=>{
+    session.attendanceDates = (session.attendanceDates||[]).filter(d=>d.id!==dateId);
+    Object.keys(session.attendanceRecords||{}).forEach(sid=>{
+      if(session.attendanceRecords[sid]) delete session.attendanceRecords[sid][dateId];
+    });
+    await storageSet('sessions', state.sessions);
+    render();
+    showToast('已刪除日期欄');
+  });
+}
+
+async function setSessionAttendanceCell(sessionId, studentId, dateId, value){
+  const session = getSession(sessionId);
+  if(!session) return;
+  if(!session.attendanceRecords) session.attendanceRecords = {};
+  if(!session.attendanceRecords[studentId]) session.attendanceRecords[studentId] = {};
+  session.attendanceRecords[studentId][dateId] = value;
+  await storageSet('sessions', state.sessions);
+}
+
+function buildSessionRosterRows(session){
+  const students = (session.studentIds||[]).map(id=>state.students.find(s=>s.id===id)).filter(Boolean);
+  const dates = session.attendanceDates || [];
+  const rows = [];
+  rows.push([`大洋周文理補習班｜${session.name}｜梯次名冊`]);
+  rows.push(['學生編號','姓名','年級','學生電話','家長電話','繳費狀態', ...dates.map(d=>d.label), '備註']);
+  students.forEach(s=>{
+    const rec = (session.attendanceRecords||{})[s.id] || {};
+    rows.push([s.studentNo||'', studentFullName(s), s.grade||'', s.phone||'', s.parentPhone||'', paymentStatusOf(session, s.id), ...dates.map(d=>rec[d.id]||''), s.note||'']);
+  });
+  return rows;
+}
+function exportSessionRosterCsv(sessionId){
+  const session = getSession(sessionId);
+  if(!session) return;
+  downloadCsv(`${session.name}_梯次名冊.csv`, rowsToCsv(buildSessionRosterRows(session)));
+}
+
+function buildSessionInsuranceRows(session){
+  const students = (session.studentIds||[]).map(id=>state.students.find(s=>s.id===id)).filter(Boolean);
+  const rows = [];
+  rows.push(['學生編號','中文姓名','英文姓名','身分證字號','生日','就讀學校','年級','家長電話','繳費狀態']);
+  students.forEach(s=>{
+    rows.push([s.studentNo||'', s.zh, s.en||'', s.idNumber||'', s.birthday||'', s.school||'', s.grade||'', s.parentPhone||'', paymentStatusOf(session, s.id)]);
+  });
+  return rows;
+}
+function exportSessionInsuranceCsv(sessionId){
+  const session = getSession(sessionId);
+  if(!session) return;
+  downloadCsv(`${session.name}_保險名冊.csv`, rowsToCsv(buildSessionInsuranceRows(session)));
+  showToast('保險名冊已匯出，內含身分證字號與生日，請妥善保管此檔案', 'warn');
+}
+
 /* ============ modals: folder create ============ */
 function promptCreateFolder(kind, parentId){
   const targetParent = parentId || ALL_ID;
   openModal(`
     <h3>${targetParent === ALL_ID ? '新增資料夾' : '新增子資料夾'}</h3>
-    <p class="sub">${kind === 'papers' ? '例如：高一數學、高二理化段考卷' : '例如：高三英文補課影片'}</p>
+    <p class="sub">${kind === 'papers' ? '例如：G3數學、G4國語講義' : '例如：G5英文補課影片'}</p>
     <div class="field"><label>資料夾名稱</label><input type="text" id="new-folder-name" placeholder="請輸入名稱" autofocus></div>
     <div class="modal-actions">
       <button class="btn ghost" id="folder-cancel">取消</button>
@@ -1392,7 +1937,7 @@ function openAddVideoModal(){
       <div class="field"><label>選擇影片檔</label><input type="file" id="video-file-input" accept="video/*"></div>
     </div>
     <div id="vtype-link-fields" style="display:none;">
-      <div class="field"><label>影片名稱</label><input type="text" id="video-link-name" placeholder="例如：高三英文 Lesson 5"></div>
+      <div class="field"><label>影片名稱</label><input type="text" id="video-link-name" placeholder="例如：G5數學 Lesson 5"></div>
       <div class="field"><label>影片連結</label><input type="url" id="video-link-url" placeholder="https://..."></div>
     </div>
     <div class="modal-actions">
@@ -1460,6 +2005,9 @@ async function addFileToStore(kind, folderIdOrNull, file){
     driveFileId: null,
     tooLarge
   };
+  if(kind === 'attendance'){
+    entry.category = folderIdOrNull || '點名表';
+  }
 
   if(cloudMode && dataUrl){
     try{
@@ -1493,11 +2041,154 @@ async function addFileToStore(kind, folderIdOrNull, file){
 }
 
 function resolveFolderName(kind, folderId){
-  if(kind === 'attendance') return null;
+  if(kind === 'attendance') return folderId || null;
   if(!folderId || folderId === ALL_ID) return null;
   const data = kind === 'papers' ? state.papers : state.videos;
   const f = data.folders.find(x => x.id === folderId);
   return f ? f.name : null;
+}
+
+/* ============ 一鍵備份：把匯出的 CSV 直接存進「點名表檔案」（雲端模式＝真的存進雲端硬碟） ============ */
+async function saveCsvToAttendanceArchive(filename, csvBody, category){
+  const csv = '\uFEFF' + csvBody;
+  const base64 = btoa(unescape(encodeURIComponent(csv)));
+  const dataUrl = 'data:text/csv;charset=utf-8;base64,' + base64;
+  const cloudMode = Backend.gasUrl && Backend.cloudReady;
+  let entry = {
+    id: genId(),
+    name: filename,
+    size: csv.length,
+    type: 'text/csv',
+    date: new Date().toISOString(),
+    dataUrl,
+    driveFileId: null,
+    tooLarge: false,
+    category: category || '點名表'
+  };
+  if(cloudMode){
+    try{
+      const result = await backendUploadFile('attendance', category || '點名表', filename, dataUrl);
+      entry.driveFileId = result.fileId;
+      entry.dataUrl = null;
+    }catch(e){
+      showToast(`「${filename}」雲端上傳失敗，將只暫存在本機：${e.message||e}`, 'warn');
+    }
+  }
+  state.attendanceFiles.push(entry);
+}
+
+function buildAttendanceRowsForGrade(grade){
+  const dates = state.attendanceDates;
+  const rows = [];
+  rows.push([`大洋周文理補習班｜點名總表｜${grade}`]);
+  rows.push(['姓名','家長電話', ...dates.map(d=>d.label), '備註']);
+  state.students.filter(s=>s.grade===grade).forEach(s=>{
+    const rec = state.attendanceRecords[s.id] || {};
+    rows.push([studentFullName(s), s.parentPhone||'', ...dates.map(d=>rec[d.id]||''), s.note||'']);
+  });
+  return rows;
+}
+
+function promptBackupAttendanceGrades(){
+  const present = [...new Set(state.students.map(s=>s.grade).filter(Boolean))];
+  const orderedGrades = GRADE_ORDER.concat(present.filter(g=>!GRADE_ORDER.includes(g)));
+  openModal(`
+    <h3>備份點名表</h3>
+    <p class="sub">選「全部班級」會產生一份合併總表；取消勾選後可以只選單一班級、或勾選多個班級各自產生獨立檔案。</p>
+    <div class="field"><label><input type="checkbox" id="bk-att-all" checked> 全部班級（單一合併檔案）</label></div>
+    <div class="field" id="bk-att-grade-list" style="display:none;">
+      <label>選擇班級（可複選）</label>
+      <div class="checkbox-group">
+        ${orderedGrades.map(g=>`<label><input type="checkbox" name="bk-att-grade" value="${escapeHtml(g)}"> ${escapeHtml(g)}</label>`).join('')}
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="bk-att-cancel">取消</button>
+      <button class="btn" id="bk-att-save">開始備份</button>
+    </div>
+  `);
+  document.getElementById('bk-att-all').addEventListener('change', (e)=>{
+    document.getElementById('bk-att-grade-list').style.display = e.target.checked ? 'none' : 'block';
+  });
+  document.getElementById('bk-att-cancel').onclick = closeModal;
+  document.getElementById('bk-att-save').onclick = async ()=>{
+    const useAll = document.getElementById('bk-att-all').checked;
+    const todayStr = todayLabel().replace(/[（）]/g,'');
+    if(useAll){
+      await saveCsvToAttendanceArchive(`備份_點名總表_全部班級_${todayStr}.csv`, rowsToCsv(buildAttendanceRows()), '點名表');
+      await storageSet('attendance-files', state.attendanceFiles);
+      closeModal(); render();
+      showToast('已備份 1 份點名表（全部班級）');
+      return;
+    }
+    const grades = Array.from(document.querySelectorAll('input[name="bk-att-grade"]:checked')).map(el=>el.value);
+    if(!grades.length){ showToast('請至少選擇一個班級，或改選「全部班級」','warn'); return; }
+    for(const g of grades){
+      await saveCsvToAttendanceArchive(`備份_點名總表_${g}_${todayStr}.csv`, rowsToCsv(buildAttendanceRowsForGrade(g)), '點名表');
+    }
+    await storageSet('attendance-files', state.attendanceFiles);
+    closeModal(); render();
+    showToast(`已備份 ${grades.length} 份點名表（依班級分開）`);
+  };
+}
+
+async function backupStudentsOnly(){
+  await saveCsvToAttendanceArchive(`備份_學生名冊_${todayLabel().replace(/[（）]/g,'')}.csv`, rowsToCsv(buildStudentRosterRows()), '學生檔案');
+  await storageSet('attendance-files', state.attendanceFiles);
+  render();
+  showToast('已備份學生名冊');
+}
+
+async function backupInsuranceOnly(){
+  await saveCsvToAttendanceArchive(`備份_保險名冊_${todayLabel().replace(/[（）]/g,'')}.csv`, rowsToCsv(buildInsuranceRosterRows()), '保險檔案');
+  await storageSet('attendance-files', state.attendanceFiles);
+  render();
+  showToast('已備份保險名冊');
+}
+
+async function backupSessionsOnly(){
+  const todayStr = todayLabel().replace(/[（）]/g,'');
+  let count = 0;
+  for(const session of state.sessions){
+    await saveCsvToAttendanceArchive(`備份_梯次名冊_${session.name}_${todayStr}.csv`, rowsToCsv(buildSessionRosterRows(session)), '梯次名冊'); count++;
+    await saveCsvToAttendanceArchive(`備份_梯次保險名冊_${session.name}_${todayStr}.csv`, rowsToCsv(buildSessionInsuranceRows(session)), '保險檔案'); count++;
+  }
+  await storageSet('attendance-files', state.attendanceFiles);
+  render();
+  showToast(state.sessions.length ? `已備份 ${state.sessions.length} 個梯次，共 ${count} 份檔案` : '目前還沒有任何梯次');
+}
+
+async function backupSingleSession(sessionId){
+  const session = getSession(sessionId);
+  if(!session) return;
+  const todayStr = todayLabel().replace(/[（）]/g,'');
+  await saveCsvToAttendanceArchive(`備份_梯次名冊_${session.name}_${todayStr}.csv`, rowsToCsv(buildSessionRosterRows(session)), '梯次名冊');
+  await saveCsvToAttendanceArchive(`備份_梯次保險名冊_${session.name}_${todayStr}.csv`, rowsToCsv(buildSessionInsuranceRows(session)), '保險檔案');
+  await storageSet('attendance-files', state.attendanceFiles);
+  render();
+  showToast(`已備份「${session.name}」，共 2 份檔案`);
+}
+
+
+async function backupAllNow(){
+  const cloudMode = Backend.gasUrl && Backend.cloudReady;
+  if(!cloudMode){
+    showToast('目前是本機模式，備份只會存在這台裝置的瀏覽器裡，建議先在「⚙️ 同步設定」接上雲端後端','warn');
+  }
+  const todayStr = todayLabel().replace(/[（）]/g,'');
+  let count = 0;
+
+  await saveCsvToAttendanceArchive(`備份_學生名冊_${todayStr}.csv`, rowsToCsv(buildStudentRosterRows()), '學生檔案'); count++;
+  await saveCsvToAttendanceArchive(`備份_保險名冊_${todayStr}.csv`, rowsToCsv(buildInsuranceRosterRows()), '保險檔案'); count++;
+  await saveCsvToAttendanceArchive(`備份_點名總表_全部班級_${todayStr}.csv`, rowsToCsv(buildAttendanceRows()), '點名表'); count++;
+  for(const session of state.sessions){
+    await saveCsvToAttendanceArchive(`備份_梯次名冊_${session.name}_${todayStr}.csv`, rowsToCsv(buildSessionRosterRows(session)), '梯次名冊'); count++;
+    await saveCsvToAttendanceArchive(`備份_梯次保險名冊_${session.name}_${todayStr}.csv`, rowsToCsv(buildSessionInsuranceRows(session)), '保險檔案'); count++;
+  }
+
+  await storageSet('attendance-files', state.attendanceFiles);
+  render();
+  showToast(`備份完成，共 ${count} 份檔案已分類存入下方檔案庫${cloudMode ? '（已同步到雲端硬碟）' : ''}`);
 }
 
 /* ============ folder rename / file rename & move ============ */
@@ -1579,7 +2270,7 @@ function promptMoveFolder(kind, folderId){
   if(!folder) return;
   const blocked = new Set([folderId, ...getDescendantFolderIds(kind, folderId)]);
   const currentParent = folder.parentId || ALL_ID;
-  const allLabel = kind === 'papers' ? '全部試卷（頂層）' : '全部影片（頂層）';
+  const allLabel = kind === 'papers' ? '全部檔案（頂層）' : '全部影片（頂層）';
   const options = [
     { id: ALL_ID, name: allLabel },
     ...data.folders.filter(f => !blocked.has(f.id)).map(f => ({ id: f.id, name: getFolderPath(kind, f.id).map(p=>p.name).join(' / ') }))
@@ -1615,7 +2306,7 @@ function promptMoveFile(kind, fromFolderId, fileId){
   const bucket = kind === 'papers' ? state.papers.files : state.videos.items;
   const entry = (bucket[fromFolderId]||[]).find(f=>f.id===fileId);
   if(!entry) return;
-  const allLabel = kind === 'papers' ? '全部試卷（未分類）' : '全部影片（未分類）';
+  const allLabel = kind === 'papers' ? '全部檔案（未分類）' : '全部影片（未分類）';
   const options = [
     { id: ALL_ID, name: allLabel },
     ...data.folders.map(f => ({ id: f.id, name: getFolderPath(kind, f.id).map(p=>p.name).join(' / ') }))
@@ -1678,6 +2369,9 @@ function openStudentModal(studentId){
   const editing = !!studentId;
   const s = editing ? state.students.find(x=>x.id===studentId) : null;
   if(editing && !s){ showToast('找不到這位學生的資料','warn'); return; }
+  const prevScores = editing ? Object.assign(emptyPrevScores(), s.prevScores||{}) : emptyPrevScores();
+  const studentSubjects = editing ? (s.subjects||[]) : [];
+
   openModal(`
     <h3>${editing ? '編輯學生資料' : '新增學生'}</h3>
     <p class="sub">${editing ? '修改後按「儲存」即可更新檔案' : '建立學生基本資料'}</p>
@@ -1697,26 +2391,13 @@ function openStudentModal(studentId){
       </div>
     </div>
     <div class="field"><label>狀態異動日期</label><input type="date" id="s-enroll-date" value="${editing ? escapeHtml(s.enrollStatusDate||'') : new Date().toISOString().slice(0,10)}"></div>
-    ${editing && (s.statusHistory||[]).length ? `
-      <div class="field">
-        <label>異動歷程</label>
-        <div class="status-history">
-          ${(s.statusHistory||[]).slice().reverse().map(h=>`<div class="status-history-row"><span class="status-badge ${enrollStatusClass(h.status)}">${escapeHtml(h.status)}</span><span>${escapeHtml(h.date||'')}</span></div>`).join('')}
-        </div>
-      </div>
-    ` : ''}
     <div class="field-row">
       <div class="field"><label>中文姓名 *</label><input type="text" id="s-zh" value="${editing ? escapeHtml(s.zh) : ''}"></div>
       <div class="field"><label>英文姓名</label><input type="text" id="s-en" value="${editing ? escapeHtml(s.en||'') : ''}"></div>
     </div>
     <div class="field"><label>就讀學校</label><input type="text" id="s-school" value="${editing ? escapeHtml(s.school||'') : ''}"></div>
     <div class="field-row">
-      <div class="field">
-        <label>就讀管道</label>
-        <select id="s-track">
-          ${['高中','高職','五專'].map(t=>`<option ${editing && s.track===t ? 'selected':''}>${t}</option>`).join('')}
-        </select>
-      </div>
+      <div class="field"><label>身分證字號</label><input type="text" id="s-idnumber" placeholder="A123456789" maxlength="10" value="${editing ? escapeHtml(s.idNumber||'') : ''}"></div>
       <div class="field">
         <label>就讀年級</label>
         <select id="s-grade">
@@ -1724,20 +2405,57 @@ function openStudentModal(studentId){
         </select>
       </div>
     </div>
-    <div class="field-row">
-      <div class="field">
-        <label>班級</label>
-        <input type="text" id="s-classname" list="class-options" placeholder="例如 G1、資優班" value="${editing ? escapeHtml(s.className||'') : ''}">
-        <datalist id="class-options">${CLASS_PRESETS.map(c=>`<option value="${c}">`).join('')}</datalist>
+    <div class="field">
+      <label>補習科目（可複選）</label>
+      <div class="checkbox-group">
+        ${SUBJECT_OPTIONS.map(sub=>`<label><input type="checkbox" name="s-subject" value="${escapeHtml(sub)}" ${studentSubjects.includes(sub)?'checked':''}> ${escapeHtml(sub)}</label>`).join('')}
       </div>
-      <div class="field"><label>選修科目</label><input type="text" id="s-subjects" placeholder="以逗號分隔，例如：數學, 英文" value="${editing ? escapeHtml((s.subjects||[]).join(', ')) : ''}"></div>
     </div>
+    <details class="prev-score-section">
+      <summary>科目班級調整（僅跳級／降級或特殊班才需要調整，預設跟著就讀年級）</summary>
+      <div style="display:flex;justify-content:flex-end;margin:6px 0;">
+        <button type="button" class="btn ghost small" id="s-add-class-btn">＋ 新增班級</button>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:6px;">
+        ${SUBJECT_OPTIONS.filter(sub=>sub!=='安親班').map(sub=>`
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-size:12px;font-weight:700;color:var(--ink-soft);width:52px;flex-shrink:0;">${escapeHtml(sub)}</span>
+            <select id="s-classgrade-${sub}" style="flex:1;padding:8px 10px;border-radius:8px;border:1px solid var(--lavender-line);background:var(--lavender-bg);font-size:13px;">
+              <option value="">（跟著就讀年級）</option>
+              ${GRADE_ORDER.concat(state.customClasses).map(g=>`<option value="${escapeHtml(g)}" ${editing && s.subjectClassGrade && s.subjectClassGrade[sub]===g ? 'selected':''}>${escapeHtml(g)}</option>`).join('')}
+            </select>
+          </div>
+        `).join('')}
+      </div>
+    </details>
     <div class="field-row">
       <div class="field"><label>生日</label><input type="date" id="s-birthday" value="${editing ? escapeHtml(s.birthday||'') : ''}"></div>
       <div class="field"><label>學生電話</label><input type="tel" id="s-phone" placeholder="09xx-xxx-xxx" value="${editing ? escapeHtml(s.phone||'') : ''}"></div>
     </div>
     <div class="field"><label>家長電話</label><input type="tel" id="s-parent-phone" placeholder="09xx-xxx-xxx" value="${editing ? escapeHtml(s.parentPhone||'') : ''}"></div>
     <div class="field"><label>備註</label><input type="text" id="s-note" placeholder="例如：週一不進班" value="${editing ? escapeHtml(s.note||'') : ''}"></div>
+
+    <details class="prev-score-section">
+      <summary>入班先備成績（選填，僅入班時登記一次）</summary>
+      <div class="prev-score-grid">
+        <div></div><div class="ps-head">期中</div><div class="ps-head">期末</div>
+        ${PREV_SCORE_SUBJECTS.map(ps => `
+          <div class="ps-label">${escapeHtml(ps.label)}</div>
+          <input type="number" min="0" max="100" id="s-prev-${ps.key}-mid" placeholder="—" value="${escapeHtml(prevScores[ps.key].mid || '')}">
+          <input type="number" min="0" max="100" id="s-prev-${ps.key}-final" placeholder="—" value="${escapeHtml(prevScores[ps.key].final || '')}">
+        `).join('')}
+      </div>
+    </details>
+
+    ${editing && s.history && s.history.length ? `
+    <details class="prev-score-section">
+      <summary>異動歷程（${s.history.length} 筆）</summary>
+      <div style="margin-top:8px;display:flex;flex-direction:column;gap:6px;max-height:180px;overflow-y:auto;">
+        ${s.history.slice().reverse().map(h=>`<div style="font-size:12px;color:var(--ink-soft);"><strong style="color:var(--ink);">${escapeHtml(h.date)}</strong>　${escapeHtml(h.label)}</div>`).join('')}
+      </div>
+    </details>
+    ` : ''}
+
     <div class="modal-actions">
       ${editing ? `<button class="btn ghost" id="student-delete" style="color:var(--danger);margin-right:auto;">刪除學生</button>` : ''}
       <button class="btn ghost" id="student-cancel">取消</button>
@@ -1746,6 +2464,10 @@ function openStudentModal(studentId){
   `);
   document.getElementById('s-gen-no').addEventListener('click', ()=>{
     document.getElementById('s-studentno').value = generateStudentNo();
+  });
+  document.getElementById('s-add-class-btn').addEventListener('click', ()=>{
+    const name = prompt('請輸入新的班級名稱（例如：G6私）');
+    if(name && name.trim()) addCustomClass(name.trim());
   });
   document.getElementById('student-cancel').onclick = closeModal;
   if(editing){
@@ -1766,12 +2488,33 @@ function openStudentModal(studentId){
   document.getElementById('student-save').onclick = async ()=>{
     const zh = document.getElementById('s-zh').value.trim();
     if(!zh){ showToast('請輸入中文姓名','warn'); return; }
+    const idNumberVal = document.getElementById('s-idnumber').value.trim().toUpperCase();
+    if(idNumberVal && !looksLikeIdNumber(idNumberVal)){
+      showToast('身分證字號格式看起來不對（應為1碼英文字母＋9碼數字），請確認後再儲存','warn');
+      return;
+    }
+    const selectedSubjects = Array.from(document.querySelectorAll('input[name="s-subject"]:checked')).map(el=>el.value);
+    const subjectClassGrade = {};
+    SUBJECT_OPTIONS.filter(sub=>sub!=='安親班').forEach(sub=>{
+      const el = document.getElementById(`s-classgrade-${sub}`);
+      const val = el ? el.value : '';
+      if(val) subjectClassGrade[sub] = val;
+    });
+    const newPrevScores = {};
+    PREV_SCORE_SUBJECTS.forEach(ps=>{
+      newPrevScores[ps.key] = {
+        mid: document.getElementById(`s-prev-${ps.key}-mid`).value.trim(),
+        final: document.getElementById(`s-prev-${ps.key}-final`).value.trim()
+      };
+    });
     const fields = {
       zh,
       en: document.getElementById('s-en').value.trim(),
+      idNumber: idNumberVal,
       school: document.getElementById('s-school').value.trim(),
-      track: document.getElementById('s-track').value,
       grade: document.getElementById('s-grade').value,
+      subjects: selectedSubjects,
+      subjectClassGrade,
       birthday: document.getElementById('s-birthday').value,
       phone: document.getElementById('s-phone').value.trim(),
       parentPhone: document.getElementById('s-parent-phone').value.trim(),
@@ -1779,27 +2522,25 @@ function openStudentModal(studentId){
       studentNo: document.getElementById('s-studentno').value.trim() || generateStudentNo(),
       enrollStatus: document.getElementById('s-enroll-status').value,
       enrollStatusDate: document.getElementById('s-enroll-date').value,
-      className: document.getElementById('s-classname').value.trim(),
-      subjects: document.getElementById('s-subjects').value.split(',').map(x=>x.trim()).filter(Boolean)
+      prevScores: newPrevScores
     };
     const dup = findDuplicateStudent(fields, editing ? studentId : null);
     const proceedSave = async ()=>{
       if(editing){
-        const statusChanged = s.enrollStatus !== fields.enrollStatus || s.enrollStatusDate !== fields.enrollStatusDate;
-        Object.assign(s, fields);
-        if(statusChanged){
-          if(!s.statusHistory) s.statusHistory = [];
-          s.statusHistory.push({ status: fields.enrollStatus, date: fields.enrollStatusDate, changedAt: new Date().toISOString() });
+        if(fields.enrollStatus !== (s.enrollStatus||'在班')){
+          addHistoryEntry(s, `狀態變更：${s.enrollStatus||'在班'} → ${fields.enrollStatus}`);
         }
+        if(fields.grade !== s.grade){
+          addHistoryEntry(s, `年級調整：${s.grade||''} → ${fields.grade}`);
+        }
+        Object.assign(s, fields);
         await storageSet('students', state.students);
         closeModal();
         render();
         showToast('學生資料已更新');
       } else {
-        const student = {
-          id: genId(), ...fields, createdAt: new Date().toISOString(),
-          statusHistory: [{ status: fields.enrollStatus, date: fields.enrollStatusDate, changedAt: new Date().toISOString() }]
-        };
+        const student = { id: genId(), ...fields, createdAt: new Date().toISOString(), history: [] };
+        addHistoryEntry(student, `建檔（${fields.enrollStatus}）`);
         state.students.push(student);
         await storageSet('students', state.students);
         closeModal();
@@ -1816,111 +2557,107 @@ function openStudentModal(studentId){
 }
 
 /* ============ attendance date columns ============ */
-/* ============ batch edit selected students ============ */
-function openBatchEditModal(){
+/* ============ 批次修改（多選後套用） ============ */
+function promptBatchStatus(){
   const ids = state.selectedStudentIds;
   if(!ids.length) return;
   openModal(`
-    <h3>批次編輯（${ids.length} 位學生）</h3>
-    <p class="sub">只勾選您要修改的項目，沒勾選的欄位不會被更動</p>
-
-    <div class="batch-field">
-      <label><input type="checkbox" id="be-status-on"> 修改在班狀態</label>
-      <div class="field-row" style="margin-top:6px;">
-        <select id="be-status" disabled>
-          ${ENROLL_STATUS_OPTIONS.map(o=>`<option>${o}</option>`).join('')}
-        </select>
-        <input type="date" id="be-status-date" value="${new Date().toISOString().slice(0,10)}" disabled>
-      </div>
+    <h3>批次修改在班狀態</h3>
+    <p class="sub">將套用到已選取的 ${ids.length} 位學生</p>
+    <div class="field">
+      <label>新的在班狀態</label>
+      <select id="batch-status-value">${ENROLL_STATUS_OPTIONS.map(o=>`<option>${o}</option>`).join('')}</select>
     </div>
-
-    <div class="batch-field">
-      <label><input type="checkbox" id="be-grade-on"> 修改就讀年級</label>
-      <select id="be-grade" style="margin-top:6px;" disabled>
-        ${GRADE_ORDER.map(g=>`<option>${g}</option>`).join('')}
-      </select>
-    </div>
-
-    <div class="batch-field">
-      <label><input type="checkbox" id="be-class-on"> 修改班級</label>
-      <input type="text" id="be-class" list="class-options" placeholder="例如 G1、資優班" style="margin-top:6px;" disabled>
-      <datalist id="class-options">${CLASS_PRESETS.map(c=>`<option value="${c}">`).join('')}</datalist>
-    </div>
-
-    <div class="batch-field">
-      <label><input type="checkbox" id="be-add-subject-on"> 加選科目</label>
-      <input type="text" id="be-add-subject" placeholder="以逗號分隔，例如：數學, 物理" style="margin-top:6px;" disabled>
-    </div>
-
-    <div class="batch-field">
-      <label><input type="checkbox" id="be-remove-subject-on"> 退選科目</label>
-      <input type="text" id="be-remove-subject" placeholder="以逗號分隔，例如：數學" style="margin-top:6px;" disabled>
-    </div>
-
     <div class="modal-actions">
-      <button class="btn ghost" id="batch-edit-cancel">取消</button>
-      <button class="btn" id="batch-edit-save">套用到 ${ids.length} 位學生</button>
+      <button class="btn ghost" id="batch-cancel">取消</button>
+      <button class="btn" id="batch-save">套用</button>
     </div>
   `);
-
-  // enable/disable paired inputs when checkbox toggled
-  [
-    ['be-status-on', ['be-status','be-status-date']],
-    ['be-grade-on', ['be-grade']],
-    ['be-class-on', ['be-class']],
-    ['be-add-subject-on', ['be-add-subject']],
-    ['be-remove-subject-on', ['be-remove-subject']]
-  ].forEach(([checkboxId, inputIds])=>{
-    const cb = document.getElementById(checkboxId);
-    cb.addEventListener('change', ()=>{
-      inputIds.forEach(id=> document.getElementById(id).disabled = !cb.checked);
-    });
-  });
-
-  document.getElementById('batch-edit-cancel').onclick = closeModal;
-  document.getElementById('batch-edit-save').onclick = async ()=>{
-    const doStatus = document.getElementById('be-status-on').checked;
-    const doGrade = document.getElementById('be-grade-on').checked;
-    const doClass = document.getElementById('be-class-on').checked;
-    const doAddSubject = document.getElementById('be-add-subject-on').checked;
-    const doRemoveSubject = document.getElementById('be-remove-subject-on').checked;
-
-    if(!doStatus && !doGrade && !doClass && !doAddSubject && !doRemoveSubject){
-      showToast('請至少勾選一項要修改的內容','warn'); return;
-    }
-
-    const newStatus = document.getElementById('be-status').value;
-    const newStatusDate = document.getElementById('be-status-date').value;
-    const newGrade = document.getElementById('be-grade').value;
-    const newClass = document.getElementById('be-class').value.trim();
-    const addSubjects = document.getElementById('be-add-subject').value.split(',').map(x=>x.trim()).filter(Boolean);
-    const removeSubjects = document.getElementById('be-remove-subject').value.split(',').map(x=>x.trim()).filter(Boolean);
-
-    let affected = 0;
+  document.getElementById('batch-cancel').onclick = closeModal;
+  document.getElementById('batch-save').onclick = async ()=>{
+    const newStatus = document.getElementById('batch-status-value').value;
+    const todayIso = new Date().toISOString().slice(0,10);
     state.students.forEach(s=>{
-      if(!state.selectedStudentIds.includes(s.id)) return;
-      affected++;
-      if(doStatus){
-        if(s.enrollStatus !== newStatus || s.enrollStatusDate !== newStatusDate){
-          if(!s.statusHistory) s.statusHistory = [];
-          s.statusHistory.push({ status: newStatus, date: newStatusDate, changedAt: new Date().toISOString() });
-        }
+      if(ids.includes(s.id) && (s.enrollStatus||'在班') !== newStatus){
+        addHistoryEntry(s, `批次修改狀態：${s.enrollStatus||'在班'} → ${newStatus}`);
         s.enrollStatus = newStatus;
-        s.enrollStatusDate = newStatusDate;
+        s.enrollStatusDate = todayIso;
       }
-      if(doGrade) s.grade = newGrade;
-      if(doClass) s.className = newClass;
-      if(!s.subjects) s.subjects = [];
-      if(doAddSubject) s.subjects = [...new Set([...s.subjects, ...addSubjects])];
-      if(doRemoveSubject) s.subjects = s.subjects.filter(sub=>!removeSubjects.includes(sub));
     });
-
     await storageSet('students', state.students);
-    state.profileSelectMode = false;
-    state.selectedStudentIds = [];
     closeModal();
     render();
-    showToast(`已批次更新 ${affected} 位學生的資料`);
+    showToast(`已將 ${ids.length} 位學生的狀態改為「${newStatus}」`);
+  };
+}
+
+function promptBatchSubjects(mode){
+  const ids = state.selectedStudentIds;
+  if(!ids.length) return;
+  openModal(`
+    <h3>批次${mode==='add'?'加選':'退選'}科目</h3>
+    <p class="sub">將套用到已選取的 ${ids.length} 位學生</p>
+    <div class="checkbox-group">
+      ${SUBJECT_OPTIONS.map(sub=>`<label><input type="checkbox" name="batch-subject" value="${escapeHtml(sub)}"> ${escapeHtml(sub)}</label>`).join('')}
+    </div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="batch-cancel">取消</button>
+      <button class="btn" id="batch-save">套用</button>
+    </div>
+  `);
+  document.getElementById('batch-cancel').onclick = closeModal;
+  document.getElementById('batch-save').onclick = async ()=>{
+    const chosen = Array.from(document.querySelectorAll('input[name="batch-subject"]:checked')).map(el=>el.value);
+    if(!chosen.length){ showToast('請至少勾選一個科目','warn'); return; }
+    state.students.forEach(s=>{
+      if(!ids.includes(s.id)) return;
+      const current = s.subjects || [];
+      let updated;
+      if(mode === 'add'){
+        updated = [...new Set([...current, ...chosen])];
+      } else {
+        updated = current.filter(sub=>!chosen.includes(sub));
+      }
+      if(updated.length !== current.length || updated.some(x=>!current.includes(x))){
+        addHistoryEntry(s, `批次${mode==='add'?'加選':'退選'}科目：${chosen.join('、')}`);
+        s.subjects = updated;
+      }
+    });
+    await storageSet('students', state.students);
+    closeModal();
+    render();
+    showToast(`已為 ${ids.length} 位學生${mode==='add'?'加選':'退選'}：${chosen.join('、')}`);
+  };
+}
+
+function promptBatchGrade(){
+  const ids = state.selectedStudentIds;
+  if(!ids.length) return;
+  openModal(`
+    <h3>批次修改年級</h3>
+    <p class="sub">將套用到已選取的 ${ids.length} 位學生</p>
+    <div class="field">
+      <label>新的就讀年級</label>
+      <select id="batch-grade-value">${GRADE_ORDER.map(g=>`<option>${g}</option>`).join('')}</select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="batch-cancel">取消</button>
+      <button class="btn" id="batch-save">套用</button>
+    </div>
+  `);
+  document.getElementById('batch-cancel').onclick = closeModal;
+  document.getElementById('batch-save').onclick = async ()=>{
+    const newGrade = document.getElementById('batch-grade-value').value;
+    state.students.forEach(s=>{
+      if(ids.includes(s.id) && s.grade !== newGrade){
+        addHistoryEntry(s, `批次修改年級：${s.grade||''} → ${newGrade}`);
+        s.grade = newGrade;
+      }
+    });
+    await storageSet('students', state.students);
+    closeModal();
+    render();
+    showToast(`已將 ${ids.length} 位學生的年級改為「${newGrade}」`);
   };
 }
 
@@ -1974,26 +2711,60 @@ async function setStudentNote(studentId, note){
   await storageSet('students', state.students);
 }
 
-/* ============ student roster CSV (full profile, with dedupe) ============ */
-function exportStudentRosterCsv(){
+/* ============ student roster CSV (daily use — no ID number / birthday) ============ */
+function buildStudentRosterRows(studentsList){
+  const list = studentsList || state.students;
   const rows = [];
-  rows.push(['學生編號','在班狀態','狀態異動日期','中文姓名','英文姓名','就讀學校','就讀管道','就讀年級','生日','學生電話','家長電話','備註']);
-  const order = GRADE_ORDER.concat([...new Set(state.students.map(s=>s.grade).filter(g=>!GRADE_ORDER.includes(g)))]);
+  rows.push(['學生編號','在班狀態','狀態異動日期','中文姓名','英文姓名','就讀學校','就讀年級','補習科目','學生電話','家長電話','備註',
+    '國語期中','國語期末','數學期中','數學期末','英文期中','英文期末','自然期中','自然期末','社會期中','社會期末']);
+  const order = GRADE_ORDER.concat([...new Set(list.map(s=>s.grade).filter(g=>!GRADE_ORDER.includes(g)))]);
   order.forEach(grade=>{
-    state.students.filter(s=>s.grade===grade).forEach(s=>{
-      rows.push([s.studentNo||'', s.enrollStatus||'在班', s.enrollStatusDate||'', s.zh, s.en||'', s.school||'', s.track||'', s.grade||'', s.birthday||'', s.phone||'', s.parentPhone||'', s.note||'']);
+    list.filter(s=>s.grade===grade).forEach(s=>{
+      const ps = Object.assign(emptyPrevScores(), s.prevScores||{});
+      rows.push([
+        s.studentNo||'', s.enrollStatus||'在班', s.enrollStatusDate||'', s.zh, s.en||'', s.school||'', s.grade||'',
+        subjectsToText(s.subjects), s.phone||'', s.parentPhone||'', s.note||'',
+        ps.chinese.mid, ps.chinese.final, ps.math.mid, ps.math.final, ps.english.mid, ps.english.final,
+        ps.science.mid, ps.science.final, ps.social.mid, ps.social.final
+      ]);
     });
   });
-  const csv = '\uFEFF' + rows.map(r => r.map(csvField).join(',')).join('\r\n');
+  return rows;
+}
+function rowsToCsv(rows){
+  return rows.map(r => r.map(csvField).join(',')).join('\r\n');
+}
+function downloadCsv(filename, csvBody){
+  const csv = '\uFEFF' + csvBody;
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `學生名冊_${todayLabel().replace(/[（）]/g,'')}.csv`;
+  a.download = filename;
   document.body.appendChild(a);
   a.click();
   a.remove();
   URL.revokeObjectURL(url);
+}
+function exportStudentRosterCsv(){
+  downloadCsv(`學生名冊_${todayLabel().replace(/[（）]/g,'')}.csv`, rowsToCsv(buildStudentRosterRows()));
+}
+
+/* ============ insurance roster CSV (contains ID number + birthday — handle with care) ============ */
+function buildInsuranceRosterRows(){
+  const rows = [];
+  rows.push(['學生編號','中文姓名','英文姓名','身分證字號','生日','就讀學校','就讀年級','家長電話','在班狀態']);
+  const order = GRADE_ORDER.concat([...new Set(state.students.map(s=>s.grade).filter(g=>!GRADE_ORDER.includes(g)))]);
+  order.forEach(grade=>{
+    state.students.filter(s=>s.grade===grade).forEach(s=>{
+      rows.push([s.studentNo||'', s.zh, s.en||'', s.idNumber||'', s.birthday||'', s.school||'', s.grade||'', s.parentPhone||'', s.enrollStatus||'在班']);
+    });
+  });
+  return rows;
+}
+function exportInsuranceRosterCsv(){
+  downloadCsv(`保險名冊_${todayLabel().replace(/[（）]/g,'')}.csv`, rowsToCsv(buildInsuranceRosterRows()));
+  showToast('保險名冊已匯出，內含身分證字號與生日，請妥善保管此檔案', 'warn');
 }
 
 /* ---------- field-type sanity checks for CSV import ---------- */
@@ -2003,13 +2774,24 @@ const FIELD_SYNONYMS = {
   enrollStatusDate: ['狀態異動日期','異動日期','狀態日期'],
   zh: ['中文姓名','姓名','學生姓名','中文名'],
   en: ['英文姓名','英文名','英文'],
+  idNumber: ['身分證字號','身分證','身份證字號'],
   school: ['就讀學校','學校','就讀之學校'],
-  track: ['就讀管道','管道','學制'],
   grade: ['就讀年級','年級','班級'],
+  subjects: ['補習科目','科目'],
   birthday: ['生日','出生日期','生日期'],
   phone: ['學生電話','電話','學生手機','手機'],
   parentPhone: ['家長電話','家長手機','監護人電話','緊急聯絡電話'],
-  note: ['備註','備注']
+  note: ['備註','備注'],
+  prevScore_chinese_mid: ['國語期中'],
+  prevScore_chinese_final: ['國語期末'],
+  prevScore_math_mid: ['數學期中'],
+  prevScore_math_final: ['數學期末'],
+  prevScore_english_mid: ['英文期中'],
+  prevScore_english_final: ['英文期末'],
+  prevScore_science_mid: ['自然期中'],
+  prevScore_science_final: ['自然期末'],
+  prevScore_social_mid: ['社會期中'],
+  prevScore_social_final: ['社會期末']
 };
 function mapCsvHeaderToFields(headerRow){
   const map = {};
@@ -2041,15 +2823,13 @@ function looksLikeDateText(v){
   const s = (v||'').toString().trim();
   return /^\d{2,4}[-/]\d{1,2}[-/]\d{1,2}$/.test(s);
 }
-function normalizeDateText(v){ return v.trim().replace(/\//g,'-'); }
-function fuzzyMatchTrack(v){
-  const s = (v||'').trim();
-  if(['高中','高職','五專'].includes(s)) return s;
-  if(s.includes('高中')) return '高中';
-  if(s.includes('高職')) return '高職';
-  if(s.includes('五專')) return '五專';
-  return '';
+function looksLikeScoreText(v){
+  const s = (v||'').toString().trim();
+  if(!s) return true; // 允許留空
+  const n = Number(s);
+  return !isNaN(n) && n >= 0 && n <= 100;
 }
+function normalizeDateText(v){ return v.trim().replace(/\//g,'-'); }
 function fuzzyMatchGrade(v){
   const s = (v||'').trim();
   if(GRADE_ORDER.includes(s)) return s;
@@ -2065,7 +2845,11 @@ async function importStudentRosterCsv(file){
   let colMap = mapCsvHeaderToFields(headerRow);
   if(Object.keys(colMap).length < 3){
     // 標題列無法辨識，改用預設欄位順序（跟「匯出學生名冊」的格式一致）
-    colMap = { 0:'studentNo', 1:'enrollStatus', 2:'enrollStatusDate', 3:'zh', 4:'en', 5:'school', 6:'track', 7:'grade', 8:'birthday', 9:'phone', 10:'parentPhone', 11:'note' };
+    colMap = { 0:'studentNo', 1:'enrollStatus', 2:'enrollStatusDate', 3:'zh', 4:'en', 5:'school', 6:'grade',
+      7:'subjects', 8:'phone', 9:'parentPhone', 10:'note',
+      11:'prevScore_chinese_mid', 12:'prevScore_chinese_final', 13:'prevScore_math_mid', 14:'prevScore_math_final',
+      15:'prevScore_english_mid', 16:'prevScore_english_final', 17:'prevScore_science_mid', 18:'prevScore_science_final',
+      19:'prevScore_social_mid', 20:'prevScore_social_final' };
   }
 
   let added = 0, skippedDup = 0, skippedNoName = 0, blankedFields = 0;
@@ -2090,14 +2874,17 @@ async function importStudentRosterCsv(file){
     candidate.en = (raw.en && !looksLikePhoneText(raw.en)) ? raw.en : '';
     if(raw.en && !candidate.en) blankedFields++;
 
-    candidate.school = (raw.school && !looksLikePhoneText(raw.school) && !fuzzyMatchTrack(raw.school) && !GRADE_ORDER.includes(raw.school)) ? raw.school : '';
-    if(raw.school && !candidate.school) blankedFields++;
+    candidate.idNumber = looksLikeIdNumber(raw.idNumber) ? raw.idNumber.toUpperCase() : '';
+    if(raw.idNumber && !candidate.idNumber) blankedFields++;
 
-    candidate.track = fuzzyMatchTrack(raw.track);
-    if(raw.track && !candidate.track) blankedFields++;
+    candidate.school = (raw.school && !looksLikePhoneText(raw.school) && !GRADE_ORDER.includes(raw.school)) ? raw.school : '';
+    if(raw.school && !candidate.school) blankedFields++;
 
     candidate.grade = fuzzyMatchGrade(raw.grade);
     if(raw.grade && !candidate.grade) blankedFields++;
+
+    candidate.subjects = textToSubjects(raw.subjects);
+    if(raw.subjects && !candidate.subjects.length) blankedFields++;
 
     candidate.birthday = looksLikeDateText(raw.birthday) ? normalizeDateText(raw.birthday) : '';
     if(raw.birthday && !candidate.birthday) blankedFields++;
@@ -2109,6 +2896,16 @@ async function importStudentRosterCsv(file){
     if(raw.parentPhone && !candidate.parentPhone) blankedFields++;
 
     candidate.note = raw.note || '';
+
+    candidate.prevScores = {};
+    PREV_SCORE_SUBJECTS.forEach(ps=>{
+      const midRaw = raw[`prevScore_${ps.key}_mid`] || '';
+      const finalRaw = raw[`prevScore_${ps.key}_final`] || '';
+      const mid = looksLikeScoreText(midRaw) ? midRaw : '';
+      const final = looksLikeScoreText(finalRaw) ? finalRaw : '';
+      if((midRaw && !mid) || (finalRaw && !final)) blankedFields++;
+      candidate.prevScores[ps.key] = { mid, final };
+    });
 
     const dup = findDuplicateStudent(candidate, null);
     if(dup){
@@ -2126,105 +2923,34 @@ async function importStudentRosterCsv(file){
   const parts = [`已新增 ${added} 位學生`];
   if(skippedDup) parts.push(`${skippedDup} 筆偵測到重複已略過（${skippedNames.slice(0,5).join('、')}${skippedNames.length>5?' 等':''}）`);
   if(skippedNoName) parts.push(`${skippedNoName} 筆缺少有效姓名已跳過`);
-  if(blankedFields) parts.push(`${blankedFields} 個欄位內容格式看起來不對（例如電話欄放了文字、學校欄放了電話），已自動留空避免存錯，請自行確認補齊`);
+  if(blankedFields) parts.push(`${blankedFields} 個欄位內容格式看起來不對，已自動留空避免存錯，請自行確認補齊`);
   showToast(parts.join('；'), (skippedDup || skippedNoName || blankedFields) ? 'warn' : undefined);
 }
 
-/* ============ CSV export / import ============ */
+/* ============ CSV export / import (attendance grid) ============ */
 function csvField(v){
   const s = String(v==null?'':v);
   return /[",\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s;
 }
-async function downloadCsvContent(csv, filename, backupFolderLabel){
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
-
-  if(Backend.gasUrl && Backend.cloudReady){
-    try{
-      const dataUrl = await new Promise((resolve, reject)=>{
-        const reader = new FileReader();
-        reader.onload = ()=> resolve(reader.result);
-        reader.onerror = ()=> reject(new Error('讀取檔案失敗'));
-        reader.readAsDataURL(blob);
-      });
-      await backendUploadFile('attendance', backupFolderLabel || null, filename, dataUrl);
-      showToast(`「${filename}」已下載，並備份一份到雲端硬碟`);
-    }catch(e){
-      showToast(`「${filename}」已下載，但雲端備份失敗：${e.message||e}`, 'warn');
-    }
-  } else {
-    showToast(`「${filename}」已下載`);
-  }
-}
-
-function buildAttendanceCsvRows(students, dates){
+function buildAttendanceRows(){
+  const dates = state.attendanceDates;
   const rows = [];
   rows.push(['大洋周文理補習班｜點名總表']);
-  rows.push(['班級/姓名','學生電話','家長電話', ...dates.map(d=>d.label), '備註']);
-  GRADE_ORDER.concat([...new Set(students.map(s=>s.grade).filter(g=>!GRADE_ORDER.includes(g)))]).forEach(grade=>{
-    const list = students.filter(s=>s.grade===grade);
+  rows.push(['班級/姓名','家長電話', ...dates.map(d=>d.label), '備註']);
+  GRADE_ORDER.concat([...new Set(state.students.map(s=>s.grade).filter(g=>!GRADE_ORDER.includes(g)))]).forEach(grade=>{
+    const list = state.students.filter(s=>s.grade===grade);
     if(!list.length) return;
     rows.push([grade]);
     list.forEach(s=>{
       const rec = state.attendanceRecords[s.id] || {};
-      rows.push([studentFullName(s), s.phone||'', s.parentPhone||'', ...dates.map(d=>rec[d.id]||''), s.note||'']);
+      rows.push([studentFullName(s), s.parentPhone||'', ...dates.map(d=>rec[d.id]||''), s.note||'']);
     });
     rows.push([]);
   });
   return rows;
 }
-
-async function exportAttendanceCsvForClass(className){
-  const dates = state.attendanceDates;
-  const students = className ? state.students.filter(s => (s.className||'') === className) : state.students;
-  const rows = buildAttendanceCsvRows(students, dates);
-  const csv = '\uFEFF' + rows.map(r => r.map(csvField).join(',')).join('\r\n');
-  const suffix = className ? `_${className}` : '';
-  const filename = `備份_點名總表${suffix}_${todayLabel().replace(/[（）]/g,'')}.csv`;
-  await downloadCsvContent(csv, filename, '點名表CSV備份');
-}
-
-function openExportAttendanceModal(){
-  const usedClasses = [...new Set(state.students.map(s=>s.className).filter(Boolean))];
-  const allClassOptions = [...new Set([...CLASS_PRESETS, ...usedClasses])];
-  openModal(`
-    <h3>匯出點名總表</h3>
-    <p class="sub">預設匯出「全部班級」合併成一份總表；取消勾選後可以只選特定班級，勾選幾個就會各自產生一份獨立檔案。</p>
-    <div class="field">
-      <label style="display:flex;align-items:center;gap:8px;font-weight:700;"><input type="checkbox" id="export-all-classes" checked style="width:auto;"> 全部班級（合併成一份）</label>
-    </div>
-    <div id="export-class-list" style="display:none; margin-top:10px;">
-      ${allClassOptions.length ? allClassOptions.map(c=>`<label style="display:flex;align-items:center;gap:8px;margin-bottom:8px;"><input type="checkbox" class="export-class-cb" value="${escapeHtml(c)}" style="width:auto;"> ${escapeHtml(c)}</label>`).join('') : '<p class="sub">目前沒有學生設定班級，請先在學生資料裡填寫「班級」欄位。</p>'}
-    </div>
-    <div class="modal-actions">
-      <button class="btn ghost" id="export-cancel">取消</button>
-      <button class="btn" id="export-confirm">匯出</button>
-    </div>
-  `);
-  const allCb = document.getElementById('export-all-classes');
-  const listDiv = document.getElementById('export-class-list');
-  allCb.addEventListener('change', ()=>{ listDiv.style.display = allCb.checked ? 'none' : 'block'; });
-  document.getElementById('export-cancel').onclick = closeModal;
-  document.getElementById('export-confirm').onclick = async ()=>{
-    if(allCb.checked){
-      closeModal();
-      await exportAttendanceCsvForClass(null);
-      return;
-    }
-    const selected = Array.from(document.querySelectorAll('.export-class-cb:checked')).map(cb=>cb.value);
-    if(!selected.length){ showToast('請至少選擇一個班級','warn'); return; }
-    closeModal();
-    for(const c of selected){
-      await exportAttendanceCsvForClass(c);
-    }
-  };
+function exportAttendanceCsv(){
+  downloadCsv(`點名總表_${todayLabel().replace(/[（）]/g,'')}.csv`, rowsToCsv(buildAttendanceRows()));
 }
 
 function parseCsvLine(line){
@@ -2256,10 +2982,10 @@ async function importAttendanceCsv(file){
   // header row could be the title row or the real header row depending on file source
   if(header[0] && header[0].includes('點名')){
     const header2 = parseCsvLine(lines[1]);
-    dateLabels = header2.slice(3, header2.length-1);
+    dateLabels = header2.slice(2, header2.length-1);
     startRow = 2;
   } else {
-    dateLabels = header.slice(3, header.length-1);
+    dateLabels = header.slice(2, header.length-1);
     startRow = 1;
   }
   // map date labels to existing/new date columns
@@ -2277,18 +3003,18 @@ async function importAttendanceCsv(file){
   for(let i=startRow;i<lines.length;i++){
     const cols = parseCsvLine(lines[i]);
     if(!cols[0] || !cols[0].trim()) continue; // blank separator row
-    if(GRADE_ORDER.includes(cols[0].trim()) && !cols[1] && !cols[2]) continue; // grade header row
+    if(GRADE_ORDER.includes(cols[0].trim()) && !cols[1]) continue; // grade header row
     const name = cols[0].trim();
     const student = state.students.find(s => studentFullName(s).trim() === name || s.zh.trim() === name);
     if(!student){ unmatched.push(name); continue; }
     dateLabels.forEach((label, idx)=>{
       if(!label) return;
-      const val = cols[3+idx];
+      const val = cols[2+idx];
       if(val === undefined) return;
       if(!state.attendanceRecords[student.id]) state.attendanceRecords[student.id] = {};
       state.attendanceRecords[student.id][dateIdByLabel[label]] = val;
     });
-    const noteVal = cols[3+dateLabels.length];
+    const noteVal = cols[2+dateLabels.length];
     if(noteVal !== undefined && noteVal.trim()) student.note = noteVal.trim();
     updated++;
   }
@@ -2303,107 +3029,6 @@ async function importAttendanceCsv(file){
 }
 
 /* ============ settings modal ============ */
-/* ============ year snapshot & grade promotion ============ */
-async function createYearSnapshot(label){
-  const snapshot = {
-    id: genId(),
-    label,
-    createdAt: new Date().toISOString(),
-    students: JSON.parse(JSON.stringify(state.students))
-  };
-  state.yearSnapshots.push(snapshot);
-  await storageSet('year-snapshots', state.yearSnapshots);
-  return snapshot;
-}
-
-function openPromoteYearModal(){
-  const defaultLabel = `${new Date().getFullYear()}學年度`;
-  openModal(`
-    <h3>學年度升級</h3>
-    <p class="sub">會先把目前 ${state.students.length} 位學生的資料存成一份唯讀快照，接著自動把年級往上升一級（高三／專五會轉為「轉出」並標記畢業），此操作請確認無誤後再執行。</p>
-    <div class="field"><label>這份快照要標記的學年度名稱</label><input type="text" id="promote-year-label" value="${escapeHtml(defaultLabel)}"></div>
-    <div class="modal-actions">
-      <button class="btn ghost" id="promote-year-cancel">取消</button>
-      <button class="btn" id="promote-year-confirm" style="background:var(--danger);">建立快照並升年級</button>
-    </div>
-  `);
-  document.getElementById('promote-year-cancel').onclick = closeModal;
-  document.getElementById('promote-year-confirm').onclick = async ()=>{
-    const label = document.getElementById('promote-year-label').value.trim() || defaultLabel;
-    closeModal();
-    confirmDialog(`確定要以「${label}」建立快照，並把全體學生升年級嗎？此操作會直接更動所有學生的年級資料。`, async ()=>{
-      await createYearSnapshot(label);
-      const today = new Date().toISOString().slice(0,10);
-      state.students.forEach(s=>{
-        const next = NEXT_GRADE[s.grade];
-        if(next){
-          s.grade = next;
-        } else {
-          // 高三 / 專五：視為畢業，狀態改為轉出
-          s.enrollStatus = '轉出';
-          s.enrollStatusDate = today;
-          if(!s.statusHistory) s.statusHistory = [];
-          s.statusHistory.push({ status:'轉出', date: today, changedAt: new Date().toISOString(), note:'學年度升級－畢業' });
-          s.note = (s.note ? s.note + '；' : '') + `${label} 畢業`;
-        }
-      });
-      await storageSet('students', state.students);
-      render();
-      showToast(`已建立「${label}」快照並完成升年級`);
-    }, '確定升年級');
-  };
-}
-
-function openSnapshotViewerModal(){
-  if(!state.yearSnapshots.length){
-    openModal(`
-      <h3>歷史學年度快照</h3>
-      <p class="sub">目前還沒有任何快照，執行「學年度升級」時會自動建立。</p>
-      <div class="modal-actions"><button class="btn" id="snap-close">關閉</button></div>
-    `);
-    document.getElementById('snap-close').onclick = closeModal;
-    return;
-  }
-  openModal(`
-    <h3>歷史學年度快照</h3>
-    <p class="sub">選擇一份快照查看當時的學生名單（唯讀，不能編輯）</p>
-    <div class="field">
-      <select id="snapshot-select">
-        ${state.yearSnapshots.slice().reverse().map(s=>`<option value="${s.id}">${escapeHtml(s.label)}（${fmtDate(s.createdAt)}・共 ${s.students.length} 位）</option>`).join('')}
-      </select>
-    </div>
-    <div id="snapshot-detail" class="status-history" style="max-height:280px;"></div>
-    <div class="modal-actions">
-      <button class="btn ghost" id="snap-delete" style="color:var(--danger); margin-right:auto;">刪除這份快照</button>
-      <button class="btn" id="snap-close">關閉</button>
-    </div>
-  `);
-  const renderDetail = ()=>{
-    const id = document.getElementById('snapshot-select').value;
-    const snap = state.yearSnapshots.find(s=>s.id===id);
-    const detail = document.getElementById('snapshot-detail');
-    if(!snap){ detail.innerHTML = ''; return; }
-    detail.innerHTML = snap.students.map(s=>`
-      <div class="status-history-row">
-        <span>${escapeHtml(studentFullName(s))}${s.studentNo ? '（'+escapeHtml(s.studentNo)+'）' : ''}</span>
-        <span>${escapeHtml(s.grade||'')}${s.className ? '・'+escapeHtml(s.className) : ''}・${escapeHtml(s.enrollStatus||'在班')}</span>
-      </div>
-    `).join('') || '<p class="sub">這份快照沒有學生資料</p>';
-  };
-  document.getElementById('snapshot-select').addEventListener('change', renderDetail);
-  renderDetail();
-  document.getElementById('snap-close').onclick = closeModal;
-  document.getElementById('snap-delete').onclick = ()=>{
-    const id = document.getElementById('snapshot-select').value;
-    confirmDialog('確定要刪除這份快照嗎？刪除後無法復原。', async ()=>{
-      state.yearSnapshots = state.yearSnapshots.filter(s=>s.id!==id);
-      await storageSet('year-snapshots', state.yearSnapshots);
-      closeModal();
-      showToast('快照已刪除');
-    });
-  };
-}
-
 function openSettingsModal(){
   const cloudOn = Backend.gasUrl && Backend.cloudReady;
   const cloudSetButNotReady = Backend.gasUrl && !Backend.cloudReady;
@@ -2412,24 +3037,41 @@ function openSettingsModal(){
     : cloudSetButNotReady
       ? `<p class="sub" style="color:var(--danger);font-weight:700;">⚠️ 已設定雲端網址，但剛剛連線失敗，目前暫時使用本機資料。請確認網址與部署設定是否正確。</p>`
       : `<p class="sub" style="color:var(--ink-soft);font-weight:700;">💻 目前為本機模式，資料只存在這台裝置的瀏覽器裡，換裝置看不到。</p>`;
+  const promoSummary = computePromotionSummary();
+  const lastGrade = GRADE_ORDER[GRADE_ORDER.length - 1];
 
   openModal(`
     <h3>雲端硬碟同步設定</h3>
     ${statusHtml}
-    <p class="sub">貼上你部署好的 Google Apps Script 網頁應用程式網址，即可把所有資料（學生、點名、試卷、影片檔案）改成存在你的 Google 試算表／雲端硬碟，多台裝置、多位老師都能看到同一份資料。${DEFAULT_GAS_URL ? '這個網頁已經內建了共用後台網址，一般情況下不用手動設定這一步。' : ''}</p>
+    <p class="sub">貼上你部署好的 Google Apps Script 網頁應用程式網址，即可把所有資料（學生、點名、檔案專區檔案）改成存在你的 Google 試算表／雲端硬碟，多台裝置、多位老師都能看到同一份資料。<strong>國小資料庫請部署獨立的一份 Apps Script／試算表，不要跟高中資料庫共用同一個網址。</strong></p>
     <div class="field">
       <label>Apps Script 網頁應用程式網址</label>
       <input type="url" id="gas-url" placeholder="https://script.google.com/macros/s/.../exec" value="${escapeHtml(Backend.gasUrl||'')}">
     </div>
-    <p class="sub" style="margin-top:-6px;">留空並儲存＝${DEFAULT_GAS_URL ? '改回使用網頁內建的共用後台網址' : '改回本機模式（資料只留在這台裝置）'}。第一次連上雲端時，會直接讀取雲端現有的資料，本機原本的資料不會自動搬過去。</p>
+    <p class="sub" style="margin-top:-6px;">留空並儲存＝改回本機模式（資料只留在這台裝置）。第一次連上雲端時，會直接讀取雲端現有的資料，本機原本的資料不會自動搬過去。</p>
 
-    <div class="settings-section">
-      <h4>學年度管理</h4>
-      <p class="sub" style="margin-top:0;">升年級前會自動存一份目前所有學生資料的唯讀快照，之後可以回頭查「某學年度某學生在哪個班」。目前已有 ${state.yearSnapshots.length} 份快照。</p>
-      <div style="display:flex; gap:8px; flex-wrap:wrap;">
-        <button class="btn secondary" id="open-promote-year">🎓 學年度升級</button>
-        <button class="btn ghost" id="open-view-snapshots">📸 查看歷史快照（${state.yearSnapshots.length}）</button>
-      </div>
+    <div style="border-top:1.5px dashed var(--lavender-line); margin:18px 0 14px; padding-top:14px;">
+      <h3 style="font-size:15px;">🎓 年度升年級（每年7月使用）</h3>
+      <p class="sub">會把在班／新生的 ${GRADE_ORDER[0]}～${GRADE_ORDER[GRADE_ORDER.length-2]} 學生各升一個年級；${lastGrade} 學生會轉為「畢業生（銜接中）」狀態，可以繼續參加寒暑假校外教學，之後再決定要「轉出」（升國中部繼續補習）或「退班」。</p>
+      <p class="sub" style="margin-top:-8px;">目前預估：${promoSummary.promoteCount} 位會升一個年級、${promoSummary.graduateCount} 位（${lastGrade}）會轉為畢業生（銜接中）${promoSummary.skippedCount ? `、${promoSummary.skippedCount} 位年級為自訂班級不會被自動處理` : ''}。執行前會自動先建立一份學年封存快照。</p>
+      <button class="btn secondary" id="settings-promote-btn" style="width:100%;">執行升年級</button>
+    </div>
+
+    <div style="border-top:1.5px dashed var(--lavender-line); margin:18px 0 14px; padding-top:14px;">
+      <h3 style="font-size:15px;">📸 學年封存快照</h3>
+      <p class="sub">把目前所有學生資料存成一份唯讀快照，方便之後回查「某年某生在哪個班」。執行「升年級」時也會自動建立一份。</p>
+      <button class="btn ghost" id="settings-create-snapshot-btn" style="width:100%;margin-bottom:10px;">建立目前快照</button>
+      ${(state.archives||[]).length ? `
+        <div style="display:flex;flex-direction:column;gap:6px;max-height:180px;overflow-y:auto;">
+          ${[...state.archives].reverse().map(a=>`
+            <div style="display:flex;align-items:center;gap:8px;background:var(--lavender-bg);border-radius:10px;padding:8px 10px;font-size:12px;">
+              <span style="flex:1;"><strong>${escapeHtml(a.label)}</strong>　${escapeHtml(fmtDate(a.createdAt))}　${a.studentCount} 位學生</span>
+              <button class="btn ghost small" data-export-archive="${a.id}">⬇ 匯出</button>
+              <button class="btn ghost small" data-delete-archive="${a.id}" style="color:var(--danger);">刪除</button>
+            </div>
+          `).join('')}
+        </div>
+      ` : `<p class="sub" style="margin-top:0;">目前還沒有任何封存快照。</p>`}
     </div>
 
     <div class="modal-actions" style="flex-wrap:wrap;">
@@ -2439,9 +3081,30 @@ function openSettingsModal(){
     </div>
   `);
 
-  document.getElementById('open-promote-year').onclick = openPromoteYearModal;
-  document.getElementById('open-view-snapshots').onclick = openSnapshotViewerModal;
   document.getElementById('settings-cancel').onclick = closeModal;
+
+  document.getElementById('settings-create-snapshot-btn').onclick = async ()=>{
+    const label = prompt('請輸入這份快照的名稱（例如：2026學年）', `${new Date().getFullYear()}學年`);
+    if(label === null) return;
+    await createArchiveSnapshot(label.trim() || undefined);
+    showToast('封存快照已建立');
+    openSettingsModal();
+  };
+  document.querySelectorAll('[data-export-archive]').forEach(btn=>{
+    btn.addEventListener('click', ()=> exportArchiveSnapshotCsv(btn.dataset.exportArchive));
+  });
+  document.querySelectorAll('[data-delete-archive]').forEach(btn=>{
+    btn.addEventListener('click', ()=> deleteArchiveSnapshot(btn.dataset.deleteArchive));
+  });
+
+  document.getElementById('settings-promote-btn').onclick = ()=>{
+    const s = computePromotionSummary();
+    confirmDialog(
+      `此操作會將 ${s.promoteCount} 位在班／新生的學生升一個年級，${s.graduateCount} 位 ${lastGrade} 學生轉為「畢業生（銜接中）」狀態。此操作無法一鍵復原，建議先匯出學生名冊備份。確定要執行嗎？`,
+      promoteAllGrades,
+      '確定升年級'
+    );
+  };
 
   document.getElementById('settings-save').onclick = async ()=>{
     const url = document.getElementById('gas-url').value.trim();
@@ -2455,14 +3118,13 @@ function openSettingsModal(){
   };
 
   document.getElementById('settings-reset').onclick = ()=>{
-    confirmDialog('這將清除所有試卷、影片、點名表與學生資料，且無法復原，確定要繼續嗎？', async ()=>{
+    confirmDialog('這將清除所有檔案、點名表與學生資料，且無法復原，確定要繼續嗎？', async ()=>{
       state.papers = { folders: [], files: { [ALL_ID]: [] } };
       state.videos = { folders: [], items: { [ALL_ID]: [] } };
       state.attendanceFiles = [];
       state.students = [];
       state.attendanceDates = [];
       state.attendanceRecords = {};
-      state.yearSnapshots = [];
       state.activePaperFolder = ALL_ID;
       state.activeVideoFolder = ALL_ID;
       await Promise.all([
@@ -2471,8 +3133,7 @@ function openSettingsModal(){
         storageSet('attendance-files', state.attendanceFiles),
         storageSet('students', state.students),
         storageSet('attendance-dates', state.attendanceDates),
-        storageSet('attendance-records', state.attendanceRecords),
-        storageSet('year-snapshots', state.yearSnapshots)
+        storageSet('attendance-records', state.attendanceRecords)
       ]);
       closeModal();
       render();
@@ -2621,7 +3282,7 @@ function bindViewEvents(){
     });
   });
 
-  // folder overview cards (only shown on 全部試卷 / 全部影片)
+  // folder overview cards (only shown on 全部檔案 / 全部影片)
   document.querySelectorAll('[data-goto-folder]').forEach(card=>{
     card.addEventListener('click', ()=>{
       const kind = card.dataset.kind;
@@ -2688,26 +3349,60 @@ function bindViewEvents(){
     });
   });
 
-  // attendance file upload
-  const attUploadBtn = document.getElementById('attendance-upload-btn');
+  // attendance file upload（依分類上傳）
+  document.querySelectorAll('[data-attendance-upload-cat]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      state.pendingAttendanceUploadCategory = btn.dataset.attendanceUploadCat;
+      const input = document.getElementById('attendance-file-input');
+      if(input) input.click();
+    });
+  });
   const attFileInput = document.getElementById('attendance-file-input');
-  if(attUploadBtn) attUploadBtn.addEventListener('click', ()=> attFileInput.click());
   if(attFileInput) attFileInput.addEventListener('change', async (e)=>{
     for(const file of Array.from(e.target.files)){
-      await addFileToStore('attendance', null, file);
+      await addFileToStore('attendance', state.pendingAttendanceUploadCategory || '點名表', file);
     }
     e.target.value = '';
     render();
+  });
+  const attFileSearchInput = document.getElementById('attendance-file-search');
+  if(attFileSearchInput) attFileSearchInput.addEventListener('input', (e)=>{
+    state.attendanceFileSearch = e.target.value;
+    render();
+    const el = document.getElementById('attendance-file-search');
+    if(el){ el.focus(); el.selectionStart = el.selectionEnd = el.value.length; }
   });
 
   // settings
   const settingsBtn = document.getElementById('open-settings');
   if(settingsBtn) settingsBtn.addEventListener('click', openSettingsModal);
+  const backupAttendanceBtn = document.getElementById('backup-attendance-btn');
+  if(backupAttendanceBtn) backupAttendanceBtn.addEventListener('click', promptBackupAttendanceGrades);
+  const backupStudentsBtn = document.getElementById('backup-students-btn');
+  if(backupStudentsBtn) backupStudentsBtn.addEventListener('click', backupStudentsOnly);
+  const backupInsuranceBtn = document.getElementById('backup-insurance-btn');
+  if(backupInsuranceBtn) backupInsuranceBtn.addEventListener('click', ()=>{
+    confirmDialog('保險名冊會包含身分證字號與生日等敏感資料，確定要備份嗎？', backupInsuranceOnly, '確定備份');
+  });
+  const backupSessionsBtn = document.getElementById('backup-sessions-btn');
+  if(backupSessionsBtn) backupSessionsBtn.addEventListener('click', ()=>{
+    confirmDialog('將依梯次分別產生名冊與保險名冊 CSV（保險名冊含身分證字號與生日），確定要備份所有梯次嗎？', backupSessionsOnly, '確定備份');
+  });
+  const backupAllBtn = document.getElementById('backup-all-btn');
+  if(backupAllBtn) backupAllBtn.addEventListener('click', ()=>{
+    confirmDialog('將產生學生名冊、保險名冊、點名總表（全部班級），以及每個梯次的名冊與保險名冊 CSV，依分類存檔。確定要執行嗎？', backupAllNow, '確定備份');
+  });
 
   // students
-  document.querySelectorAll('.sub-tab-btn').forEach(btn=>{
+  document.querySelectorAll('.sub-tab-btn[data-subview]').forEach(btn=>{
     btn.addEventListener('click', ()=>{
       state.attendanceSubView = btn.dataset.subview;
+      render();
+    });
+  });
+  document.querySelectorAll('[data-profile-viewmode]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      state.profileViewMode = btn.dataset.profileViewmode;
       render();
     });
   });
@@ -2731,6 +3426,26 @@ function bindViewEvents(){
     profilePwInput.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') tryUnlock(); });
     profilePwInput.focus();
   }
+
+  // 點名表檔案密碼鎖（共用同一組解鎖狀態 state.profileUnlocked）
+  const filePwSubmit = document.getElementById('file-password-submit');
+  const filePwInput = document.getElementById('file-password-input');
+  if(filePwSubmit && filePwInput){
+    const tryUnlockFile = ()=>{
+      if(filePwInput.value === STUDENT_PROFILE_PASSWORD){
+        state.profileUnlocked = true;
+        render();
+      } else {
+        const err = document.getElementById('file-password-error');
+        if(err) err.classList.add('show');
+        filePwInput.value = '';
+        filePwInput.focus();
+      }
+    };
+    filePwSubmit.addEventListener('click', tryUnlockFile);
+    filePwInput.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') tryUnlockFile(); });
+  }
+
   const lockProfileBtn = document.getElementById('lock-profile-btn');
   if(lockProfileBtn) lockProfileBtn.addEventListener('click', ()=>{
     state.profileUnlocked = false;
@@ -2775,8 +3490,6 @@ function bindViewEvents(){
     state.selectedStudentIds = [];
     render();
   });
-  const batchEditBtn = document.getElementById('batch-edit-students-btn');
-  if(batchEditBtn) batchEditBtn.addEventListener('click', openBatchEditModal);
   const deleteSelectedBtn = document.getElementById('delete-selected-students-btn');
   if(deleteSelectedBtn) deleteSelectedBtn.addEventListener('click', ()=>{
     const ids = state.selectedStudentIds;
@@ -2799,10 +3512,22 @@ function bindViewEvents(){
       `確定刪除這 ${ids.length} 位`
     );
   });
+  const batchStatusBtn = document.getElementById('batch-status-btn');
+  if(batchStatusBtn) batchStatusBtn.addEventListener('click', promptBatchStatus);
+  const batchAddSubjectBtn = document.getElementById('batch-add-subject-btn');
+  if(batchAddSubjectBtn) batchAddSubjectBtn.addEventListener('click', ()=> promptBatchSubjects('add'));
+  const batchRemoveSubjectBtn = document.getElementById('batch-remove-subject-btn');
+  if(batchRemoveSubjectBtn) batchRemoveSubjectBtn.addEventListener('click', ()=> promptBatchSubjects('remove'));
+  const batchGradeBtn = document.getElementById('batch-grade-btn');
+  if(batchGradeBtn) batchGradeBtn.addEventListener('click', promptBatchGrade);
   const addStudentBtn = document.getElementById('add-student-btn');
   if(addStudentBtn) addStudentBtn.addEventListener('click', ()=> openStudentModal());
   const exportRosterBtn = document.getElementById('export-roster-csv-btn');
   if(exportRosterBtn) exportRosterBtn.addEventListener('click', exportStudentRosterCsv);
+  const exportInsuranceBtn = document.getElementById('export-insurance-csv-btn');
+  if(exportInsuranceBtn) exportInsuranceBtn.addEventListener('click', ()=>{
+    confirmDialog('保險名冊會包含身分證字號與生日等敏感資料，匯出後請妥善保管此檔案，確定要匯出嗎？', exportInsuranceRosterCsv, '確定匯出');
+  });
   const importRosterBtn = document.getElementById('import-roster-csv-btn');
   const importRosterInput = document.getElementById('import-roster-csv-input');
   if(importRosterBtn) importRosterBtn.addEventListener('click', ()=> importRosterInput.click());
@@ -2824,6 +3549,11 @@ function bindViewEvents(){
     state.profileStatusFilter = e.target.value;
     render();
   });
+  const subjectFilterSelect = document.getElementById('profile-subject-filter');
+  if(subjectFilterSelect) subjectFilterSelect.addEventListener('change', (e)=>{
+    state.profileSubjectFilter = e.target.value;
+    render();
+  });
   document.querySelectorAll('[data-action="delete-student"]').forEach(btn=>{
     btn.addEventListener('click', ()=>{
       const id = btn.dataset.id;
@@ -2843,23 +3573,79 @@ function bindViewEvents(){
   // attendance date columns + grid cells
   const addDateBtn = document.getElementById('add-date-btn');
   if(addDateBtn) addDateBtn.addEventListener('click', promptAddDateColumn);
-  document.querySelectorAll('.date-del').forEach(btn=>{
+  document.querySelectorAll('.date-del[data-date]').forEach(btn=>{
     btn.addEventListener('click', ()=> deleteDateColumn(btn.dataset.date));
   });
-  document.querySelectorAll('.att-cell').forEach(input=>{
+  document.querySelectorAll('.att-cell[data-date]').forEach(input=>{
     input.addEventListener('change', (e)=>{
       setAttendanceCell(input.dataset.student, input.dataset.date, e.target.value);
     });
   });
-  document.querySelectorAll('.note-cell').forEach(input=>{
+  document.querySelectorAll('.note-cell[data-student]').forEach(input=>{
     input.addEventListener('change', (e)=>{
       setStudentNote(input.dataset.student, e.target.value);
     });
   });
 
+  // 梯次名冊
+  const addSessionBtn = document.getElementById('add-session-btn');
+  if(addSessionBtn) addSessionBtn.addEventListener('click', promptCreateSession);
+  document.querySelectorAll('[data-open-session]').forEach(card=>{
+    card.addEventListener('click', ()=>{
+      state.activeSessionId = card.dataset.openSession;
+      render();
+    });
+  });
+  const backToSessionsBtn = document.getElementById('back-to-sessions-btn');
+  if(backToSessionsBtn) backToSessionsBtn.addEventListener('click', ()=>{ state.activeSessionId = null; render(); });
+  const editSessionBtn = document.getElementById('edit-session-btn');
+  if(editSessionBtn) editSessionBtn.addEventListener('click', ()=> promptEditSessionInfo(state.activeSessionId));
+  const manageSessionStudentsBtn = document.getElementById('manage-session-students-btn');
+  if(manageSessionStudentsBtn) manageSessionStudentsBtn.addEventListener('click', ()=> openSessionStudentPicker(state.activeSessionId));
+  const addSessionDateBtn = document.getElementById('add-session-date-btn');
+  if(addSessionDateBtn) addSessionDateBtn.addEventListener('click', ()=> promptAddSessionDateColumn(state.activeSessionId));
+  const exportSessionCsvBtn = document.getElementById('export-session-csv-btn');
+  if(exportSessionCsvBtn) exportSessionCsvBtn.addEventListener('click', ()=> exportSessionRosterCsv(state.activeSessionId));
+  const exportSessionInsuranceCsvBtn = document.getElementById('export-session-insurance-csv-btn');
+  if(exportSessionInsuranceCsvBtn) exportSessionInsuranceCsvBtn.addEventListener('click', ()=>{
+    confirmDialog('保險名冊會包含身分證字號與生日等敏感資料，匯出後請妥善保管此檔案，確定要匯出嗎？', ()=> exportSessionInsuranceCsv(state.activeSessionId), '確定匯出');
+  });
+  const backupSessionBtn = document.getElementById('backup-session-btn');
+  if(backupSessionBtn) backupSessionBtn.addEventListener('click', ()=> backupSingleSession(state.activeSessionId));
+  const deleteSessionBtn = document.getElementById('delete-session-btn');
+  if(deleteSessionBtn) deleteSessionBtn.addEventListener('click', ()=> deleteSession(state.activeSessionId));
+  const sessionPaymentFilterSelect = document.getElementById('session-payment-filter');
+  if(sessionPaymentFilterSelect) sessionPaymentFilterSelect.addEventListener('change', (e)=>{
+    state.sessionPaymentFilter = e.target.value;
+    render();
+  });
+  document.querySelectorAll('[data-payment-quickfilter]').forEach(card=>{
+    card.addEventListener('click', ()=>{
+      const val = card.dataset.paymentQuickfilter;
+      state.sessionPaymentFilter = (state.sessionPaymentFilter === val) ? '全部' : val;
+      render();
+    });
+  });
+  document.querySelectorAll('.date-del[data-session-date]').forEach(btn=>{
+    btn.addEventListener('click', ()=> deleteSessionDateColumn(state.activeSessionId, btn.dataset.sessionDate));
+  });
+  document.querySelectorAll('[data-action="remove-session-student"]').forEach(btn=>{
+    btn.addEventListener('click', ()=> removeStudentFromSession(state.activeSessionId, btn.dataset.id));
+  });
+  document.querySelectorAll('.session-payment-select').forEach(sel=>{
+    sel.addEventListener('change', (e)=>{
+      setSessionPayment(state.activeSessionId, sel.dataset.sessionStudent, e.target.value);
+    });
+  });
+  document.querySelectorAll('.att-cell[data-session-date]').forEach(input=>{
+    input.addEventListener('change', (e)=>{
+      setSessionAttendanceCell(state.activeSessionId, input.dataset.sessionStudentCell, input.dataset.sessionDate, e.target.value);
+    });
+  });
+
   // csv export / import
   const exportCsvBtn = document.getElementById('export-csv-btn');
-  if(exportCsvBtn) exportCsvBtn.addEventListener('click', openExportAttendanceModal);
+  if(exportCsvBtn) exportCsvBtn.addEventListener('click', exportAttendanceCsv);
   const importCsvBtn = document.getElementById('import-csv-btn');
   const importCsvInput = document.getElementById('import-csv-input');
   if(importCsvBtn) importCsvBtn.addEventListener('click', ()=> importCsvInput.click());
