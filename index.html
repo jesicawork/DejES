@@ -1222,9 +1222,13 @@ function renderAttendance(){
   return `
     <div class="topbar">
       <div><p class="eyebrow">ROSTER &amp; STUDENTS</p><h2 class="page-title">學生檔案及點名表</h2></div>
-      <button class="icon-btn" id="open-settings" title="同步設定">⚙️</button>
+      <div style="display:flex;gap:8px;align-items:center;">
+        ${state.profileUnlocked ? `<button class="btn secondary" id="backup-all-btn">💾 一鍵備份全部</button>` : ''}
+        <button class="icon-btn" id="open-settings" title="同步設定">⚙️</button>
+      </div>
     </div>
 
+    ${state.profileUnlocked ? `
     <div class="file-panel-head">
       <h3>點名表檔案（備份存檔）</h3>
       <div>
@@ -1232,7 +1236,9 @@ function renderAttendance(){
         <button class="btn" id="attendance-upload-btn">＋ 上傳點名表</button>
       </div>
     </div>
+    <p class="helper-note" style="margin-top:-6px;">💡 「一鍵備份全部」會把學生名冊、保險名冊、點名總表、每個梯次的名冊與保險名冊，一次產生 CSV 並存進下面這個「點名表檔案」清單裡；接上雲端後端時會直接存進 Google 雲端硬碟。</p>
     <div id="attendance-file-list">${renderFileRows(state.attendanceFiles, 'attendance')}</div>
+    ` : renderFileArchiveLockScreen()}
 
     <div class="sub-tabs">
       <button class="sub-tab-btn ${sub==='profile'?'active':''}" data-subview="profile">🧑‍🎓 學生檔案</button>
@@ -1243,6 +1249,21 @@ function renderAttendance(){
     ${sub === 'profile' ? (state.profileUnlocked ? renderStudentProfiles() : renderProfileLockScreen())
       : sub === 'sessions' ? (state.profileUnlocked ? renderSessionsView() : renderProfileLockScreen())
       : renderAttendanceGrid()}
+  `;
+}
+
+function renderFileArchiveLockScreen(){
+  return `
+    <div class="lock-screen">
+      <div class="lock-card">
+        <div class="lock-icon">🔒</div>
+        <h3>點名表檔案需要密碼</h3>
+        <p class="sub">內含名冊備份與保險資料，請輸入密碼後查看</p>
+        <input type="password" id="file-password-input" inputmode="numeric" placeholder="請輸入密碼" autocomplete="off">
+        <p class="lock-error" id="file-password-error">密碼錯誤，請再試一次</p>
+        <button class="btn" id="file-password-submit" style="width:100%;margin-top:10px;">解鎖</button>
+      </div>
+    </div>
   `;
 }
 
@@ -1548,24 +1569,31 @@ function promptCreateSession(){
     <div class="field-row">
       <div class="field">
         <label>類型</label>
-        <select id="sess-type">${SESSION_TYPE_OPTIONS.map(o=>`<option>${o}</option>`).join('')}</select>
+        <select id="sess-type">${SESSION_TYPE_OPTIONS.map(o=>`<option>${o}</option>`).join('')}<option value="__custom__">自訂...</option></select>
       </div>
       <div class="field"><label>年度</label><input type="text" id="sess-year" value="${new Date().getFullYear()}"></div>
     </div>
+    <div class="field" id="sess-type-custom-field" style="display:none;"><label>自訂類型名稱</label><input type="text" id="sess-type-custom" placeholder="例如：週末棋藝營"></div>
     <div class="field"><label>備註</label><input type="text" id="sess-note" placeholder="選填"></div>
     <div class="modal-actions">
       <button class="btn ghost" id="sess-cancel">取消</button>
       <button class="btn" id="sess-save">新增</button>
     </div>
   `);
+  document.getElementById('sess-type').addEventListener('change', (e)=>{
+    document.getElementById('sess-type-custom-field').style.display = e.target.value === '__custom__' ? 'block' : 'none';
+  });
   document.getElementById('sess-cancel').onclick = closeModal;
   document.getElementById('sess-save').onclick = async ()=>{
     const name = document.getElementById('sess-name').value.trim();
     if(!name){ showToast('請輸入梯次名稱','warn'); return; }
+    const typeSel = document.getElementById('sess-type').value;
+    const type = typeSel === '__custom__' ? document.getElementById('sess-type-custom').value.trim() : typeSel;
+    if(typeSel === '__custom__' && !type){ showToast('請輸入自訂類型名稱','warn'); return; }
     const session = {
       id: genId(),
       name,
-      type: document.getElementById('sess-type').value,
+      type,
       year: document.getElementById('sess-year').value.trim(),
       note: document.getElementById('sess-note').value.trim(),
       studentIds: [],
@@ -1586,28 +1614,36 @@ function promptCreateSession(){
 function promptEditSessionInfo(sessionId){
   const session = getSession(sessionId);
   if(!session) return;
+  const isKnownType = SESSION_TYPE_OPTIONS.includes(session.type);
   openModal(`
     <h3>編輯梯次資訊</h3>
     <div class="field"><label>梯次名稱</label><input type="text" id="sess-name" value="${escapeHtml(session.name)}" autofocus></div>
     <div class="field-row">
       <div class="field">
         <label>類型</label>
-        <select id="sess-type">${SESSION_TYPE_OPTIONS.map(o=>`<option ${session.type===o?'selected':''}>${o}</option>`).join('')}</select>
+        <select id="sess-type">${SESSION_TYPE_OPTIONS.map(o=>`<option ${session.type===o?'selected':''}>${o}</option>`).join('')}<option value="__custom__" ${!isKnownType?'selected':''}>自訂...</option></select>
       </div>
       <div class="field"><label>年度</label><input type="text" id="sess-year" value="${escapeHtml(session.year||'')}"></div>
     </div>
+    <div class="field" id="sess-type-custom-field" style="display:${!isKnownType?'block':'none'};"><label>自訂類型名稱</label><input type="text" id="sess-type-custom" placeholder="例如：週末棋藝營" value="${!isKnownType?escapeHtml(session.type||''):''}"></div>
     <div class="field"><label>備註</label><input type="text" id="sess-note" value="${escapeHtml(session.note||'')}"></div>
     <div class="modal-actions">
       <button class="btn ghost" id="sess-cancel">取消</button>
       <button class="btn" id="sess-save">儲存</button>
     </div>
   `);
+  document.getElementById('sess-type').addEventListener('change', (e)=>{
+    document.getElementById('sess-type-custom-field').style.display = e.target.value === '__custom__' ? 'block' : 'none';
+  });
   document.getElementById('sess-cancel').onclick = closeModal;
   document.getElementById('sess-save').onclick = async ()=>{
     const name = document.getElementById('sess-name').value.trim();
     if(!name){ showToast('請輸入梯次名稱','warn'); return; }
+    const typeSel = document.getElementById('sess-type').value;
+    const type = typeSel === '__custom__' ? document.getElementById('sess-type-custom').value.trim() : typeSel;
+    if(typeSel === '__custom__' && !type){ showToast('請輸入自訂類型名稱','warn'); return; }
     session.name = name;
-    session.type = document.getElementById('sess-type').value;
+    session.type = type;
     session.year = document.getElementById('sess-year').value.trim();
     session.note = document.getElementById('sess-note').value.trim();
     await storageSet('sessions', state.sessions);
@@ -1743,9 +1779,7 @@ async function setSessionAttendanceCell(sessionId, studentId, dateId, value){
   await storageSet('sessions', state.sessions);
 }
 
-function exportSessionRosterCsv(sessionId){
-  const session = getSession(sessionId);
-  if(!session) return;
+function buildSessionRosterRows(session){
   const students = (session.studentIds||[]).map(id=>state.students.find(s=>s.id===id)).filter(Boolean);
   const dates = session.attendanceDates || [];
   const rows = [];
@@ -1755,37 +1789,27 @@ function exportSessionRosterCsv(sessionId){
     const rec = (session.attendanceRecords||{})[s.id] || {};
     rows.push([s.studentNo||'', studentFullName(s), s.grade||'', s.phone||'', s.parentPhone||'', paymentStatusOf(session, s.id), ...dates.map(d=>rec[d.id]||''), s.note||'']);
   });
-  const csv = '\uFEFF' + rows.map(r => r.map(csvField).join(',')).join('\r\n');
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `${session.name}_梯次名冊.csv`;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
+  return rows;
 }
-
-function exportSessionInsuranceCsv(sessionId){
+function exportSessionRosterCsv(sessionId){
   const session = getSession(sessionId);
   if(!session) return;
+  downloadCsv(`${session.name}_梯次名冊.csv`, rowsToCsv(buildSessionRosterRows(session)));
+}
+
+function buildSessionInsuranceRows(session){
   const students = (session.studentIds||[]).map(id=>state.students.find(s=>s.id===id)).filter(Boolean);
   const rows = [];
   rows.push(['學生編號','中文姓名','英文姓名','身分證字號','生日','就讀學校','年級','家長電話','繳費狀態']);
   students.forEach(s=>{
     rows.push([s.studentNo||'', s.zh, s.en||'', s.idNumber||'', s.birthday||'', s.school||'', s.grade||'', s.parentPhone||'', paymentStatusOf(session, s.id)]);
   });
-  const csv = '\uFEFF' + rows.map(r => r.map(csvField).join(',')).join('\r\n');
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `${session.name}_保險名冊.csv`;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
+  return rows;
+}
+function exportSessionInsuranceCsv(sessionId){
+  const session = getSession(sessionId);
+  if(!session) return;
+  downloadCsv(`${session.name}_保險名冊.csv`, rowsToCsv(buildSessionInsuranceRows(session)));
   showToast('保險名冊已匯出，內含身分證字號與生日，請妥善保管此檔案', 'warn');
 }
 
@@ -1942,6 +1966,55 @@ function resolveFolderName(kind, folderId){
   const data = kind === 'papers' ? state.papers : state.videos;
   const f = data.folders.find(x => x.id === folderId);
   return f ? f.name : null;
+}
+
+/* ============ 一鍵備份：把匯出的 CSV 直接存進「點名表檔案」（雲端模式＝真的存進雲端硬碟） ============ */
+async function saveCsvToAttendanceArchive(filename, csvBody){
+  const csv = '\uFEFF' + csvBody;
+  const base64 = btoa(unescape(encodeURIComponent(csv)));
+  const dataUrl = 'data:text/csv;charset=utf-8;base64,' + base64;
+  const cloudMode = Backend.gasUrl && Backend.cloudReady;
+  let entry = {
+    id: genId(),
+    name: filename,
+    size: csv.length,
+    type: 'text/csv',
+    date: new Date().toISOString(),
+    dataUrl,
+    driveFileId: null,
+    tooLarge: false
+  };
+  if(cloudMode){
+    try{
+      const result = await backendUploadFile('attendance', null, filename, dataUrl);
+      entry.driveFileId = result.fileId;
+      entry.dataUrl = null;
+    }catch(e){
+      showToast(`「${filename}」雲端上傳失敗，將只暫存在本機：${e.message||e}`, 'warn');
+    }
+  }
+  state.attendanceFiles.push(entry);
+}
+
+async function backupAllNow(){
+  const cloudMode = Backend.gasUrl && Backend.cloudReady;
+  if(!cloudMode){
+    showToast('目前是本機模式，備份只會存在這台裝置的瀏覽器裡，建議先在「⚙️ 同步設定」接上雲端後端','warn');
+  }
+  const todayStr = todayLabel().replace(/[（）]/g,'');
+  let count = 0;
+
+  await saveCsvToAttendanceArchive(`備份_學生名冊_${todayStr}.csv`, rowsToCsv(buildStudentRosterRows())); count++;
+  await saveCsvToAttendanceArchive(`備份_保險名冊_${todayStr}.csv`, rowsToCsv(buildInsuranceRosterRows())); count++;
+  await saveCsvToAttendanceArchive(`備份_點名總表_${todayStr}.csv`, rowsToCsv(buildAttendanceRows())); count++;
+  for(const session of state.sessions){
+    await saveCsvToAttendanceArchive(`備份_梯次名冊_${session.name}_${todayStr}.csv`, rowsToCsv(buildSessionRosterRows(session))); count++;
+    await saveCsvToAttendanceArchive(`備份_梯次保險名冊_${session.name}_${todayStr}.csv`, rowsToCsv(buildSessionInsuranceRows(session))); count++;
+  }
+
+  await storageSet('attendance-files', state.attendanceFiles);
+  render();
+  showToast(`備份完成，共 ${count} 份檔案已存入「點名表檔案」${cloudMode ? '（已同步到雲端硬碟）' : ''}`);
 }
 
 /* ============ folder rename / file rename & move ============ */
@@ -2345,7 +2418,7 @@ async function setStudentNote(studentId, note){
 }
 
 /* ============ student roster CSV (daily use — no ID number / birthday) ============ */
-function exportStudentRosterCsv(){
+function buildStudentRosterRows(){
   const rows = [];
   rows.push(['學生編號','在班狀態','狀態異動日期','中文姓名','英文姓名','就讀學校','就讀年級','補習科目','學生電話','家長電話','備註',
     '國語期中','國語期末','數學期中','數學期末','英文期中','英文期末','自然期中','自然期末','社會期中','社會期末']);
@@ -2361,20 +2434,29 @@ function exportStudentRosterCsv(){
       ]);
     });
   });
-  const csv = '\uFEFF' + rows.map(r => r.map(csvField).join(',')).join('\r\n');
+  return rows;
+}
+function rowsToCsv(rows){
+  return rows.map(r => r.map(csvField).join(',')).join('\r\n');
+}
+function downloadCsv(filename, csvBody){
+  const csv = '\uFEFF' + csvBody;
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `學生名冊_${todayLabel().replace(/[（）]/g,'')}.csv`;
+  a.download = filename;
   document.body.appendChild(a);
   a.click();
   a.remove();
   URL.revokeObjectURL(url);
 }
+function exportStudentRosterCsv(){
+  downloadCsv(`學生名冊_${todayLabel().replace(/[（）]/g,'')}.csv`, rowsToCsv(buildStudentRosterRows()));
+}
 
 /* ============ insurance roster CSV (contains ID number + birthday — handle with care) ============ */
-function exportInsuranceRosterCsv(){
+function buildInsuranceRosterRows(){
   const rows = [];
   rows.push(['學生編號','中文姓名','英文姓名','身分證字號','生日','就讀學校','就讀年級','家長電話','在班狀態']);
   const order = GRADE_ORDER.concat([...new Set(state.students.map(s=>s.grade).filter(g=>!GRADE_ORDER.includes(g)))]);
@@ -2383,16 +2465,10 @@ function exportInsuranceRosterCsv(){
       rows.push([s.studentNo||'', s.zh, s.en||'', s.idNumber||'', s.birthday||'', s.school||'', s.grade||'', s.parentPhone||'', s.enrollStatus||'在班']);
     });
   });
-  const csv = '\uFEFF' + rows.map(r => r.map(csvField).join(',')).join('\r\n');
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `保險名冊_${todayLabel().replace(/[（）]/g,'')}.csv`;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
+  return rows;
+}
+function exportInsuranceRosterCsv(){
+  downloadCsv(`保險名冊_${todayLabel().replace(/[（）]/g,'')}.csv`, rowsToCsv(buildInsuranceRosterRows()));
   showToast('保險名冊已匯出，內含身分證字號與生日，請妥善保管此檔案', 'warn');
 }
 
@@ -2561,7 +2637,7 @@ function csvField(v){
   const s = String(v==null?'':v);
   return /[",\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s;
 }
-function exportAttendanceCsv(){
+function buildAttendanceRows(){
   const dates = state.attendanceDates;
   const rows = [];
   rows.push(['大洋周文理補習班｜點名總表']);
@@ -2576,16 +2652,10 @@ function exportAttendanceCsv(){
     });
     rows.push([]);
   });
-  const csv = '\uFEFF' + rows.map(r => r.map(csvField).join(',')).join('\r\n');
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `點名總表_${todayLabel().replace(/[（）]/g,'')}.csv`;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
+  return rows;
+}
+function exportAttendanceCsv(){
+  downloadCsv(`點名總表_${todayLabel().replace(/[（）]/g,'')}.csv`, rowsToCsv(buildAttendanceRows()));
 }
 
 function parseCsvLine(line){
@@ -2968,6 +3038,10 @@ function bindViewEvents(){
   // settings
   const settingsBtn = document.getElementById('open-settings');
   if(settingsBtn) settingsBtn.addEventListener('click', openSettingsModal);
+  const backupAllBtn = document.getElementById('backup-all-btn');
+  if(backupAllBtn) backupAllBtn.addEventListener('click', ()=>{
+    confirmDialog('將產生學生名冊、保險名冊、點名總表，以及每個梯次的名冊與保險名冊 CSV，一次存進「點名表檔案」（保險名冊含身分證字號與生日，請妥善保管）。確定要執行嗎？', backupAllNow, '確定備份');
+  });
 
   // students
   document.querySelectorAll('.sub-tab-btn[data-subview]').forEach(btn=>{
@@ -3002,6 +3076,26 @@ function bindViewEvents(){
     profilePwInput.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') tryUnlock(); });
     profilePwInput.focus();
   }
+
+  // 點名表檔案密碼鎖（共用同一組解鎖狀態 state.profileUnlocked）
+  const filePwSubmit = document.getElementById('file-password-submit');
+  const filePwInput = document.getElementById('file-password-input');
+  if(filePwSubmit && filePwInput){
+    const tryUnlockFile = ()=>{
+      if(filePwInput.value === STUDENT_PROFILE_PASSWORD){
+        state.profileUnlocked = true;
+        render();
+      } else {
+        const err = document.getElementById('file-password-error');
+        if(err) err.classList.add('show');
+        filePwInput.value = '';
+        filePwInput.focus();
+      }
+    };
+    filePwSubmit.addEventListener('click', tryUnlockFile);
+    filePwInput.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') tryUnlockFile(); });
+  }
+
   const lockProfileBtn = document.getElementById('lock-profile-btn');
   if(lockProfileBtn) lockProfileBtn.addEventListener('click', ()=>{
     state.profileUnlocked = false;
